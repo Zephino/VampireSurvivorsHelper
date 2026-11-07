@@ -119,6 +119,7 @@ class ReadResult:
 class Chain:
     root_index: int
     fields: tuple[str, ...]
+    trusted: bool = False  # came from the game map, not from the automatic search
 
 
 @dataclass
@@ -225,7 +226,7 @@ class GameReader:
             for i, obj in roots.items():
                 names = self._follow_candidates(s.il2, obj, path)
                 if names:
-                    s.chains[kind] = Chain(i, names)
+                    s.chains[kind] = Chain(i, names, trusted=True)
                     break
 
         if len(s.chains) < len(self.map.inventories) and self._clock() - s.last_discovery >= REDISCOVER_SECONDS:
@@ -246,7 +247,7 @@ class GameReader:
                 if not coll:
                     continue  # e.g. no player yet
                 elements = s.il2.collection_elements(coll)
-                if len(elements) > MAX_SLOTS:
+                if len(elements) > MAX_SLOTS and not chain.trusted:
                     s.rejected.add(chain.fields)
                     del s.chains[kind]
                     continue
@@ -488,7 +489,9 @@ class GameReader:
         return found
 
 
-MAX_SLOTS = 12  # inventories hold at most a dozen of each kind, even with extra slots
+# The automatic search ignores bigger lists (item pools, pickups). Paths from the game map are
+# trusted at any size: some characters and modes hold many more passives.
+MAX_SLOTS = 12
 GOOD_WORDS = ("player", "character", "equip", "weapon", "accessor", "inventory", "slot", "active", "owned")
 BAD_WORDS = ("pool", "available", "pickup", "drop", "ground", "spawn", "unlock", "banish", "seen",
              "collection", "shop", "store", "reward", "treasure", "chest", "levelup", "choice", "offer",

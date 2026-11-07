@@ -158,8 +158,14 @@ class GameReaderTests(unittest.TestCase):
     def test_list_bigger_than_an_inventory_is_ignored(self):
         g = FakeGame()
         g.set_list(g.weapon_list, [1] * 13)  # 13 whips: a pool or ground items, not what you hold
-        result = _reader(g).poll()
+        result = _reader(g, inventories={"weapons": [["Nope"]]}).poll()  # found by the automatic search
         self.assertEqual(result.owned, frozenset())
+
+    def test_configured_path_is_trusted_at_any_size(self):
+        g = FakeGame()
+        g.set_named(g.passive_list, [("Spinach", 5, 5)] * 17)
+        result = _reader(g).poll()
+        self.assertIn("spinach", result.owned)
 
     def test_inventory_scoring(self):
         from vshelper.memory.game import score_inventory_path

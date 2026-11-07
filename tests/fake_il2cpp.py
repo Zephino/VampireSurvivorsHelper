@@ -148,7 +148,7 @@ class FakeGame:
         self.m.w64(o, klass)
         return o
 
-    def make_list(self, values: list[int], capacity: int = 8) -> int:
+    def make_list(self, values: list[int], capacity: int = 32) -> int:
         arr = self.obj(self.array_cls, 0x20 + 8 * capacity)
         self.m.w64(arr + 0x18, capacity)
         lst = self.obj(self.list_cls, 0x20)

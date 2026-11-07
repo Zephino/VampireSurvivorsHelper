@@ -1,5 +1,17 @@
 # Changelog
 
+## Version 00.07.01
+Date: 11/07/2026
+Time: 3:06 PM
+
+### Changes
+- Passive items now show even when you hold more than 12: inventory paths from the game map are trusted at any size. The 12-item limit only applies to lists found by the automatic search (item pools, pickups).
+- Internal game names are worked out even when both parts of a recipe are unknown (the recipe's key is the base weapon, the rest is the passive). This resolves the last three false wiki "mismatches" (Emergency Meeting, Paranormal Scan, Rocket Science).
+- Test lists can hold more items; added tests for both fixes.
+
+### Reason
+The user's latest diagnose report showed detection working for weapons, but all 17 held passives were dropped by the 12-item limit, and three recipes were still reported as mismatches.
+
 ## Version 00.07.00
 Date: 11/07/2026
 Time: 3:00 PM

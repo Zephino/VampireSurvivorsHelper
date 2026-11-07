@@ -155,6 +155,17 @@ class GameDataTests(unittest.TestCase):
         self.assertEqual(gamedata.internal_to_item(db, data)["C1_SHRINK_GUARDI"], "mini_guardian")
         self.assertEqual(gamedata.compare(db, data)["clear_asteroids"].status, "match")
 
+    def test_two_unknown_names_in_one_recipe(self):
+        text = json.dumps({
+            "C1_REPORT1": [{"level": 1, "evoInto": "C1_MEETING", "evoSynergy": ["C1_SHRINK_CREWMA"]}],
+            "C1_SHRINK_CREWMA": [{"level": 1}],
+            "C1_MEETING": [{"name": "Emergency Meeting"}],
+        })
+        db = load_database()
+        mapping = gamedata.internal_to_item(db, gamedata.parse_game_json(text))
+        self.assertEqual(mapping["C1_REPORT1"], "report")
+        self.assertEqual(mapping["C1_SHRINK_CREWMA"], "mini_crewmate")
+
     def test_non_game_text_is_ignored(self):
         self.assertEqual(gamedata.parse_game_json("hello").recipes, {})
         self.assertEqual(gamedata.parse_game_json("[1, 2]").names, {})

@@ -105,11 +105,20 @@ def internal_to_item(db: Database, game_data: GameData) -> dict[str, str]:
             into = recipe["into"]
             unknown = [p for p in parts if p not in mapping]
             known = {mapping[p] for p in parts if p in mapping}
-            if into in mapping and len(unknown) == 1:
+            if into in mapping and unknown:
                 for evo in by_result.get(mapping[into], []):
-                    leftover = [r for r in evo.requires if r not in known]
-                    if len(evo.requires) == len(parts) and len(leftover) == 1 and leftover[0] not in mapping.values():
+                    leftover = [r for r in evo.requires if r not in known and r not in mapping.values()]
+                    if len(evo.requires) != len(parts) or len(leftover) != len(unknown):
+                        continue
+                    if len(unknown) == 1:
                         mapping[unknown[0]] = leftover[0]
+                        changed = True
+                        break
+                    # Two or more unknown: the recipe's own key is the base weapon, so pair it with
+                    # the only remaining weapon; the rest is solved on the next pass.
+                    weapons_left = [r for r in leftover if db.items[r].kind == "weapon"]
+                    if base in unknown and len(weapons_left) == 1:
+                        mapping[base] = weapons_left[0]
                         changed = True
                         break
             elif into not in mapping and not unknown:
