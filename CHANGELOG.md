@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 00.01.02
+Date: 11/07/2026
+Time: 2:23 PM
+
+### Changes
+- Replaced the Weapons / Passives / Evolved tabs with one scrolling list: Weapons first, then Passive Items, then Evolved Weapons, each under a heading.
+- The filter box now keeps that order (it previously moved re-shown items to the end of the list).
+
+### Reason
+User wants all weapons listed first, followed by items.
+
 ## Version 00.01.01
 Date: 11/07/2026
 Time: 2:21 PM

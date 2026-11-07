@@ -60,15 +60,12 @@ class App:
 
         body = ttk.PanedWindow(root, orient="horizontal")
         body.pack(fill="both", expand=True, padx=6)
-        tabs = ttk.Notebook(body)
-        body.add(tabs, weight=1)
-        self.frames = {}
-        for title, items in (
+        item_list = self._item_list(body, [
             ("Weapons", [i for i in db.weapons() if not i.evolved]),
-            ("Passives", db.passives()),
-            ("Evolved", [i for i in db.weapons() if i.evolved]),
-        ):
-            self.frames[title] = self._item_list(tabs, title, items)
+            ("Passive Items", db.passives()),
+            ("Evolved Weapons", [i for i in db.weapons() if i.evolved]),
+        ])
+        body.add(item_list, weight=1)
 
         self.output = tk.Text(body, wrap="word", state="disabled", font=("Consolas", 10))
         body.add(self.output, weight=2)
@@ -89,9 +86,9 @@ class App:
         root.after(200, self._drain_results)
         root.protocol("WM_DELETE_WINDOW", self._close)
 
-    def _item_list(self, tabs: ttk.Notebook, title: str, items: list[Item]) -> ttk.Frame:
-        outer = ttk.Frame(tabs)
-        tabs.add(outer, text=title)
+    def _item_list(self, parent: tk.Widget, sections: list[tuple[str, list[Item]]]) -> ttk.Frame:
+        """One scrollable list with a heading per section, in the order given."""
+        outer = ttk.Frame(parent)
         canvas = tk.Canvas(outer, highlightthickness=0)
         scroll = ttk.Scrollbar(outer, orient="vertical", command=canvas.yview)
         inner = ttk.Frame(canvas)
@@ -102,23 +99,29 @@ class App:
         scroll.pack(side="right", fill="y")
         canvas.bind("<Enter>", lambda e: canvas.bind_all("<MouseWheel>", lambda ev: canvas.yview_scroll(-ev.delta // 120, "units")))
         canvas.bind("<Leave>", lambda e: canvas.unbind_all("<MouseWheel>"))
-        for item in sorted(items, key=lambda i: i.name.lower()):
-            var = tk.BooleanVar()
-            label = item.name if item.dlc == "Base game" else f"{item.name}  ({item.dlc})"
-            cb = ttk.Checkbutton(inner, text=label, variable=var, command=self._refresh)
-            cb.pack(anchor="w", padx=4, pady=1)
-            self.vars[item.id] = var
-            self.checkbuttons[item.id] = cb
-        return inner
+        row = 0
+        for title, items in sections:
+            ttk.Label(inner, text=title, font=("Segoe UI", 11, "bold")).grid(
+                row=row, column=0, sticky="w", padx=4, pady=(10 if row else 2, 2))
+            row += 1
+            for item in sorted(items, key=lambda i: i.name.lower()):
+                var = tk.BooleanVar()
+                label = item.name if item.dlc == "Base game" else f"{item.name}  ({item.dlc})"
+                cb = ttk.Checkbutton(inner, text=label, variable=var, command=self._refresh)
+                cb.grid(row=row, column=0, sticky="w", padx=14, pady=1)
+                row += 1
+                self.vars[item.id] = var
+                self.checkbuttons[item.id] = cb
+        return outer
 
     def _apply_filter(self) -> None:
         text = self.filter_var.get().lower()
         for item_id, cb in self.checkbuttons.items():
             visible = text in self.db.items[item_id].name.lower()
-            if visible and not cb.winfo_ismapped():
-                cb.pack(anchor="w", padx=4, pady=1)
-            elif not visible:
-                cb.pack_forget()
+            if visible:
+                cb.grid()  # grid() restores the original row, so the order is kept
+            else:
+                cb.grid_remove()
 
     def owned(self) -> set[str]:
         return {i for i, v in self.vars.items() if v.get()}
