@@ -96,9 +96,11 @@ def check_online(current: str, url: str = RAW_VERSION_URL) -> UpdateInfo:
         raise UpdateError(f"Couldn't reach GitHub to check for updates ({exc}).") from exc
     if not version_key(latest):
         raise UpdateError(f"GitHub returned an unexpected version: {latest[:40]!r}")
-    newer = version_key(latest) > version_key(current)
-    changes = [f"Download version {latest} from the GitHub page"] if newer else []
-    return UpdateInfo(current, latest, 1 if newer else 0, changes)
+    # Any different version counts as an update: the numbering was reset once (to 00.00.34),
+    # so a newer release can have a lower number than an older exe.
+    different = version_key(latest) != version_key(current)
+    changes = [f"Download version {latest} from the GitHub page"] if different else []
+    return UpdateInfo(current, latest, 1 if different else 0, changes)
 
 
 def check(root: Path = PROJECT_ROOT) -> UpdateInfo:

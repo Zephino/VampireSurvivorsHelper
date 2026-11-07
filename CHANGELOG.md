@@ -1,6 +1,51 @@
 # Changelog
 
-## Version 00.20.02
+## Version 00.00.34
+Date: 11/07/2026
+Time: 5:14 PM
+
+### Changes
+- Renumbered every version so they count up by 00.00.01 per changelog entry, oldest first (33 entries: 00.00.01 to 00.00.33; this change is 00.00.34). Old -> new:
+  - 00.00.01 -> 00.00.01
+  - 00.00.02 -> 00.00.02
+  - 00.01.00 -> 00.00.03
+  - 00.01.01 -> 00.00.04
+  - 00.01.02 -> 00.00.05
+  - 00.02.00 -> 00.00.06
+  - 00.03.00 -> 00.00.07
+  - 00.04.00 -> 00.00.08
+  - 00.05.00 -> 00.00.09
+  - 00.06.00 -> 00.00.10
+  - 00.07.00 -> 00.00.11
+  - 00.07.01 -> 00.00.12
+  - 00.08.00 -> 00.00.13
+  - 00.09.00 -> 00.00.14
+  - 00.10.00 -> 00.00.15
+  - 00.11.00 -> 00.00.16
+  - 00.12.00 -> 00.00.17
+  - 00.13.00 -> 00.00.18
+  - 00.13.01 -> 00.00.19
+  - 00.14.00 -> 00.00.20
+  - 00.15.00 -> 00.00.21
+  - 00.15.01 -> 00.00.22
+  - 00.15.02 -> 00.00.23
+  - 00.16.00 -> 00.00.24
+  - 00.17.00 -> 00.00.25
+  - 00.18.00 -> 00.00.26
+  - 00.18.01 -> 00.00.27
+  - 00.18.02 -> 00.00.28
+  - 00.18.03 -> 00.00.29
+  - 00.19.00 -> 00.00.30
+  - 00.20.00 -> 00.00.31
+  - 00.20.01 -> 00.00.32
+  - 00.20.02 -> 00.00.33
+- The standalone exe's update check now offers any version that differs from the installed one (it used to require a higher number, which would have hidden all updates after the renumbering). The git-based updater compares commits and is unaffected.
+- Changelog rule updated with the new numbering examples.
+
+### Reason
+User asked to fix the version numbers based on the changelog so they count by 00.00.01.
+
+## Version 00.00.33
 Date: 11/07/2026
 Time: 5:13 PM
 
@@ -10,7 +55,7 @@ Time: 5:13 PM
 ### Reason
 User expected the version to count up by 00.00.01 per change; earlier changes had raised the middle number for larger features because the rule didn't say which part to raise.
 
-## Version 00.20.01
+## Version 00.00.32
 Date: 11/07/2026
 Time: 5:06 PM
 
@@ -21,7 +66,7 @@ Time: 5:06 PM
 ### Reason
 User asked whether levels matter for evolving; they do (usually the weapon, sometimes also the passive, must be at max level), but the recipe cards didn't show it.
 
-## Version 00.20.00
+## Version 00.00.31
 Date: 11/07/2026
 Time: 5:00 PM
 
@@ -33,7 +78,7 @@ Time: 5:00 PM
 ### Reason
 User wants to see what their friends hold so they can tell them what they need to evolve.
 
-## Version 00.19.00
+## Version 00.00.30
 Date: 11/07/2026
 Time: 4:44 PM
 
@@ -47,7 +92,7 @@ Time: 4:44 PM
 ### Reason
 User suggested pulling all pictures from the wiki, since some items (e.g. Keremet and the Custos weapons) still had none.
 
-## Version 00.18.03
+## Version 00.00.29
 Date: 11/07/2026
 Time: 4:30 PM
 
@@ -61,7 +106,7 @@ Time: 4:30 PM
 ### Reason
 The user's diagnose report showed their second Custos weapon reported as "#1438" (the game spells it "Sinistro Custos") and the item catalogue not found, which kept Keremet and Custos weapons without pictures.
 
-## Version 00.18.02
+## Version 00.00.28
 Date: 11/07/2026
 Time: 4:19 PM
 
@@ -73,7 +118,7 @@ Time: 4:19 PM
 ### Reason
 User holds two of the three Custos weapons but the helper listed only Dextro Custos, so it said both Sinestro and Centralis Custos were still needed.
 
-## Version 00.18.01
+## Version 00.00.27
 Date: 11/07/2026
 Time: 4:04 PM
 
@@ -84,7 +129,7 @@ Time: 4:04 PM
 ### Reason
 User expected to see Dextro Custos' recipe on Overview, which only listed evolutions that were already ready.
 
-## Version 00.18.00
+## Version 00.00.26
 Date: 11/07/2026
 Time: 3:51 PM
 
@@ -98,7 +143,7 @@ Time: 3:51 PM
 ### Reason
 User asked for the helper to search the internet when it doesn't have a recipe, and for a search box on the Overview item list.
 
-## Version 00.17.00
+## Version 00.00.25
 Date: 11/07/2026
 Time: 3:46 PM
 
@@ -112,7 +157,7 @@ Time: 3:46 PM
 ### Reason
 User asked why the helper didn't seem to know how to evolve some items (e.g. Keremet Bubbles). Their report showed the recipe was known (Keremet Bubbles + Armor = Keremet Morbus) but those items had no picture, because their picture names weren't in the data read from the game files; the game's memory does contain them.
 
-## Version 00.16.00
+## Version 00.00.24
 Date: 11/07/2026
 Time: 3:38 PM
 
@@ -124,7 +169,7 @@ Time: 3:38 PM
 ### Reason
 User wants to toggle items they don't have to see what they would need.
 
-## Version 00.15.02
+## Version 00.00.23
 Date: 11/07/2026
 Time: 3:36 PM
 
@@ -135,7 +180,7 @@ Time: 3:36 PM
 ### Reason
 User reported the update button had disappeared.
 
-## Version 00.15.01
+## Version 00.00.22
 Date: 11/07/2026
 Time: 3:34 PM
 
@@ -146,7 +191,7 @@ Time: 3:34 PM
 ### Reason
 User wants the items on the Overview page.
 
-## Version 00.15.00
+## Version 00.00.21
 Date: 11/07/2026
 Time: 3:32 PM
 
@@ -160,7 +205,7 @@ Time: 3:32 PM
 ### Reason
 User reported that narrowing the list hid words and buttons, then asked for all tabs in one row, for the weapon list to hide automatically (toggleable in Settings), and for auto-detect to move into Settings.
 
-## Version 00.14.00
+## Version 00.00.20
 Date: 11/07/2026
 Time: 3:27 PM
 
@@ -175,7 +220,7 @@ Time: 3:27 PM
 ### Reason
 User wants an easy way to give the app to friends as an exe they can just run, and is making the repository public so friends can download it.
 
-## Version 00.13.01
+## Version 00.00.19
 Date: 11/07/2026
 Time: 3:22 PM
 
@@ -185,7 +230,7 @@ Time: 3:22 PM
 ### Reason
 User asked for the version to be shown in the title.
 
-## Version 00.13.00
+## Version 00.00.18
 Date: 11/07/2026
 Time: 3:21 PM
 
@@ -197,7 +242,7 @@ Time: 3:21 PM
 ### Reason
 User asked for a way to hide the weapon list.
 
-## Version 00.12.00
+## Version 00.00.17
 Date: 11/07/2026
 Time: 3:18 PM
 
@@ -210,7 +255,7 @@ Time: 3:18 PM
 ### Reason
 User asked for an update function in Settings.
 
-## Version 00.11.00
+## Version 00.00.16
 Date: 11/07/2026
 Time: 3:16 PM
 
@@ -225,7 +270,7 @@ Time: 3:16 PM
 ### Reason
 User asked for the main screen to use their card layout (icon, level, name) because it is easier to see.
 
-## Version 00.10.00
+## Version 00.00.15
 Date: 11/07/2026
 Time: 3:11 PM
 
@@ -238,7 +283,7 @@ Time: 3:11 PM
 ### Reason
 User asked for a separate tab for how to evolve weapons, and chose both splitting the main screen into Overview / How to evolve and adding an All evolutions guide.
 
-## Version 00.09.00
+## Version 00.00.14
 Date: 11/07/2026
 Time: 3:09 PM
 
@@ -251,7 +296,7 @@ Time: 3:09 PM
 ### Reason
 User asked for a way in Settings to toggle what is shown on the main screen.
 
-## Version 00.08.00
+## Version 00.00.13
 Date: 11/07/2026
 Time: 3:07 PM
 
@@ -263,7 +308,7 @@ Time: 3:07 PM
 ### Reason
 User asked for a dark theme that can be toggled in Settings and is on by default.
 
-## Version 00.07.01
+## Version 00.00.12
 Date: 11/07/2026
 Time: 3:06 PM
 
@@ -275,7 +320,7 @@ Time: 3:06 PM
 ### Reason
 The user's latest diagnose report showed detection working for weapons, but all 17 held passives were dropped by the 12-item limit, and three recipes were still reported as mismatches.
 
-## Version 00.07.00
+## Version 00.00.11
 Date: 11/07/2026
 Time: 3:00 PM
 
@@ -288,7 +333,7 @@ Time: 3:00 PM
 ### Reason
 User asked for Diagnose.bat to gather everything that might be needed, such as the full game structure and item data.
 
-## Version 00.06.00
+## Version 00.00.10
 Date: 11/07/2026
 Time: 2:55 PM
 
@@ -303,7 +348,7 @@ Time: 2:55 PM
 ### Reason
 The user's second diagnose report showed the helper now reaches the player's real weapons and accessories but couldn't identify them, because the game's item-type numbers don't follow the enum's declaration order.
 
-## Version 00.05.00
+## Version 00.00.09
 Date: 11/07/2026
 Time: 2:47 PM
 
@@ -318,7 +363,7 @@ Time: 2:47 PM
 ### Reason
 The user's diagnose report showed the helper was reading a list from the game's cheat-code system instead of the player's inventory, and the diagnose script crashed at the end.
 
-## Version 00.04.00
+## Version 00.00.08
 Date: 11/07/2026
 Time: 2:39 PM
 
@@ -331,7 +376,7 @@ Time: 2:39 PM
 ### Reason
 User reported the helper was reading items on the ground rather than the items they hold, and wants it to show what they're holding first and then how to evolve those items.
 
-## Version 00.03.00
+## Version 00.00.07
 Date: 11/07/2026
 Time: 2:34 PM
 
@@ -348,7 +393,7 @@ Time: 2:34 PM
 ### Reason
 User asked to pull all data from the wiki and compare it with the game files, to include all expansions with per-expansion toggles on by default, and to add a Settings tab for these and future settings.
 
-## Version 00.02.00
+## Version 00.00.06
 Date: 11/07/2026
 Time: 2:27 PM
 
@@ -363,7 +408,7 @@ Time: 2:27 PM
 ### Reason
 User asked for item pictures in the format weapon + augment = evolution. The game's artwork can't be shipped with the project, so it is extracted from the user's own installed game, as they chose.
 
-## Version 00.01.02
+## Version 00.00.05
 Date: 11/07/2026
 Time: 2:23 PM
 
@@ -374,7 +419,7 @@ Time: 2:23 PM
 ### Reason
 User wants all weapons listed first, followed by items.
 
-## Version 00.01.01
+## Version 00.00.04
 Date: 11/07/2026
 Time: 2:21 PM
 
@@ -388,7 +433,7 @@ Time: 2:21 PM
 ### Reason
 User wants to start everything with a double-click instead of using PowerShell.
 
-## Version 00.01.00
+## Version 00.00.03
 Date: 11/07/2026
 Time: 2:15 PM
 

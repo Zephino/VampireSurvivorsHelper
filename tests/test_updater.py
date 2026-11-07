@@ -85,7 +85,8 @@ class OnlineCheckTests(unittest.TestCase):
     def test_newer_and_same(self):
         self.assertTrue(self.check("00.14.00", "00.13.01").available)
         self.assertFalse(self.check("00.13.01", "00.13.01").available)
-        self.assertFalse(self.check("00.09.00", "00.13.01").available)  # compares numbers, not text
+        self.assertTrue(self.check("00.00.34", "00.20.01").available)  # renumbered release is still offered
+        self.assertFalse(self.check("00.13.1", "00.13.01").available)   # compares numbers, not text
 
     def test_bad_response(self):
         with self.assertRaises(updater.UpdateError):
