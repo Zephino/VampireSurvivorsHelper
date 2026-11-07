@@ -166,6 +166,15 @@ class GameDataTests(unittest.TestCase):
         self.assertEqual(mapping["C1_REPORT1"], "report")
         self.assertEqual(mapping["C1_SHRINK_CREWMA"], "mini_crewmate")
 
+    def test_catalogue_gives_picture_names(self):
+        with tempfile.TemporaryDirectory() as d:
+            gamedata.save_catalog({"Keremet Bubbles": {"frame": "-05-TP_ACID1.png", "evo_into": "TP_ACID2"}}, Path(d))
+            gamedata.save_catalog({"Not An Item": {"frame": "x.png"}}, Path(d))  # merges
+            catalog = gamedata.load_catalog(Path(d))
+        self.assertEqual(len(catalog), 2)
+        frames = gamedata.catalog_frames(load_database(), catalog)
+        self.assertEqual(frames, {"keremet_bubbles": "-05-TP_ACID1.png"})
+
     def test_non_game_text_is_ignored(self):
         self.assertEqual(gamedata.parse_game_json("hello").recipes, {})
         self.assertEqual(gamedata.parse_game_json("[1, 2]").names, {})

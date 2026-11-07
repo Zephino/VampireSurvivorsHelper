@@ -26,6 +26,7 @@
     [["_currentWeaponData", "<CurrentAccessoryData>k__BackingField", "CurrentWeaponData", "CurrentAccessoryData", "_currentAccessoryData"],
      ["name", "_name", "<name>k__BackingField", "Name", "<Name>k__BackingField"]]
   ],
+  "catalog_path": [["_dataManager", "DataManager"], ["<AllWeaponData>k__BackingField", "AllWeaponData", "_weaponData"]],
   "level_field": ["<Level>k__BackingField", "Level", "_level"],
   "max_level_field": ["<LevelsNumber>k__BackingField", "LevelsNumber", "_levelsNumber", "MaxLevel", "_maxLevel"],
   "search_depth": 5,

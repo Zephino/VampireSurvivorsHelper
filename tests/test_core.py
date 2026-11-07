@@ -127,6 +127,20 @@ class GameReaderTests(unittest.TestCase):
         self.assertEqual(result.level_of("wine_glass"), (5, 8))
         self.assertEqual(result.level_of("whip"), (8, 8))
 
+    def test_reads_the_item_catalogue_once(self):
+        g = FakeGame()
+        g.set_named(g.weapon_list, [("Keremet Bubbles", 2, 8)])
+        g.set_catalog([(1433, "Keremet Bubbles", "-05-TP_ACID1.png", "TP_ACID2"),
+                       (1434, "Keremet Morbus", "-05-TP_ACID2.png", "")])
+        seen = []
+        reader = _reader(g)
+        reader.on_catalog = seen.append
+        self.assertEqual(reader.poll().owned, {"keremet_bubbles"})
+        reader.poll()
+        self.assertEqual(len(seen), 1)  # only once per game session
+        self.assertEqual(seen[0]["Keremet Bubbles"], {"frame": "-05-TP_ACID1.png", "evo_into": "TP_ACID2"})
+        self.assertIn("Keremet Morbus", seen[0])
+
     def test_discovery_steps_into_the_players_list(self):
         g = FakeGame()
         g.set_list(g.weapon_list, [1])

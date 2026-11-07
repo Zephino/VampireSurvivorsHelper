@@ -45,6 +45,8 @@ class GameMap:
     name_paths: list[list[list[str]]] = field(default_factory=list)
     level_field: list[str] = field(default_factory=list)
     max_level_field: list[str] = field(default_factory=list)
+    # Path from the root to the game's item catalogue (a dictionary of item type -> item data).
+    catalog_path: list[list[str]] = field(default_factory=list)
 
 
 def load_game_map(path: Path | str = DEFAULT_GAME_MAP) -> GameMap:
@@ -64,6 +66,7 @@ def load_game_map(path: Path | str = DEFAULT_GAME_MAP) -> GameMap:
             name_paths=raw.get("name_paths", []),
             level_field=raw.get("level_field", []),
             max_level_field=raw.get("max_level_field", []),
+            catalog_path=raw.get("catalog_path", []),
         )
     except FileNotFoundError as exc:
         raise GameMapError(f"Game map not found: {path}") from exc
@@ -133,17 +136,20 @@ class _Session:
     chains: dict[str, Chain] = field(default_factory=dict)
     last_discovery: float = 0.0
     rejected: set[tuple[str, ...]] = field(default_factory=set)  # paths that turned out not to be the inventory
+    catalog_done: bool = False
 
 
 class GameReader:
     def __init__(self, db: Database, game_map: GameMap,
                  open_memory: Callable[[str], Memory] | None = None,
-                 clock: Callable[[], float] = time.monotonic):
+                 clock: Callable[[], float] = time.monotonic,
+                 on_catalog: Callable[[dict], None] | None = None):
         self.db = db
         self.map = game_map
         self.matcher = ItemMatcher(db, dict(game_map.enum_aliases), game_map.id_map)
         self._open = open_memory or ProcessMemory.open_by_name
         self._clock = clock
+        self.on_catalog = on_catalog  # called with the game's item catalogue once per session
         self._session: _Session | None = None
         self._attach_failed: tuple[float, str] | None = None
 
@@ -271,11 +277,64 @@ class GameReader:
 
         if not found_any:
             return ReadResult("waiting", "Game found. Waiting for a run to start.")
+        if not s.catalog_done and self.on_catalog is not None:
+            s.catalog_done = True  # once per game session; the catalogue doesn't change
+            try:
+                catalog = self.read_catalog(s, roots)
+            except MemoryAccessError:
+                catalog = {}
+            if catalog:
+                self.on_catalog(catalog)
         msg = f"Reading game: {len(owned)} item(s) detected."
         if unknown:
             msg += f" Unrecognized: {', '.join(unknown)}"
         return ReadResult("ok", msg, frozenset(owned), tuple(unknown),
                           tuple((i, lv, mx) for i, (lv, mx) in sorted(levels.items())))
+
+    # ---- item catalogue ----------------------------------------------------
+    def read_catalog(self, s: _Session, roots: dict[int, int]) -> dict[str, dict]:
+        """Every item the game knows: {display name: {"frame": picture name, "evo_into": id}}.
+
+        Read from the game's own data (DataManager.AllWeaponData), so it includes DLC items whose
+        data isn't readable from the game files.
+        """
+        il2 = s.il2
+        for root_i, obj in roots.items():
+            try:
+                for candidates in self.map.catalog_path:
+                    obj = il2.read_field_ptr(obj, candidates)
+                    if not obj:
+                        break
+                if not obj:
+                    continue
+                pairs = il2.dictionary_items(obj)
+            except MemoryAccessError:
+                continue
+            catalog: dict[str, dict] = {}
+            for _key, value in pairs:
+                try:
+                    data = value
+                    if il2.class_name(il2.object_class(value)).startswith("List`"):
+                        elements = il2.collection_elements(value)
+                        if not elements:
+                            continue
+                        data = elements[0]  # level 1 holds the name and picture
+                    name = self._read_text(il2, data, ["name", "<name>k__BackingField"])
+                    frame = self._read_text(il2, data, ["frameName", "<frameName>k__BackingField"])
+                    evo = self._read_text(il2, data, ["evoInto", "<evoInto>k__BackingField"])
+                except MemoryAccessError:
+                    continue
+                if name and name not in catalog:
+                    catalog[name] = {"frame": frame or "", "evo_into": evo or ""}
+            if catalog:
+                return catalog
+        return {}
+
+    @staticmethod
+    def _read_text(il2: Il2Cpp, obj: int, candidates: list[str]) -> str | None:
+        f = il2.find_field(il2.object_class(obj), candidates)
+        ptr = il2.try_ptr(obj + f.offset)
+        return il2.read_string(ptr) if ptr else None
 
     # ---- path helpers ----------------------------------------------------
     @staticmethod

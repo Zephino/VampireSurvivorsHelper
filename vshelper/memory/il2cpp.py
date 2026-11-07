@@ -401,6 +401,38 @@ class Il2Cpp:
             items = self.array_elements(items_arr, size)
         return [p for p in items if p]
 
+    MAX_DICT_ENTRIES = 4096
+
+    def dictionary_items(self, obj: int) -> list[tuple[int, int]]:
+        """(int key, object value) pairs of a Dictionary<int-or-enum, object>.
+
+        Entries are structs {hashCode, next, key, value}; their size isn't recorded anywhere we
+        read, so the common layouts are tried and the one whose values are real objects is used.
+        """
+        klass = self.object_class(obj)
+        entries = self.read_field_ptr(obj, ["_entries", "entries"])
+        count = self.i32(obj + self.find_field(klass, ["_count", "count"]).offset)
+        if not entries or not 0 < count <= self.MAX_DICT_ENTRIES:
+            return []
+        length = self.ptr(entries + ARRAY_LENGTH)
+        count = min(count, length)
+        for stride in (24, 16, 32):
+            try:
+                raw = self.mem.read(entries + ARRAY_DATA, count * stride)
+            except MemoryAccessError:
+                continue
+            pairs = []
+            for i in range(count):
+                _hash, nxt, key = struct.unpack_from("<iii", raw, i * stride)
+                value = struct.unpack_from("<Q", raw, i * stride + stride - 8)[0]
+                if nxt < -1 or not value:  # free slot
+                    continue
+                pairs.append((key, value))
+            sample = pairs[:8]
+            if sample and all(self.is_class(self.try_ptr(v)) for _, v in sample):
+                return pairs
+        raise Il2CppError("Could not read the dictionary's entries.")
+
     def enum_names(self, klass: int) -> list[str]:
         """Constant names of an enum class in declaration order (value__ excluded)."""
         return [f.name for f in self.own_fields(klass) if f.is_literal]

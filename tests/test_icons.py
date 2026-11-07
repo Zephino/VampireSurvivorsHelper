@@ -83,6 +83,27 @@ class ExtractTests(unittest.TestCase):
         finally:
             del sys.modules["UnityPy"]
 
+    def test_catalogue_picture_names_are_used(self):
+        from vshelper import gamedata
+        red = Image.new("RGBA", (16, 16), (255, 0, 0, 255))
+        objs = [_FakeObj("Sprite", "-05-TP_ACID1", red)]  # name doesn't look like the item at all
+        fake = types.ModuleType("UnityPy")
+        fake.load = lambda _path: types.SimpleNamespace(objects=objs)
+        sys.modules["UnityPy"] = fake
+        try:
+            with tempfile.TemporaryDirectory() as d:
+                game = Path(d) / "game"
+                (game / "VampireSurvivors_Data").mkdir(parents=True)
+                out = Path(d) / "icons"
+                gamedata.save_catalog({"Keremet Bubbles": {"frame": "-05-TP_ACID1.png"}}, Path(d))
+                report = icons.extract_icons(game, load_database(), {}, out_dir=out)
+                self.assertEqual(report.found.get("keremet_bubbles"), "-05-TP_ACID1")
+                self.assertFalse(icons.needs_extraction(game, out))
+                gamedata.save_catalog({"Whip": {"frame": "Whip.png"}}, Path(d))  # catalogue grew
+                self.assertTrue(icons.needs_extraction(game, out))
+        finally:
+            del sys.modules["UnityPy"]
+
     def test_missing_unity_data_folder(self):
         sys.modules["UnityPy"] = types.ModuleType("UnityPy")
         try:

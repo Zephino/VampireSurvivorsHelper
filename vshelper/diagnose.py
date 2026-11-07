@@ -191,6 +191,21 @@ def _game_files(out: Report, db: Database) -> None:
                 f" | {game.frames.get(key, '-')}")
 
 
+def _catalog(out: Report, db: Database) -> None:
+    catalog = gamedata.load_catalog(CACHE_ROOT)
+    if not catalog:
+        out.add("  not read yet (it is read from the game's memory during a run)")
+        return
+    frames = gamedata.catalog_frames(db, catalog)
+    by_name = {gamedata._canon(i.name): i.id for i in db.items.values()}
+    out.add(f"  {len(catalog)} items; {len(frames)} matched to helper items with a picture name")
+    out.add("  game name -> helper item | picture | evolves into")
+    for name in sorted(catalog):
+        entry = catalog[name]
+        item = by_name.get(gamedata._canon(name))
+        out.add(f"  {name} -> {item or 'UNMAPPED'} | {entry.get('frame', '')} | {entry.get('evo_into', '')}")
+
+
 def _pictures(out: Report) -> None:
     manifest = icons.read_manifest()
     if manifest is None:
@@ -329,6 +344,12 @@ def _read_game(out: Report, db: Database, gmap: GameMap, open_memory) -> ReadRes
             out.add(f"  items: {', '.join(sorted(db.name(i) for i in r.owned)) or '(none)'}")
             out.add(f"  levels: {', '.join(f'{db.name(i)} {lv}/{mx}' for i, lv, mx in r.levels) or '(none)'}")
             if reader._session:
+                catalog = reader.read_catalog(reader._session, reader.root_objects(reader._session))
+                if catalog:
+                    total = gamedata.save_catalog(catalog, CACHE_ROOT)
+                    out.add(f"  item catalogue read from the game: {len(catalog)} items (saved: {total})")
+                else:
+                    out.add("  item catalogue: not found in the game's memory")
                 for kind, chain in reader._session.chains.items():
                     out.add(f"  {kind} read from: {gmap.roots[chain.root_index]['class']} -> {' -> '.join(chain.fields)}")
             if r.owned:
@@ -392,6 +413,7 @@ def run(output: Path = REPORT_PATH, open_memory=ProcessMemory.open_by_name) -> i
     out.section("Settings, data and cache", lambda: _settings_and_cache(out, db))
     result = _read_game(out, db, gmap, open_memory) if gmap else None
     out.section("Game files: item names, recipes, pictures (and wiki check)", lambda: _game_files(out, db))
+    out.section("Item catalogue from the game's memory", lambda: _catalog(out, db))
     out.section("Item pictures", lambda: _pictures(out))
 
     output.parent.mkdir(parents=True, exist_ok=True)

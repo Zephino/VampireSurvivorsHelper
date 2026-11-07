@@ -86,7 +86,13 @@ class FakeGame:
         self.equip_cls = self.make_class("Equipment", [
             ("_equipmentType", TYPE_VALUETYPE, 0x10, 0), ("_currentWeaponData", TYPE_CLASS, 0x18, 0),
             ("<Level>k__BackingField", TYPE_I4, 0x20, 0), ("<LevelsNumber>k__BackingField", TYPE_I4, 0x24, 0)])
-        self.data_cls = self.make_class("WeaponData", [("name", TYPE_STRING, 0x10, 0)])
+        self.data_cls = self.make_class("WeaponData", [
+            ("<name>k__BackingField", TYPE_STRING, 0x10, 0), ("<frameName>k__BackingField", TYPE_STRING, 0x18, 0),
+            ("<evoInto>k__BackingField", TYPE_STRING, 0x20, 0)])
+        # The game's item catalogue: DataManager.AllWeaponData = Dictionary<WeaponType, List<WeaponData>>
+        self.dict_cls = self.make_class("Dictionary`2", [("_entries", TYPE_SZARRAY, 0x10, 0), ("_count", TYPE_I4, 0x18, 0)])
+        self.entry_arr_cls = self.make_class("Entry[]", [])
+        self.datamanager_cls = self.make_class("DataManager", [("<AllWeaponData>k__BackingField", TYPE_GENERICINST, 0x10, 0)])
         self.string_cls = self.make_class("String", [])
         self.enum_cls = self.make_class(
             "WeaponType",
@@ -97,7 +103,8 @@ class FakeGame:
         self.am_cls = self.make_class("AccessoriesManager", [(weapons_field, TYPE_GENERICINST, 0x10, 0)])
         self.player_cls = self.make_class("CharacterController", [
             ("_weaponsManager", TYPE_CLASS, 0x10, 0), ("_accessoriesManager", TYPE_CLASS, 0x18, 0)])
-        self.gm_obj_cls = self.make_class("GameManager", [(player_field, TYPE_GENERICINST, 0x10, 0)])
+        self.gm_obj_cls = self.make_class("GameManager", [(player_field, TYPE_GENERICINST, 0x10, 0),
+                                                          ("_dataManager", TYPE_CLASS, 0x18, 0)])
         self.root_cls = self.make_class(root_name, [(root_field, TYPE_CLASS, 0x0, FIELD_ATTRIBUTE_STATIC)],
                                         namespace="VampireSurvivors.Framework")
 
@@ -110,7 +117,7 @@ class FakeGame:
         self.player = self.obj(self.player_cls, 0x20)
         self.m.w64(self.player + 0x10, wm)
         self.m.w64(self.player + 0x18, am)
-        self.gm = self.obj(self.gm_obj_cls, 0x18)
+        self.gm = self.obj(self.gm_obj_cls, 0x20)
         self.players = self.make_list([])
         self.set_objects(self.players, [self.player])
         self.m.w64(self.gm + 0x10, self.players)
@@ -179,8 +186,7 @@ class FakeGame:
         for i, (name, level, max_level) in enumerate(items):
             e = self.obj(self.equip_cls, 0x28)
             self.m.w32(e + 0x10, enum_value)
-            data = self.obj(self.data_cls, 0x18)
-            self.m.w64(data + 0x10, self.make_string(name))
+            data = self.make_data(name)
             self.m.w64(e + 0x18, data)
             self.m.w32(e + 0x20, level)
             self.m.w32(e + 0x24, max_level)
@@ -193,3 +199,34 @@ class FakeGame:
         for i, o in enumerate(objects):
             self.m.w64(arr + 0x20 + 8 * i, o)
         self.m.w32(lst + 0x18, len(objects))
+
+    def make_data(self, name: str, frame: str = "", evo_into: str = "") -> int:
+        data = self.obj(self.data_cls, 0x28)
+        self.m.w64(data + 0x10, self.make_string(name))
+        if frame:
+            self.m.w64(data + 0x18, self.make_string(frame))
+        if evo_into:
+            self.m.w64(data + 0x20, self.make_string(evo_into))
+        return data
+
+    def set_catalog(self, items: list[tuple[int, str, str, str]]) -> None:
+        """Fill DataManager.AllWeaponData with (enum value, name, frame, evoInto) entries, each a
+        List<WeaponData> like the game (24-byte entries: hash, next, key, padding, value)."""
+        stride = 24
+        arr = self.obj(self.entry_arr_cls, 0x20 + stride * (len(items) + 1))
+        self.m.w64(arr + 0x18, len(items) + 1)
+        for i, (key, name, frame, evo) in enumerate(items):
+            levels = self.make_list([])
+            self.set_objects(levels, [self.make_data(name, frame, evo)])
+            entry = arr + 0x20 + i * stride
+            self.m.w32(entry, key * 7919)  # hash
+            self.m.w32(entry + 4, -1)      # next: end of chain
+            self.m.w32(entry + 8, key)
+            self.m.w64(entry + 16, levels)
+        d = self.obj(self.dict_cls, 0x20)
+        self.m.w64(d + 0x10, arr)
+        self.m.w32(d + 0x18, len(items))
+        dm = self.obj(self.datamanager_cls, 0x18)
+        self.m.w64(dm + 0x10, d)
+        self.m.w64(self.gm + 0x18, dm)
+

@@ -1,5 +1,19 @@
 # Changelog
 
+## Version 00.17.00
+Date: 11/07/2026
+Time: 3:46 PM
+
+### Changes
+- The helper now reads the game's own item catalogue from memory during a run (`DataManager.AllWeaponData`): the name, picture name and evolution of every weapon and passive, including DLC items such as the Ode to Castlevania weapons, whose data couldn't be read from the game files. It is saved to `cache/game_catalog.json` once per game session.
+- Picture extraction uses those picture names first (e.g. Keremet Bubbles is `-05-TP_ACID1`) and runs again in the background when the catalogue adds new ones, so most of the ~200 items that showed without a picture should get one.
+- New reader for the game's dictionaries (`Il2Cpp.dictionary_items`) and `catalog_path` in `config/game_map.json`.
+- The diagnose report shows the catalogue (game name -> helper item, picture, evolves into) and saves it.
+- Tests for the catalogue, its picture names and the dictionary reader.
+
+### Reason
+User asked why the helper didn't seem to know how to evolve some items (e.g. Keremet Bubbles). Their report showed the recipe was known (Keremet Bubbles + Armor = Keremet Morbus) but those items had no picture, because their picture names weren't in the data read from the game files; the game's memory does contain them.
+
 ## Version 00.16.00
 Date: 11/07/2026
 Time: 3:38 PM

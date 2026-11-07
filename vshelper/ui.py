@@ -28,7 +28,11 @@ GAME_SEARCH_SECONDS = 10.0
 
 
 class IconThread(threading.Thread):
-    """Extracts item pictures from the game files once, waiting until the game folder is known."""
+    """Extracts item pictures from the game files, waiting until the game folder is known.
+
+    Keeps watching afterwards: when the game's item catalogue is read from memory during a run
+    (it names the picture of every item, DLC included), pictures are extracted again.
+    """
 
     def __init__(self, db: Database, game_map: GameMap | None, messages: "queue.Queue[tuple[str, str]]"):
         super().__init__(daemon=True)
@@ -36,6 +40,7 @@ class IconThread(threading.Thread):
         self.map = game_map
         self.messages = messages
         self.stopped = threading.Event()
+        self.wake = threading.Event()  # set when the catalogue was saved, to check right away
 
     def run(self) -> None:
         exe_name = self.map.process_name if self.map else "VampireSurvivors.exe"
@@ -44,9 +49,7 @@ class IconThread(threading.Thread):
         while not self.stopped.is_set():
             exe = process_exe_path(exe_name)
             game_dir = icons.find_game_dir(Path(exe) if exe else None)
-            if game_dir is not None:
-                if not icons.needs_extraction(game_dir):
-                    return
+            if game_dir is not None and icons.needs_extraction(game_dir):
                 try:
                     report = icons.extract_icons(
                         game_dir, self.db, aliases,
@@ -58,11 +61,11 @@ class IconThread(threading.Thread):
                     self.messages.put(("status", f"No item pictures: unexpected error {exc!r}"))
                     return
                 self.messages.put(("done", f"Item pictures: {len(report.found)} of {len(self.db.items)} found."))
-                return
-            if not icons.read_manifest() and not announced:
+            elif game_dir is None and not icons.read_manifest() and not announced:
                 self.messages.put(("status", "Item pictures: start the game once so the helper can find it."))
                 announced = True
-            self.stopped.wait(GAME_SEARCH_SECONDS)
+            self.wake.wait(GAME_SEARCH_SECONDS)
+            self.wake.clear()
 
 
 class ReaderThread(threading.Thread):
@@ -232,7 +235,7 @@ class App:
 
         self.reader_thread: ReaderThread | None = None
         if game_map is not None:
-            self.game_reader = GameReader(db, game_map)
+            self.game_reader = GameReader(db, game_map, on_catalog=self._catalog_read)
             self.reader_thread = ReaderThread(self.game_reader, self.results)
             self._load_game_data()  # teach the reader the game's own item names, if known
             self.reader_thread.start()
@@ -657,6 +660,13 @@ class App:
             else:
                 cb.configure(image="", compound="none")
 
+    def _catalog_read(self, catalog: dict) -> None:
+        """Runs on the reader thread: save the game's item catalogue, then let the picture
+        thread fetch any pictures it makes findable."""
+        before = len(gamedata.load_catalog(CACHE_ROOT))
+        if gamedata.save_catalog(catalog, CACHE_ROOT) > before:
+            self.icon_thread.wake.set()
+
     def _load_game_data(self) -> None:
         """Use evolution data read from the game files: check recipes and learn internal item names."""
         data = gamedata.load(CACHE_ROOT)
@@ -1008,6 +1018,7 @@ class App:
         if self.reader_thread:
             self.reader_thread.stopped.set()
         self.icon_thread.stopped.set()
+        self.icon_thread.wake.set()
         self.root.destroy()
 
 

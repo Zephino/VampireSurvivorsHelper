@@ -205,7 +205,9 @@ def extract_icons(game_dir: Path, db: Database, aliases: dict[str, str], out_dir
         elif obj.type.name == "TextAsset":
             text_assets.append(obj)
 
-    frames: dict[str, str] = {}
+    # Picture names from the game's own item catalogue (read from memory) are the most reliable.
+    catalog = gamedata.load_catalog(out_dir.parent)
+    frames: dict[str, str] = dict(gamedata.catalog_frames(db, catalog))
     game_data = gamedata.GameData()
     for obj in text_assets:
         try:
@@ -261,6 +263,7 @@ def extract_icons(game_dir: Path, db: Database, aliases: dict[str, str], out_dir
     (out_dir / SPRITE_NAMES).write_text("\n".join(sorted(sprite_names)), encoding="utf-8")
     (out_dir / MANIFEST).write_text(json.dumps({
         "extractor_version": EXTRACTOR_VERSION,
+        "catalog_size": len(catalog),
         "game_dir": str(game_dir),
         "build": _build_marker(game_dir),
         "sprite_count": report.sprite_count,
@@ -283,6 +286,9 @@ def needs_extraction(game_dir: Path | None, out_dir: Path | None = None) -> bool
     if manifest is None or not ((out_dir or CACHE_DIR).parent / gamedata.GAME_DATA_FILE).exists():
         return True
     if manifest.get("extractor_version", 1) < EXTRACTOR_VERSION:
+        return True
+    # the game's item catalogue grew (read from memory during a run): more pictures can be found
+    if len(gamedata.load_catalog((out_dir or CACHE_DIR).parent)) > manifest.get("catalog_size", 0):
         return True
     return game_dir is not None and manifest.get("build") != _build_marker(game_dir)
 

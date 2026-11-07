@@ -81,6 +81,10 @@ files into `cache/icons/`. This takes up to a minute once; the bottom-right of t
 progress. It re-extracts automatically after a game update. To force a fresh extraction, delete the
 `cache` folder.
 
+During a run the helper also reads the game's own item catalogue from memory (the name and
+picture of every item, DLC included) into `cache/game_catalog.json`, and then extracts the
+pictures it was missing once more in the background.
+
 Items without a matching picture just show their name. The diagnose report lists which pictures
 were found.
 

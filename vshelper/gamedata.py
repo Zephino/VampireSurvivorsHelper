@@ -15,6 +15,7 @@ from pathlib import Path
 from .data import Database
 
 GAME_DATA_FILE = "game_data.json"
+CATALOG_FILE = "game_catalog.json"  # item catalogue read from the running game's memory
 
 
 def _canon(text: str) -> str:
@@ -160,3 +161,33 @@ def compare(db: Database, game_data: GameData) -> dict[str, Check]:
         elif evo.result not in checks:
             checks[evo.result] = Check("mismatch", options[0])
     return checks
+
+
+def save_catalog(catalog: dict[str, dict], out_dir: Path) -> int:
+    """Merge a catalogue read from memory into cache/game_catalog.json. Returns the entry count."""
+    merged = load_catalog(out_dir)
+    merged.update(catalog)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / CATALOG_FILE).write_text(json.dumps(merged, indent=1, ensure_ascii=False), encoding="utf-8")
+    return len(merged)
+
+
+def load_catalog(out_dir: Path) -> dict[str, dict]:
+    try:
+        raw = json.loads((out_dir / CATALOG_FILE).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    return raw if isinstance(raw, dict) else {}
+
+
+def catalog_frames(db: Database, catalog: dict[str, dict]) -> dict[str, str]:
+    """item id -> picture (frame) name, matched by display name."""
+    by_name = {_canon(i.name): i.id for i in db.items.values()}
+    out = {}
+    for name, entry in catalog.items():
+        item = by_name.get(_canon(name))
+        frame = entry.get("frame") if isinstance(entry, dict) else None
+        if item and frame:
+            out.setdefault(item, frame)
+    return out
+
