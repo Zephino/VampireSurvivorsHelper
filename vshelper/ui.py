@@ -389,11 +389,7 @@ class App:
         buttons = FlowFrame(updates)
         buttons.pack(fill="x", pady=(6, 0))
         self.check_button = buttons.add(ttk.Button(buttons, text="Check for updates", command=self._check_updates))
-        if updater.FROZEN:  # the standalone exe can't replace itself: open the download page instead
-            self.update_button = ttk.Button(buttons, text="Download page", state="disabled",
-                                            command=lambda: webbrowser.open(updater.DOWNLOAD_URL))
-        else:
-            self.update_button = ttk.Button(buttons, text="Update now", command=self._apply_update, state="disabled")
+        self.update_button = ttk.Button(buttons, text="Update now", command=self._apply_update, state="disabled")
         buttons.add(self.update_button)
         self.restart_button = ttk.Button(buttons, text="Restart helper", command=self._restart)
         self.update_buttons = buttons
@@ -591,7 +587,9 @@ class App:
         self.check_button.state(["!disabled"])
         if kind == "update-error":
             self.update_status.set(message)
-            if not updater.is_git_checkout():
+            if updater.FROZEN or not updater.is_git_checkout():
+                self.web_button.configure(text="Open download page", command=lambda: webbrowser.open(
+                    updater.DOWNLOAD_URL if updater.FROZEN else updater.REPO_URL))
                 self.web_button.pack(anchor="w", pady=(6, 0))
             if not getattr(self, "_quiet_check", False):
                 self.icon_status.set("Update failed - see Settings > Updates.")

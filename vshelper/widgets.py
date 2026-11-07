@@ -52,10 +52,12 @@ class FlowFrame(ttk.Frame):
         if event.width != self._last_width:
             self.relayout()
 
-    def relayout(self) -> None:
+    def relayout(self, width: int | None = None) -> None:
+        """Place the children. width: lay out for this width instead of the current one."""
         self._pending = False
-        width = self.winfo_width()
-        self._last_width = width
+        if width is None:
+            width = self.winfo_width()
+            self._last_width = width
         if width <= 1:  # not drawn yet: lay out as one row using the requested sizes
             width = 10_000
         pad_x, pad_y = self._pad_x, self._pad_y

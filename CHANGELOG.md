@@ -1,5 +1,17 @@
 # Changelog
 
+## Version 00.00.35
+Date: 11/07/2026
+Time: 5:21 PM
+
+### Changes
+- The standalone exe now updates itself: Settings > Updates checks the latest GitHub release (only versions whose exe was actually built), "Update now" downloads the new exe next to the running one, checks it's a real program, renames the running exe to `VampireSurvivorsHelper.old.exe` and moves the new one into place; "Restart helper" starts it and the old file is deleted on the next start. If anything fails the old exe is kept; an "Open download page" button appears.
+- Fixed the GitHub build: one test (button rows wrapping) failed on GitHub's Windows machine because a hidden window doesn't report its size there, so no exe release had been published since 00.15.02 (now 00.00.24). The test now passes the width directly.
+- Removed the old VERSION-file check for the exe; tests for the release check and the exe swap. README updated.
+
+### Reason
+User asked for a way to push new exe versions to friends without them rebuilding anything, leaving only the files needed.
+
 ## Version 00.00.34
 Date: 11/07/2026
 Time: 5:14 PM

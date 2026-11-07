@@ -68,6 +68,10 @@ def main(argv: list[str]) -> int:
     except GameMapError as exc:
         map_error = str(exc)
 
+    from . import updater
+    if updater.FROZEN:
+        updater.cleanup_old_exe()  # the previous exe left behind by a self-update
+
     from . import ui  # imported late so 'diagnose' works without tkinter
     ui.run(db, game_map, map_error, notice=db_warning)
     return 0

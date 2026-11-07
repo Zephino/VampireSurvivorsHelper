@@ -15,7 +15,10 @@ signed: click **More info > Run anyway**. Some antivirus programs are wary of ne
 another program's memory; the helper only *reads* the game and never changes it.
 
 The exe saves its settings and picture cache in `%LOCALAPPDATA%\VampireSurvivorsHelper`.
-Settings > Updates tells you when a newer exe is available, and Settings > Troubleshooting >
+Settings > Updates updates the exe itself: *Check for updates* looks at the latest GitHub release,
+*Update now* downloads the new exe and swaps it in (the old one is renamed to
+`VampireSurvivorsHelper.old.exe` and deleted on the next start), then *Restart helper*. Only the
+single exe stays in the folder. Settings > Troubleshooting >
 **Create diagnose report** makes the report to send if detection doesn't work.
 
 ## Building the exe (for sharing)

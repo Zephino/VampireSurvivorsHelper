@@ -24,21 +24,20 @@ class FlowFrameTests(unittest.TestCase):
         self.root.destroy()
 
     def test_buttons_are_placed_and_wrap_when_narrow(self):
+        # Widths are passed in directly: a hidden test window doesn't report its size on Windows.
         flow = FlowFrame(self.root, padding=4)
         flow.pack(fill="x")
         buttons = [flow.add(ttk.Button(flow, text=f"Button number {i}")) for i in range(3)]
-        self.root.geometry("2000x200")
-        self.root.update()
-        flow.relayout()
-        ys = {b.winfo_y() for b in buttons}
-        self.assertEqual(len(ys), 1)                       # wide: one row
-        self.assertTrue(all(b.winfo_ismapped() or b.place_info() for b in buttons))
-        self.root.geometry("150x400")
-        self.root.update()
-        flow.relayout()
-        self.root.update()
-        self.assertEqual(len({b.winfo_y() for b in buttons}), 3)  # narrow: one per row
-        self.assertGreater(flow.winfo_reqheight(), buttons[0].winfo_reqheight() * 2)
+        self.root.update_idletasks()
+
+        def rows():
+            return {int(b.place_info()["y"]) for b in buttons}
+
+        flow.relayout(2000)
+        self.assertEqual(len(rows()), 1)  # wide: one row
+        flow.relayout(150)
+        self.assertEqual(len(rows()), 3)  # narrow: one per row
+        self.assertGreater(flow._height, buttons[0].winfo_reqheight() * 2)
 
     def test_hidden_widgets_are_skipped(self):
         flow = FlowFrame(self.root)

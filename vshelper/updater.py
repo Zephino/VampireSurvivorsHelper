@@ -21,7 +21,6 @@ PROJECT_ROOT = RESOURCE_ROOT
 BRANCH = "main"
 REPO_URL = "https://github.com/Zephino/VampireSurvivorsHelper"
 DOWNLOAD_URL = REPO_URL + "/releases/latest"
-RAW_VERSION_URL = "https://raw.githubusercontent.com/Zephino/VampireSurvivorsHelper/main/VERSION"
 GIT_TIMEOUT = 90
 CREATE_NO_WINDOW = 0x08000000  # don't flash a console window on Windows
 
@@ -36,6 +35,7 @@ class UpdateInfo:
     latest: str | None
     behind: int                                     # commits on GitHub that this copy doesn't have
     changes: list[str] = field(default_factory=list)  # their titles, newest first
+    download_url: str = ""                          # the exe in the GitHub release (standalone exe only)
 
     @property
     def available(self) -> bool:
@@ -83,30 +83,100 @@ def version_key(version: str) -> tuple[int, ...]:
     return tuple(int(n) for n in re.findall(r"\d+", version))
 
 
-def check_online(current: str, url: str = RAW_VERSION_URL) -> UpdateInfo:
-    """For the standalone exe: read the latest version number from GitHub."""
-    req = urllib.request.Request(url, headers={"User-Agent": "VampireSurvivorsHelper"})
+RELEASES_API = "https://api.github.com/repos/Zephino/VampireSurvivorsHelper/releases/latest"
+EXE_NAME = "VampireSurvivorsHelper.exe"
+MAX_EXE_BYTES = 300 * 1024 * 1024
+
+
+def _get_json(url: str) -> dict:
+    import json
+    req = urllib.request.Request(url, headers={"User-Agent": "VampireSurvivorsHelper",
+                                               "Accept": "application/vnd.github+json"})
     try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            latest = resp.read().decode("utf-8").strip()
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            return json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
-        raise UpdateError(f"Couldn't check for updates (GitHub said {exc.code}). If the project is private, "
-                          "ask whoever gave you the app for the newest version.") from exc
-    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        raise UpdateError(f"Couldn't check for updates (GitHub said {exc.code}).") from exc
+    except (urllib.error.URLError, TimeoutError, OSError, ValueError) as exc:
         raise UpdateError(f"Couldn't reach GitHub to check for updates ({exc}).") from exc
-    if not version_key(latest):
-        raise UpdateError(f"GitHub returned an unexpected version: {latest[:40]!r}")
-    # Any different version counts as an update: the numbering was reset once (to 00.00.34),
-    # so a newer release can have a lower number than an older exe.
-    different = version_key(latest) != version_key(current)
-    changes = [f"Download version {latest} from the GitHub page"] if different else []
-    return UpdateInfo(current, latest, 1 if different else 0, changes)
+
+
+def check_release(current: str, fetch=_get_json, url: str = RELEASES_API) -> UpdateInfo:
+    """For the standalone exe: the newest GitHub release that has an exe attached."""
+    release = fetch(url)
+    latest = str(release.get("tag_name", "")).lstrip("vV")
+    asset = next((a for a in release.get("assets", []) if a.get("name") == EXE_NAME), None)
+    if not version_key(latest) or asset is None:
+        raise UpdateError("The latest GitHub release has no exe to download yet.")
+    different = version_key(latest) != version_key(current)  # numbering was reset once: any change
+    notes = [line[2:].strip() for line in str(release.get("body", "")).splitlines() if line.startswith("- ")]
+    return UpdateInfo(current, latest, 1 if different else 0, notes[:8] if different else [],
+                      asset.get("browser_download_url", ""))
+
+
+def _download_file(url: str, target: Path) -> None:
+    req = urllib.request.Request(url, headers={"User-Agent": "VampireSurvivorsHelper"})
+    size = 0
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp, open(target, "wb") as out:
+            while chunk := resp.read(1024 * 1024):
+                size += len(chunk)
+                if size > MAX_EXE_BYTES:
+                    raise UpdateError("The download is unexpectedly large; update cancelled.")
+                out.write(chunk)
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        raise UpdateError(f"Downloading the update failed ({exc}).") from exc
+
+
+def apply_release(info: UpdateInfo, exe: Path, download=_download_file) -> str:
+    """Replace the running exe with the release's exe.
+
+    Windows won't overwrite a running program but does allow renaming it, so: download to
+    '<name>.new', rename the running exe to '<name>.old.exe', move the new one into place. The
+    old file is deleted the next time the helper starts (cleanup_old_exe).
+    """
+    if not info.available or not info.download_url:
+        return f"Already up to date ({info.current})."
+    new = exe.with_name(exe.stem + ".new")
+    old = exe.with_name(exe.stem + ".old.exe")
+    try:
+        download(info.download_url, new)
+        with open(new, "rb") as f:
+            if f.read(2) != b"MZ" or new.stat().st_size < 1024 * 1024:
+                raise UpdateError("The downloaded file isn't a valid program; update cancelled.")
+        if old.exists():
+            old.unlink()
+        exe.rename(old)
+    except OSError as exc:
+        new.unlink(missing_ok=True)
+        raise UpdateError(f"Couldn't install the update in {exe.parent} ({exc}). If the helper is in a "
+                          f"protected folder, move it (e.g. to Documents) or download it from {DOWNLOAD_URL}") from exc
+    except UpdateError:
+        new.unlink(missing_ok=True)
+        raise
+    try:
+        new.rename(exe)
+    except OSError as exc:
+        old.rename(exe)  # put the old version back so the helper still starts
+        new.unlink(missing_ok=True)
+        raise UpdateError(f"Couldn't put the new version in place ({exc}).") from exc
+    return f"Updated to {info.latest}. Restart the helper to use it."
+
+
+def cleanup_old_exe(exe: Path | None = None) -> None:
+    """Delete the previous exe left behind by an update (it can't delete itself while running)."""
+    exe = exe or Path(sys.executable)
+    for leftover in (exe.with_name(exe.stem + ".old.exe"), exe.with_name(exe.stem + ".new")):
+        try:
+            leftover.unlink(missing_ok=True)
+        except OSError:
+            pass  # still running (just restarted): try again next start
 
 
 def check(root: Path = PROJECT_ROOT) -> UpdateInfo:
     """Report whether a newer version exists (changes nothing locally)."""
     if FROZEN:
-        return check_online(local_version(root))
+        return check_release(local_version(root))
     _require_git_checkout(root)
     _git("fetch", "--quiet", "origin", BRANCH, root=root)
     remote = f"origin/{BRANCH}"
@@ -122,7 +192,7 @@ def check(root: Path = PROJECT_ROOT) -> UpdateInfo:
 def apply(root: Path = PROJECT_ROOT) -> str:
     """Download and install the latest version. Returns a short summary."""
     if FROZEN:
-        raise UpdateError(f"The standalone app can't replace itself. Download the new version from {DOWNLOAD_URL}")
+        return apply_release(check(root), Path(sys.executable))
     _require_git_checkout(root)
     before = _git("rev-parse", "HEAD", root=root)
     try:

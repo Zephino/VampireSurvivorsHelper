@@ -73,28 +73,50 @@ class UpdaterTests(unittest.TestCase):
         self.assertIn("Download ZIP", str(ctx.exception))
 
 
-class OnlineCheckTests(unittest.TestCase):
-    """The exe's check reads a VERSION file over HTTP; a file:// URL stands in for GitHub."""
+class ExeUpdateTests(unittest.TestCase):
+    """The standalone exe updates itself from the latest GitHub release."""
 
-    def check(self, remote_version: str, current: str) -> updater.UpdateInfo:
-        with tempfile.TemporaryDirectory() as d:
-            f = Path(d) / "VERSION"
-            f.write_text(remote_version + "\n")
-            return updater.check_online(current, f.as_uri())
+    RELEASE = {"tag_name": "v00.00.35", "body": "## Version 00.00.35\n### Changes\n- Self-updating exe\n- More",
+               "assets": [{"name": "VampireSurvivorsHelper.exe", "browser_download_url": "https://x/new.exe"}]}
 
-    def test_newer_and_same(self):
-        self.assertTrue(self.check("00.14.00", "00.13.01").available)
-        self.assertFalse(self.check("00.13.01", "00.13.01").available)
-        self.assertTrue(self.check("00.00.34", "00.20.01").available)  # renumbered release is still offered
-        self.assertFalse(self.check("00.13.1", "00.13.01").available)   # compares numbers, not text
+    def test_check_release(self):
+        info = updater.check_release("00.00.34", fetch=lambda url: self.RELEASE)
+        self.assertTrue(info.available)
+        self.assertEqual((info.latest, info.download_url), ("00.00.35", "https://x/new.exe"))
+        self.assertEqual(info.changes, ["Self-updating exe", "More"])
+        self.assertFalse(updater.check_release("00.00.35", fetch=lambda url: self.RELEASE).available)
+        self.assertTrue(updater.check_release("00.20.01", fetch=lambda url: self.RELEASE).available)  # renumbered
 
-    def test_bad_response(self):
+    def test_release_without_exe(self):
         with self.assertRaises(updater.UpdateError):
-            self.check("<html>not found</html>", "00.13.01")
+            updater.check_release("00.00.34", fetch=lambda url: {"tag_name": "v00.00.35", "assets": []})
 
-    def test_unreachable(self):
+    def _install(self, payload: bytes):
+        d = Path(tempfile.mkdtemp())
+        exe = d / "VampireSurvivorsHelper.exe"
+        exe.write_bytes(b"MZ old version" + b"\0" * 2_000_000)
+        info = updater.check_release("00.00.34", fetch=lambda url: self.RELEASE)
+
+        def download(url, target):
+            target.write_bytes(payload)
+        return d, exe, info, download
+
+    def test_swaps_in_the_new_exe_and_cleans_up_later(self):
+        d, exe, info, download = self._install(b"MZ new version" + b"\0" * 2_000_000)
+        self.assertIn("Updated to 00.00.35", updater.apply_release(info, exe, download=download))
+        self.assertTrue(exe.read_bytes().startswith(b"MZ new"))
+        old = d / "VampireSurvivorsHelper.old.exe"
+        self.assertTrue(old.exists())                 # the running exe was renamed, not overwritten
+        updater.cleanup_old_exe(exe)                  # next start
+        self.assertFalse(old.exists())
+        self.assertEqual(sorted(p.name for p in d.iterdir()), ["VampireSurvivorsHelper.exe"])
+
+    def test_bad_download_leaves_the_old_exe(self):
+        d, exe, info, download = self._install(b"<html>not a program</html>")
         with self.assertRaises(updater.UpdateError):
-            updater.check_online("00.13.01", "file:///does/not/exist/VERSION")
+            updater.apply_release(info, exe, download=download)
+        self.assertTrue(exe.read_bytes().startswith(b"MZ old"))
+        self.assertEqual(sorted(p.name for p in d.iterdir()), ["VampireSurvivorsHelper.exe"])
 
 
 if __name__ == "__main__":
