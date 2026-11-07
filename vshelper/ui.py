@@ -903,7 +903,8 @@ class App:
             if others:
                 out.insert("end", "  needs  ", "result")
                 for r in others:
-                    self._card(out, r, "have" if r in owned else "missing")
+                    self._card(out, r, "have" if r in owned else "missing",
+                               needs_max=r in s.evolution.max_level)
             if not s.missing:
                 if any(self.is_planned(r) for r in s.evolution.requires):
                     pal = PALETTES["dark" if self.settings.dark_theme else "light"]
@@ -950,15 +951,19 @@ class App:
     CARD_WIDTH = 132
     CARD_HEIGHT = 76
 
-    def _card(self, out: tk.Text, item_id: str, state: str = "plain") -> None:
-        """Insert an item card. state: held (shows level), have (owned, check mark),
+    def _card(self, out: tk.Text, item_id: str, state: str = "plain", needs_max: bool = False) -> None:
+        """Insert an item card. state: held (shows level), have (owned: level or check mark),
         missing (red border, 'need'), result (an evolution) or plain. Items ticked as planned
-        while auto-detect is on get a blue border and 'planned'."""
+        while auto-detect is on get a blue border and 'planned'. needs_max: this recipe needs the
+        item at max level - if it isn't yet, the card gets an orange border."""
         pal = PALETTES["dark" if self.settings.dark_theme else "light"]
         if state in ("held", "have") and self.is_planned(item_id):
             state = "planned"
+        lv = self.level_of(item_id) if state in ("held", "have") else None
         border = {"held": pal["border"], "have": pal["have"], "missing": pal["missing"],
                   "planned": pal["planned"]}.get(state, pal["border"])
+        if state == "have" and needs_max and lv and lv[0] < lv[1]:
+            border = pal["level"]  # have it, but it still needs levelling for this recipe
         card = tk.Frame(out, width=self.CARD_WIDTH, height=self.CARD_HEIGHT, background=pal["card"],
                         highlightthickness=2, highlightbackground=border, highlightcolor=border)
         card.grid_propagate(False)
@@ -970,10 +975,11 @@ class App:
         icon.grid(row=0, column=0, sticky="nw", padx=(4, 0), pady=(4, 0))
 
         level_text, level_color = "", pal["muted"]
-        lv = self.level_of(item_id) if state == "held" else None
         if lv:
             level_text = f"Lv {lv[0]}/{lv[1]}"
             level_color = pal["have"] if lv[0] >= lv[1] else pal["level"]
+            if state == "have" and not needs_max:
+                level_color = pal["muted"]  # this recipe doesn't need it maxed: level is just info
         elif state == "have":
             level_text, level_color = "\u2713 have", pal["have"]
         elif state == "missing":
@@ -1009,7 +1015,7 @@ class App:
         for i, req in enumerate(evo.requires):
             if i:
                 out.insert("end", "  +  ", "result")
-            self._card(out, req, "missing" if req in s.missing else "have")
+            self._card(out, req, "missing" if req in s.missing else "have", needs_max=req in evo.max_level)
         out.insert("end", "  =  ", "result")
         self._card(out, evo.result, "result")
         out.insert("end", "\n")
@@ -1051,10 +1057,17 @@ class App:
                         out.insert("end", "\n")
             all_ready = suggest(self.db, owned, hidden).ready if opts.show_ready else []
             planned = [s for s in all_ready if any(self.is_planned(r) for r in s.evolution.requires)]
-            ready = [s for s in all_ready if s not in planned]
+            ready = [s for s in all_ready if s not in planned and not self._needs_leveling(s)]
+            leveling = [s for s in all_ready if s not in planned and self._needs_leveling(s)]
             if ready:
-                out.insert("end", "READY TO EVOLVE - max the weapon, then open a chest\n", "header")
+                levels_known = self.auto_on() and self.settings.show_levels
+                hint = "open a chest" if levels_known else "max the weapon, then open a chest"
+                out.insert("end", f"READY TO EVOLVE - {hint}\n", "header")
                 for s in ready:
+                    self._card_recipe(out, s)
+            if leveling:
+                out.insert("end", "ALL PARTS - LEVEL UP FIRST\n", "header")
+                for s in leveling:
                     self._card_recipe(out, s)
             if planned:
                 out.insert("end", "WITH YOUR PLANNED ITEMS\n", "header")

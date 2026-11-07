@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 00.20.01
+Date: 11/07/2026
+Time: 5:06 PM
+
+### Changes
+- Recipe cards now show each part's level (e.g. "Lv 8/8") instead of only "have". A part the recipe needs at max level that isn't maxed yet gets an orange border and orange level; levels of parts that don't need to be maxed are shown in grey.
+- Overview splits "Ready to evolve" into READY TO EVOLVE (every part at the level it needs: just open a chest) and ALL PARTS - LEVEL UP FIRST (you have everything but something still needs levelling). In manual mode, where levels are unknown, the hint still says to max the weapon first.
+
+### Reason
+User asked whether levels matter for evolving; they do (usually the weapon, sometimes also the passive, must be at max level), but the recipe cards didn't show it.
+
 ## Version 00.20.00
 Date: 11/07/2026
 Time: 5:00 PM
