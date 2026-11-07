@@ -1,0 +1,15 @@
+---
+description: Commit and push all work directly to the main branch; do not create extra branches
+alwaysApply: true
+---
+
+# Main Branch Rule
+
+All project work is committed and pushed directly to the `main` branch.
+
+## Rules
+
+- Commit changes on `main` and push with `git push origin main`.
+- Do not create feature, topic, or temporary branches.
+- If a branch other than `main` was created by mistake, merge its work into `main`, push, then delete the extra branch locally and on the remote.
+- Pull the latest `main` (`git pull origin main`) before committing to avoid conflicts.
