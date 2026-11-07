@@ -80,6 +80,9 @@ if IS_WINDOWS:
         wintypes.HANDLE, ctypes.c_void_p, ctypes.POINTER(MEMORY_BASIC_INFORMATION), ctypes.c_size_t,
     ]
     _k32.GetExitCodeProcess.argtypes = [wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD)]
+    _k32.QueryFullProcessImageNameW.argtypes = [
+        wintypes.HANDLE, wintypes.DWORD, wintypes.LPWSTR, ctypes.POINTER(wintypes.DWORD),
+    ]
 
 INVALID_HANDLE_VALUE = ctypes.c_void_p(-1).value
 STILL_ACTIVE = 259
@@ -102,6 +105,28 @@ def find_process_id(exe_name: str) -> int:
     finally:
         _k32.CloseHandle(snap)
     raise ProcessNotFound(f"{exe_name} is not running.")
+
+
+PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+
+
+def process_exe_path(exe_name: str) -> str | None:
+    """Full path of a running process's executable, or None if it isn't running or can't be queried."""
+    try:
+        pid = find_process_id(exe_name)
+    except MemoryAccessError:
+        return None
+    handle = _k32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid)
+    if not handle:
+        return None
+    try:
+        buf = ctypes.create_unicode_buffer(32768)
+        size = wintypes.DWORD(len(buf))
+        if _k32.QueryFullProcessImageNameW(handle, 0, buf, ctypes.byref(size)):
+            return buf.value
+        return None
+    finally:
+        _k32.CloseHandle(handle)
 
 
 class ProcessMemory:

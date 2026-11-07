@@ -12,6 +12,17 @@ if errorlevel 1 (
     exit /b 1
 )
 
+rem UnityPy is only needed for item pictures; install it once if missing.
+python -c "import UnityPy" >nul 2>&1
+if errorlevel 1 (
+    echo Installing UnityPy for item pictures - one time only...
+    python -m pip install --user -r requirements.txt
+    if errorlevel 1 (
+        echo Could not install UnityPy. The helper will still work, just without pictures.
+        pause
+    )
+)
+
 tasklist /FI "IMAGENAME eq VampireSurvivors.exe" 2>nul | find /I "VampireSurvivors.exe" >nul
 if errorlevel 1 (
     echo Starting Vampire Survivors through Steam...

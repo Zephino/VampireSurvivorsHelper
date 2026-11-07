@@ -45,13 +45,13 @@ def suggest(db: Database, owned: set[str]) -> Suggestions:
 
 
 def format_suggestions(db: Database, suggestions: Suggestions) -> str:
-    """Plain-text report used by the UI."""
+    """Plain-text report (used by the diagnose report; the window draws its own with pictures)."""
     lines: list[str] = []
 
     def describe(s: Suggestion) -> str:
         evo = s.evolution
         recipe = " + ".join(db.name(r) for r in evo.requires)
-        text = f"  {db.name(evo.result)}  =  {recipe}"
+        text = f"  {recipe}  =  {db.name(evo.result)}"
         if s.missing:
             text += f"\n      need: {', '.join(db.name(m) for m in s.missing)}"
         if evo.max_level:

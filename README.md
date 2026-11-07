@@ -12,7 +12,14 @@ never changes anything in the game, so it gives no gameplay advantage.
 - [Python 3.10 or newer](https://www.python.org/downloads/) (tick "Add python.exe to PATH" when
   installing; tkinter is included by default)
 
-No extra packages are needed.
+One extra package, **UnityPy**, is used to show item pictures (it also installs Pillow).
+`Start Helper.bat` installs it automatically the first time. To install it by hand:
+
+```bash
+python -m pip install --user -r requirements.txt
+```
+
+Without it the helper still works, just without pictures.
 
 ## Running
 
@@ -28,10 +35,22 @@ python -m vshelper
 1. Begin a run in Vampire Survivors. The game and the helper can be started in either order.
 2. The helper finds the game on its own. The first time after the game starts it searches memory
    for a few seconds; after that it updates about once per second.
-3. Evolutions are listed on the right:
+3. Evolutions are listed on the right as `weapon + item = evolution`, with pictures. Items you
+   have are green; items you still need are red.
    - **READY**: you have every part. Get the weapon to max level, then open a chest after 10:00.
    - **ONE ITEM AWAY**: what to pick up next.
    - **OTHER EVOLUTIONS FOR YOUR ITEMS**: longer-term options.
+
+## Item pictures
+
+The game's artwork isn't included in this project. The first time the helper finds your game
+(through Steam, or from the running game), it copies the item pictures out of your installed game
+files into `cache/icons/`. This takes up to a minute once; the bottom-right of the status bar shows
+progress. It re-extracts automatically after a game update. To force a fresh extraction, delete the
+`cache` folder.
+
+Items without a matching picture just show their name. The diagnose report lists which pictures
+were found.
 
 The status bar at the bottom says what the helper is doing ("Waiting for a run to start",
 "Reading game: 4 item(s) detected", etc.).
@@ -84,5 +103,6 @@ Project layout:
 - `vshelper/memory/winapi.py`: read-only Windows process memory access
 - `vshelper/memory/il2cpp.py`: finds Unity IL2CPP classes, fields and objects by name
 - `vshelper/memory/game.py`: reads the inventory using `config/game_map.json`
+- `vshelper/icons.py`: finds the game install and extracts item pictures
 - `vshelper/diagnose.py`: detection report
 - `vshelper/ui.py`: the window

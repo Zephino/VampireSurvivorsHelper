@@ -10,7 +10,9 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from . import icons
 from .data import load_database
+from .evolutions import format_suggestions, suggest
 from .memory.game import POINTER_TYPES, GameReader, load_game_map
 from .memory.il2cpp import TYPE_STRING, Il2Cpp
 from .memory.winapi import MemoryAccessError, ProcessMemory
@@ -105,6 +107,9 @@ def run(output: Path = Path("vshelper-diagnose.txt")) -> int:
         out.append(f"  state: {result.state}")
         out.append(f"  message: {result.message}")
         out.append(f"  items: {', '.join(sorted(db.name(i) for i in result.owned)) or '(none)'}")
+        if result.owned:
+            out.append("")
+            out.append(format_suggestions(db, suggest(db, set(result.owned))))
         session = reader._session
         if session:
             roots = reader.root_objects(session)
@@ -125,6 +130,16 @@ def run(output: Path = Path("vshelper-diagnose.txt")) -> int:
             out.append("")
             out.append(f"== Related names in metadata ({len(names)}) ==")
             out.extend(f"  {n}" for n in names[:400])
+
+    out.append("")
+    out.append("== Item pictures ==")
+    manifest = icons.read_manifest()
+    if manifest is None:
+        out.append("  not extracted yet")
+    else:
+        out.append(f"  game folder: {manifest.get('game_dir')}")
+        out.append(f"  sprites in game files: {manifest.get('sprite_count')}")
+        out.append(f"  found: {len(manifest.get('found', {}))}, missing: {', '.join(manifest.get('missing', [])) or 'none'}")
 
     output.write_text("\n".join(out) + "\n", encoding="utf-8")
     print(f"Detection: {result.state} - {result.message}")

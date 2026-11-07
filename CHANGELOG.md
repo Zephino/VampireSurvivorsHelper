@@ -1,5 +1,20 @@
 # Changelog
 
+## Version 00.02.00
+Date: 11/07/2026
+Time: 2:27 PM
+
+### Changes
+- Item pictures: on first start (and after a game update) the helper finds the game through Steam or the running process, extracts item sprites from the installed game files with UnityPy, and saves 32px PNGs to `cache/icons/` (gitignored).
+- Results are now shown as `weapon + item = evolution` with pictures; owned items are green and missing items red. The item list shows small pictures too.
+- Added `requirements.txt` (UnityPy). `Start Helper.bat` installs it once if it's missing; without it the helper still works, just without pictures.
+- The diagnose report now includes the suggestions for detected items and which pictures were found.
+- Window opens slightly larger (1000x620).
+- Added tests for picture matching and extraction; updated the README.
+
+### Reason
+User asked for item pictures in the format weapon + augment = evolution. The game's artwork can't be shipped with the project, so it is extracted from the user's own installed game, as they chose.
+
 ## Version 00.01.02
 Date: 11/07/2026
 Time: 2:23 PM

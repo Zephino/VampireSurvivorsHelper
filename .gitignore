@@ -4,3 +4,4 @@ vshelper-diagnose.txt
 build/
 dist/
 *.spec
+cache/
