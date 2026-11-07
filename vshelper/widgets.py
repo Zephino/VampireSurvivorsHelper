@@ -10,12 +10,19 @@ class FlowFrame(ttk.Frame):
     """A row of widgets that wraps onto the next line when it runs out of width
     (like words in a paragraph). Create children with this frame as parent, then add() them."""
 
-    def __init__(self, parent: tk.Widget, gap_x: int = 6, gap_y: int = 4, **kwargs) -> None:
-        super().__init__(parent, **kwargs)
+    def __init__(self, parent: tk.Widget, gap_x: int = 6, gap_y: int = 4, padding=0, **kwargs) -> None:
+        super().__init__(parent, padding=padding, **kwargs)
         self._items: list[tuple[tk.Widget, int]] = []  # (widget, extra space before it)
         self._hidden: set[tk.Widget] = set()
         self._gap_x, self._gap_y = gap_x, gap_y
+        # Remember padding and height ourselves: reading them back with cget() returns
+        # different types depending on the Tk version (Tk 9 returns objects, not numbers).
+        pad = padding if isinstance(padding, (tuple, list)) else (padding,)
+        self._pad_x = int(pad[0]) if pad else 0
+        self._pad_y = int(pad[1]) if len(pad) > 1 else self._pad_x
+        self._height = -1
         self._last_width = -1
+        self._pending = False
         self.bind("<Configure>", self._on_configure)
 
     def contains(self, widget: tk.Widget) -> bool:
@@ -37,7 +44,7 @@ class FlowFrame(ttk.Frame):
         self.relayout()
 
     def _schedule(self) -> None:
-        if not getattr(self, "_pending", False):
+        if not self._pending:
             self._pending = True
             self.after_idle(self.relayout)
 
@@ -45,22 +52,13 @@ class FlowFrame(ttk.Frame):
         if event.width != self._last_width:
             self.relayout()
 
-    def _padding(self) -> tuple[int, int]:
-        try:
-            pad = [int(float(p)) for p in str(self.cget("padding")).split()]
-        except (tk.TclError, ValueError):
-            return 0, 0
-        if not pad:
-            return 0, 0
-        return pad[0], pad[1] if len(pad) > 1 else pad[0]
-
     def relayout(self) -> None:
         self._pending = False
         width = self.winfo_width()
         self._last_width = width
         if width <= 1:  # not drawn yet: lay out as one row using the requested sizes
             width = 10_000
-        pad_x, pad_y = self._padding()
+        pad_x, pad_y = self._pad_x, self._pad_y
         # first work out the rows, then place each widget centred vertically in its row
         rows: list[list[tuple[tk.Widget, int, int, int]]] = [[]]
         x = pad_x
@@ -80,7 +78,8 @@ class FlowFrame(ttk.Frame):
                 widget.place(x=wx, y=y + (row_height - h) // 2)
             y += row_height + self._gap_y
         height = max(y - self._gap_y + pad_y, 1)
-        if int(self.cget("height") or 0) != height:
+        if height != self._height:
+            self._height = height
             self.configure(height=height)
 
 

@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 00.15.02
+Date: 11/07/2026
+Time: 3:36 PM
+
+### Changes
+- Made the wrapping button rows (used for Settings > Updates, the item list's Clear / Filter, the search bar and the status bar) independent of how Tk reports widget sizes. They read their height and padding back from Tk, which newer Tk versions (e.g. Tk 9 with recent Python) return in a different form; that could stop the rows from being laid out, leaving buttons such as "Check for updates" / "Update now" invisible.
+- Added tests for the wrapping rows (run where a display is available, e.g. the Windows build).
+
+### Reason
+User reported the update button had disappeared.
+
 ## Version 00.15.01
 Date: 11/07/2026
 Time: 3:34 PM
