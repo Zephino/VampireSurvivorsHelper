@@ -183,9 +183,12 @@ class SettingsTests(unittest.TestCase):
             path = Path(d) / "settings.json"
             s, warning = settings.load(path)
             self.assertEqual((s.hidden_expansions, warning), ([], None))
+            self.assertTrue(s.dark_theme)  # dark theme is on by default
             s.hidden_expansions = ["Emerald Diorama"]
+            s.dark_theme = False
             self.assertIsNone(settings.save(s, path))
             self.assertEqual(settings.load(path)[0].hidden_expansions, ["Emerald Diorama"])
+            self.assertFalse(settings.load(path)[0].dark_theme)
             path.write_text("{broken")
             s, warning = settings.load(path)
             self.assertEqual(s.hidden_expansions, [])

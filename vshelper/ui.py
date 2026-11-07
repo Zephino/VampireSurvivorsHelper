@@ -83,6 +83,17 @@ class ReaderThread(threading.Thread):
 
 WIKI_REFRESH_DAYS = 7
 
+# Colours for the two themes. Light keeps the native Windows look; dark uses ttk's "clam" theme,
+# which (unlike the native one) lets every colour be changed.
+PALETTES = {
+    "light": {"bg": None, "panel": None, "fg": "#000000", "text_bg": "#ffffff", "muted": "#666666",
+              "have": "#1b7f2a", "missing": "#c0392b", "level": "#d35400", "select": "#cce4f7",
+              "border": "#a0a0a0"},
+    "dark": {"bg": "#1e1f22", "panel": "#2b2d31", "fg": "#e3e5e8", "text_bg": "#232428", "muted": "#9a9da3",
+             "have": "#5fd068", "missing": "#ff6b6b", "level": "#ffa94d", "select": "#3d4250",
+             "border": "#3f4147"},
+}
+
 
 class WikiThread(threading.Thread):
     """Downloads fresh evolution data from the wiki about once a week (used from the next start)."""
@@ -132,6 +143,7 @@ class App:
         notice = notice or settings_warning
 
         root.title("Vampire Survivors Helper")
+        self.native_theme = ttk.Style(root).theme_use()
         root.geometry("1000x620")
         root.minsize(640, 400)
 
@@ -167,14 +179,13 @@ class App:
         results_scroll.pack(side="right", fill="y")
         self.output.pack(side="left", fill="both", expand=True)
         self.output.tag_configure("header", font=("Segoe UI", 11, "bold"), spacing1=10)
-        self.output.tag_configure("have", foreground="#1b7f2a")
-        self.output.tag_configure("missing", foreground="#c0392b", font=("Segoe UI", 10, "bold"))
+        self.output.tag_configure("missing", font=("Segoe UI", 10, "bold"))
         self.output.tag_configure("result", font=("Segoe UI", 10, "bold"))
-        self.output.tag_configure("detail", foreground="#666666", lmargin1=70, lmargin2=70)
+        self.output.tag_configure("detail", lmargin1=70, lmargin2=70)
         self.output.tag_configure("ready", foreground="#ffffff", background="#1b7f2a", font=("Segoe UI", 9, "bold"))
         self.output.tag_configure("levelup", foreground="#ffffff", background="#d35400", font=("Segoe UI", 9, "bold"))
-        self.output.tag_configure("level", foreground="#d35400", font=("Segoe UI", 9))
-        self.output.tag_configure("maxed", foreground="#1b7f2a", font=("Segoe UI", 9, "bold"))
+        self.output.tag_configure("level", font=("Segoe UI", 9))
+        self.output.tag_configure("maxed", font=("Segoe UI", 9, "bold"))
         body.add(results, weight=2)
 
         bar = ttk.Frame(root, relief="sunken")
@@ -202,6 +213,7 @@ class App:
             self.auto_var.set(False)
             auto.state(["disabled"])
             self.status.set(f"Auto-detect unavailable: {map_error}")
+        self.apply_theme()
         self._toggle_auto()
         self._apply_filter()
         self._refresh()
@@ -212,6 +224,7 @@ class App:
         """One scrollable list with a heading per section, in the order given."""
         outer = ttk.Frame(parent)
         canvas = tk.Canvas(outer, highlightthickness=0)
+        self.item_canvas = canvas
         scroll = ttk.Scrollbar(outer, orient="vertical", command=canvas.yview)
         inner = ttk.Frame(canvas)
         inner.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
@@ -238,6 +251,11 @@ class App:
 
     def _settings_tab(self, parent: tk.Widget) -> ttk.Frame:
         frame = ttk.Frame(parent, padding=8)
+        appearance = ttk.LabelFrame(frame, text="Appearance", padding=8)
+        appearance.pack(fill="x", anchor="n", pady=(0, 8))
+        self.dark_var = tk.BooleanVar(value=self.settings.dark_theme)
+        ttk.Checkbutton(appearance, text="Dark theme", variable=self.dark_var,
+                        command=self._theme_changed).pack(anchor="w")
         group = ttk.LabelFrame(frame, text="Expansions", padding=8)
         group.pack(fill="x", anchor="n")
         ttk.Label(group, text="Untick an expansion to hide its items and evolutions.",
@@ -251,6 +269,54 @@ class App:
         ttk.Button(buttons, text="All on", command=lambda: self._set_all_expansions(True)).pack(side="left")
         ttk.Button(buttons, text="All off", command=lambda: self._set_all_expansions(False)).pack(side="left", padx=6)
         return frame
+
+    def _theme_changed(self) -> None:
+        self.settings.dark_theme = self.dark_var.get()
+        error = user_settings.save(self.settings)
+        if error:
+            self.icon_status.set(error)
+        self.apply_theme()
+
+    def apply_theme(self) -> None:
+        """Colour every widget for the light or dark theme (instant, no restart needed)."""
+        dark = self.settings.dark_theme
+        pal = PALETTES["dark" if dark else "light"]
+        style = ttk.Style(self.root)
+        if dark:
+            style.theme_use("clam")
+            bg, panel, fg = pal["bg"], pal["panel"], pal["fg"]
+            style.configure(".", background=bg, foreground=fg, fieldbackground=panel, bordercolor=pal["border"],
+                            darkcolor=bg, lightcolor=panel, troughcolor=bg, selectbackground=pal["select"],
+                            selectforeground=fg, insertcolor=fg, focuscolor=pal["select"])
+            style.configure("TNotebook", background=bg, bordercolor=pal["border"])
+            style.configure("TNotebook.Tab", background=panel, foreground=pal["muted"], padding=(10, 4))
+            style.map("TNotebook.Tab", background=[("selected", bg)], foreground=[("selected", fg)])
+            style.configure("TButton", background=panel, foreground=fg, padding=(10, 3))
+            style.map("TButton", background=[("active", pal["select"]), ("pressed", pal["select"])])
+            style.configure("TCheckbutton", background=bg, foreground=fg, indicatorbackground=panel,
+                            indicatorforeground=fg)
+            style.map("TCheckbutton", background=[("active", bg)],
+                      indicatorbackground=[("selected", pal["have"]), ("disabled", bg)],
+                      foreground=[("disabled", pal["muted"])])
+            style.configure("TEntry", fieldbackground=panel, foreground=fg, insertcolor=fg)
+            style.configure("TLabelframe", background=bg, bordercolor=pal["border"])
+            style.configure("TLabelframe.Label", background=bg, foreground=fg)
+            style.configure("TScrollbar", background=panel, troughcolor=bg, arrowcolor=fg, bordercolor=bg)
+            style.map("TScrollbar", background=[("active", pal["select"])])
+            style.configure("TPanedwindow", background=bg)
+            self.root.configure(background=bg)
+        else:
+            style.theme_use(self.native_theme)
+            self.root.configure(background=style.lookup("TFrame", "background") or "SystemButtonFace")
+        canvas_bg = pal["bg"] or style.lookup("TFrame", "background") or "SystemButtonFace"
+        self.item_canvas.configure(background=canvas_bg)
+        self.output.configure(background=pal["text_bg"], foreground=pal["fg"], insertbackground=pal["fg"],
+                              selectbackground=pal["select"])
+        self.output.tag_configure("have", foreground=pal["have"])
+        self.output.tag_configure("missing", foreground=pal["missing"])
+        self.output.tag_configure("detail", foreground=pal["muted"])
+        self.output.tag_configure("level", foreground=pal["level"])
+        self.output.tag_configure("maxed", foreground=pal["have"])
 
     def hidden_expansions(self) -> set[str]:
         return set(self.settings.hidden_expansions)

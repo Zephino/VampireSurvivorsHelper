@@ -59,8 +59,9 @@ The status bar at the bottom says what the helper is doing ("Waiting for a run t
 **Manual mode:** untick *Auto-detect from game* to tick items yourself (useful if detection ever
 breaks after a game update). The *Filter* box searches the item list.
 
-**Settings tab:** next to the *Items* tab. Under *Expansions*, untick any DLC you don't own to
-hide its items and evolutions (all are on by default). Settings are saved to `settings.json` in
+**Settings tab:** next to the *Items* tab. *Appearance* has the **Dark theme** switch (on by
+default; changes apply instantly). Under *Expansions*, untick any DLC you don't own to hide its
+items and evolutions (all are on by default). Settings are saved to `settings.json` in
 the project folder.
 
 If Windows blocks access ("error 5"), run the helper from an administrator command prompt.

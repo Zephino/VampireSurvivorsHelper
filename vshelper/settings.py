@@ -13,6 +13,7 @@ SETTINGS_PATH = Path(__file__).resolve().parents[1] / "settings.json"
 class Settings:
     # Expansions the user switched off; everything else is shown (so new DLC is on by default).
     hidden_expansions: list[str] = field(default_factory=list)
+    dark_theme: bool = True
 
 
 def load(path: Path | None = None) -> tuple[Settings, str | None]:
@@ -29,7 +30,9 @@ def load(path: Path | None = None) -> tuple[Settings, str | None]:
     hidden = raw.get("hidden_expansions", [])
     if not isinstance(hidden, list):
         hidden = []
-    return Settings(hidden_expansions=[h for h in hidden if isinstance(h, str)]), None
+    dark = raw.get("dark_theme", True)
+    return Settings(hidden_expansions=[h for h in hidden if isinstance(h, str)],
+                    dark_theme=dark if isinstance(dark, bool) else True), None
 
 
 def save(settings: Settings, path: Path | None = None) -> str | None:

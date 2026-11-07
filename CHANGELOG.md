@@ -1,5 +1,17 @@
 # Changelog
 
+## Version 00.08.00
+Date: 11/07/2026
+Time: 3:07 PM
+
+### Changes
+- Added a dark theme, on by default, with a "Dark theme" switch under Settings > Appearance. It applies instantly and covers the tabs, item list, buttons, checkboxes, filter box, results pane (including the have / need / level colours), scrollbars and status bar. Turning it off restores the native Windows look.
+- The choice is saved in `settings.json` (`dark_theme`); added tests for the default and saving it.
+- README: documented the Appearance setting.
+
+### Reason
+User asked for a dark theme that can be toggled in Settings and is on by default.
+
 ## Version 00.07.01
 Date: 11/07/2026
 Time: 3:06 PM
