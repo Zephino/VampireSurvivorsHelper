@@ -1,5 +1,17 @@
 # Changelog
 
+## Version 00.16.00
+Date: 11/07/2026
+Time: 3:38 PM
+
+### Changes
+- The item list can be ticked while auto-detect is on, to plan ahead: items you tick but don't hold are added as "planned". They show with a blue border and "planned" on the item cards, combos that need them get a PLANNED badge on How to evolve and their own "With your planned items" section on Overview, so real READY results stay accurate.
+- Detected items stay ticked (they can't be unticked while held); Clear removes only planned items in auto-detect mode; a planned item you pick up in the game becomes a normal detected item. Switching auto-detect back on turns hand-ticked items that aren't detected into planned items.
+- Updated Settings > Detection text and the README.
+
+### Reason
+User wants to toggle items they don't have to see what they would need.
+
 ## Version 00.15.02
 Date: 11/07/2026
 Time: 3:36 PM

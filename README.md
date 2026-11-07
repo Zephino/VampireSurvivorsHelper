@@ -95,6 +95,12 @@ item list on the left of **Overview** is hidden so the results use the full widt
 *Hide the item list while auto-detect is on* to keep it). Turn auto-detect off to tick your items
 yourself in that list (with Clear and Filter on top).
 
+**Planning ahead:** with auto-detect on and the list shown, tick items you *don't* have yet. They
+appear as **planned** (blue border) on Overview and How to evolve, so you can see what they would
+evolve into and what else you'd need; combos that rely on them are listed under "With your planned
+items" with a PLANNED badge. Detected items stay ticked; Clear removes only planned items, and a
+planned item you then pick up in the game simply becomes detected.
+
 **Settings tab:** *Appearance* has the **Dark theme** switch (on by
 default; changes apply instantly). *Main screen* switches parts of the results on or off:
 Overview's You're holding and Ready to evolve, the How to evolve tab, items with no evolution,

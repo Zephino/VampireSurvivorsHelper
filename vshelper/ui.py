@@ -93,10 +93,10 @@ WIKI_REFRESH_DAYS = 7
 PALETTES = {
     "light": {"bg": None, "panel": None, "fg": "#000000", "text_bg": "#ffffff", "muted": "#666666",
               "have": "#1b7f2a", "missing": "#c0392b", "level": "#d35400", "select": "#cce4f7",
-              "border": "#a0a0a0", "card": "#f4f4f4"},
+              "border": "#a0a0a0", "card": "#f4f4f4", "planned": "#1e6fd9"},
     "dark": {"bg": "#1e1f22", "panel": "#2b2d31", "fg": "#e3e5e8", "text_bg": "#232428", "muted": "#9a9da3",
              "have": "#5fd068", "missing": "#ff6b6b", "level": "#ffa94d", "select": "#3d4250",
-             "border": "#3f4147", "card": "#2b2d31"},
+             "border": "#3f4147", "card": "#2b2d31", "planned": "#5aa9ff"},
 }
 
 
@@ -140,6 +140,7 @@ class App:
         self.checkbuttons: dict[str, ttk.Checkbutton] = {}
         self.results: "queue.Queue[ReadResult]" = queue.Queue()
         self.detected: ReadResult | None = None
+        self.planned: set[str] = set()  # items ticked while auto-detect is on ("what if I had this")
         self.canvases: list[tk.Canvas] = []  # scrollable areas, coloured by the theme
         self.texts: list[tk.Text] = []  # result panes, coloured by the theme
         self.cards: dict[tk.Text, list[tk.Frame]] = {}  # item cards embedded in each pane  # latest auto-detect result (owned items and levels)
@@ -281,7 +282,8 @@ class App:
             for item in sorted(items, key=lambda i: i.name.lower()):
                 var = tk.BooleanVar()
                 label = item.name if item.dlc in ("Base game", "") else f"{item.name}  ({item.dlc})"
-                cb = ttk.Checkbutton(inner, text=label, variable=var, command=self._refresh, style="List.TCheckbutton")
+                cb = ttk.Checkbutton(inner, text=label, variable=var, style="List.TCheckbutton",
+                                     command=lambda i=item.id: self._item_clicked(i))
                 cb.grid(row=row, column=0, sticky="w", padx=14, pady=1)
                 row += 1
                 self.vars[item.id] = var
@@ -299,8 +301,9 @@ class App:
         self.hide_items_var = tk.BooleanVar(value=self.settings.hide_items_when_auto)
         ttk.Checkbutton(detection, text="Hide the item list while auto-detect is on", variable=self.hide_items_var,
                         command=self._hide_items_changed, style="Setting.TCheckbutton").pack(anchor="w")
-        ttk.Label(detection, text="With auto-detect off, tick what you're holding in the item list on the "
-                             "Overview tab.",
+        ttk.Label(detection, text="Item list (Overview tab): with auto-detect on, tick items you don't have "
+                             "to plan ahead - they show as planned (blue) with what else you'd need. "
+                             "With auto-detect off, tick what you're holding.",
                   wraplength=280, style="Wrap.TLabel").pack(anchor="w", pady=(4, 0))
 
         appearance = ttk.LabelFrame(frame, text="Appearance", padding=8)
@@ -594,10 +597,31 @@ class App:
             else:
                 cb.grid_remove()
 
+    def auto_on(self) -> bool:
+        return self.auto_var.get() and self.reader_thread is not None
+
     def owned(self) -> set[str]:
-        if self.auto_var.get() and self.detected is not None:
-            return set(self.detected.owned)  # includes items that aren't in any recipe
+        """Items to plan with: detected items (if auto-detect is on) plus anything ticked."""
+        if self.auto_on():
+            detected = set(self.detected.owned) if self.detected is not None else set()
+            return detected | self.planned  # detected includes items that aren't in any recipe
         return {i for i, v in self.vars.items() if v.get()}
+
+    def is_planned(self, item_id: str) -> bool:
+        """Ticked by hand while auto-detect is on, i.e. not actually held."""
+        return self.auto_on() and item_id in self.planned
+
+    def _item_clicked(self, item_id: str) -> None:
+        if self.auto_on():
+            detected = self.detected.owned if self.detected is not None else frozenset()
+            if item_id in detected:
+                self.vars[item_id].set(True)  # really held: stays ticked
+                return
+            if self.vars[item_id].get():
+                self.planned.add(item_id)
+            else:
+                self.planned.discard(item_id)
+        self._refresh()
 
     def level_of(self, item_id: str) -> tuple[int, int] | None:
         if not self.settings.show_levels:
@@ -706,7 +730,10 @@ class App:
                 for r in others:
                     self._card(out, r, "have" if r in owned else "missing")
             if not s.missing:
-                if self._needs_leveling(s):
+                if any(self.is_planned(r) for r in s.evolution.requires):
+                    pal = PALETTES["dark" if self.settings.dark_theme else "light"]
+                    self._badge(out, "PLANNED", pal["planned"])
+                elif self._needs_leveling(s):
                     self._badge(out, "LEVEL UP", "#d35400")
                 else:
                     self._badge(out, "READY", "#1b7f2a")
@@ -750,9 +777,13 @@ class App:
 
     def _card(self, out: tk.Text, item_id: str, state: str = "plain") -> None:
         """Insert an item card. state: held (shows level), have (owned, check mark),
-        missing (red border, 'need'), result (an evolution) or plain."""
+        missing (red border, 'need'), result (an evolution) or plain. Items ticked as planned
+        while auto-detect is on get a blue border and 'planned'."""
         pal = PALETTES["dark" if self.settings.dark_theme else "light"]
-        border = {"held": pal["border"], "have": pal["have"], "missing": pal["missing"]}.get(state, pal["border"])
+        if state in ("held", "have") and self.is_planned(item_id):
+            state = "planned"
+        border = {"held": pal["border"], "have": pal["have"], "missing": pal["missing"],
+                  "planned": pal["planned"]}.get(state, pal["border"])
         card = tk.Frame(out, width=self.CARD_WIDTH, height=self.CARD_HEIGHT, background=pal["card"],
                         highlightthickness=2, highlightbackground=border, highlightcolor=border)
         card.grid_propagate(False)
@@ -772,6 +803,8 @@ class App:
             level_text, level_color = "\u2713 have", pal["have"]
         elif state == "missing":
             level_text, level_color = "\u2717 need", pal["missing"]
+        elif state == "planned":
+            level_text, level_color = "\u2605 planned", pal["planned"]
         tk.Label(card, text=level_text, background=pal["card"], foreground=level_color,
                  font=("Segoe UI", 9, "bold")).grid(row=0, column=1, sticky="ne", padx=(0, 6), pady=(4, 0))
 
@@ -840,12 +873,18 @@ class App:
                         for item in group:
                             self._card(out, item, "held")
                         out.insert("end", "\n")
-            ready = suggest(self.db, owned, hidden).ready if opts.show_ready else []
+            all_ready = suggest(self.db, owned, hidden).ready if opts.show_ready else []
+            planned = [s for s in all_ready if any(self.is_planned(r) for r in s.evolution.requires)]
+            ready = [s for s in all_ready if s not in planned]
             if ready:
                 out.insert("end", "READY TO EVOLVE - max the weapon, then open a chest\n", "header")
                 for s in ready:
                     self._card_recipe(out, s)
-            elif opts.show_ready:
+            if planned:
+                out.insert("end", "WITH YOUR PLANNED ITEMS\n", "header")
+                for s in planned:
+                    self._card_recipe(out, s)
+            if not all_ready and opts.show_ready:
                 out.insert("end", "READY TO EVOLVE\n", "header")
                 out.insert("end", "Nothing yet - see the How to evolve tab for what to pick up.\n", "detail")
             if not (opts.show_holding or opts.show_ready):
@@ -900,24 +939,31 @@ class App:
         out.configure(state="disabled")
 
     def _clear(self) -> None:
-        for v in self.vars.values():
-            v.set(False)
+        """Manual mode: untick everything. Auto-detect: remove only the planned items."""
+        if self.auto_on():
+            for item_id in self.planned:
+                self.vars[item_id].set(False)
+            self.planned.clear()
+        else:
+            for v in self.vars.values():
+                v.set(False)
         self._refresh()
 
     def _toggle_auto(self, save: bool = True) -> None:
         if save and self.reader_thread is not None:
             self.settings.auto_detect = self.auto_var.get()
             self._save_settings()
+        if self.auto_on():  # anything ticked by hand that isn't detected becomes "planned"
+            detected = self.detected.owned if self.detected is not None else frozenset()
+            self.planned = {i for i, v in self.vars.items() if v.get()} - detected
         self._update_items_tab()
         self._refresh()
-        auto = self.auto_var.get() and self.reader_thread is not None
-        for cb in self.checkbuttons.values():
-            cb.state(["disabled"] if auto else ["!disabled"])
+        auto = self.auto_on()
         if self.reader_thread is None:
             return
         if auto:
             self.reader_thread.enabled.set()
-            self.status.set("Looking for Vampire Survivors...")
+            self.status.set("Looking for Vampire Survivors... (tick items in the list to plan ahead)")
         else:
             self.reader_thread.enabled.clear()
             self.status.set("Manual mode: tick the items you have.")
@@ -951,8 +997,9 @@ class App:
                 changed = self.detected is None or (latest.owned, latest.levels) != (
                     self.detected.owned, self.detected.levels)
                 self.detected = latest
+                self.planned -= latest.owned  # picked up in the game: now really held
                 for item_id, var in self.vars.items():
-                    var.set(item_id in latest.owned)
+                    var.set(item_id in latest.owned or item_id in self.planned)
                 if changed:
                     self._refresh()
         self.root.after(250, self._drain_results)
