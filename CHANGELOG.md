@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 00.12.00
+Date: 11/07/2026
+Time: 3:18 PM
+
+### Changes
+- Added Settings > Updates: shows the installed version, "Check for updates" (fetches from GitHub and lists what changed), "Update now" (git pull, plus installing packages if `requirements.txt` changed) and "Restart helper".
+- "Check for updates when the helper starts" (on by default) checks quietly in the background and shows "Update available" in the status bar.
+- Clear messages when Git is missing, the copy wasn't downloaded with git (with an "Open GitHub page" button), the network is slow, or local file edits block the update. Git runs in the background without flashing a console window.
+- New `vshelper/updater.py` with tests against a local test repository; README "Updating" section.
+
+### Reason
+User asked for an update function in Settings.
+
 ## Version 00.11.00
 Date: 11/07/2026
 Time: 3:16 PM

@@ -11,7 +11,10 @@ from tkinter import ttk
 import json
 import time
 
-from . import gamedata, icons
+import subprocess
+import webbrowser
+
+from . import gamedata, icons, updater
 from . import settings as user_settings
 from .data import CACHE_ROOT, CACHED_DB_PATH, Database, DatabaseError, Item, parse_database
 from .evolutions import ItemPlan, Suggestion, held_in_order, plans_for_held, suggest
@@ -210,6 +213,8 @@ class App:
         self.icon_thread = IconThread(db, game_map, self.icon_messages)
         self.icon_thread.start()
         WikiThread(db, self.icon_messages).start()
+        if self.settings.check_updates_on_start:
+            self._check_updates(quiet=True)
 
         self.reader_thread: ReaderThread | None = None
         if game_map is not None:
@@ -274,6 +279,24 @@ class App:
         ttk.Checkbutton(appearance, text="Dark theme", variable=self.dark_var,
                         command=self._theme_changed).pack(anchor="w")
 
+        updates = ttk.LabelFrame(frame, text="Updates", padding=8)
+        updates.pack(fill="x", anchor="n", pady=(0, 8))
+        self.version_label = ttk.Label(updates, text=f"Installed version: {updater.local_version()}")
+        self.version_label.pack(anchor="w")
+        self.update_on_start_var = tk.BooleanVar(value=self.settings.check_updates_on_start)
+        ttk.Checkbutton(updates, text="Check for updates when the helper starts", variable=self.update_on_start_var,
+                        command=self._update_on_start_changed).pack(anchor="w", pady=(4, 0))
+        buttons = ttk.Frame(updates)
+        buttons.pack(anchor="w", pady=(6, 0))
+        self.check_button = ttk.Button(buttons, text="Check for updates", command=self._check_updates)
+        self.check_button.pack(side="left")
+        self.update_button = ttk.Button(buttons, text="Update now", command=self._apply_update, state="disabled")
+        self.update_button.pack(side="left", padx=6)
+        self.restart_button = ttk.Button(buttons, text="Restart helper", command=self._restart)
+        self.update_status = tk.StringVar(value="")
+        ttk.Label(updates, textvariable=self.update_status, wraplength=280, justify="left").pack(anchor="w", pady=(6, 0))
+        self.web_button = ttk.Button(updates, text="Open GitHub page", command=lambda: webbrowser.open(updater.REPO_URL))
+
         main = ttk.LabelFrame(frame, text="Main screen", padding=8)
         main.pack(fill="x", anchor="n", pady=(0, 8))
         ttk.Label(main, text="Choose what the results pane shows.", wraplength=280).pack(anchor="w", pady=(0, 6))
@@ -295,6 +318,72 @@ class App:
         ttk.Button(buttons, text="All on", command=lambda: self._set_all_expansions(True)).pack(side="left")
         ttk.Button(buttons, text="All off", command=lambda: self._set_all_expansions(False)).pack(side="left", padx=6)
         return outer
+
+    # ---- updates ----
+    def _update_on_start_changed(self) -> None:
+        self.settings.check_updates_on_start = self.update_on_start_var.get()
+        error = user_settings.save(self.settings)
+        if error:
+            self.icon_status.set(error)
+
+    def _in_background(self, kind: str, work) -> None:
+        """Run git work off the UI thread; the result arrives in _drain_results."""
+        def run() -> None:
+            try:
+                self.icon_messages.put((kind, work()))
+            except updater.UpdateError as exc:
+                self.icon_messages.put(("update-error", str(exc)))
+        threading.Thread(target=run, daemon=True).start()
+
+    def _check_updates(self, quiet: bool = False) -> None:
+        self.check_button.state(["disabled"])
+        self.update_status.set("Checking GitHub for updates...")
+        self._quiet_check = quiet
+        self._in_background("update-check", updater.check)
+
+    def _apply_update(self) -> None:
+        self.update_button.state(["disabled"])
+        self.check_button.state(["disabled"])
+        self.update_status.set("Downloading and installing the update...")
+        self._in_background("update-done", updater.apply)
+
+    def _update_message(self, kind: str, message) -> None:
+        self.check_button.state(["!disabled"])
+        if kind == "update-error":
+            self.update_status.set(message)
+            if not updater.is_git_checkout():
+                self.web_button.pack(anchor="w", pady=(6, 0))
+            if not getattr(self, "_quiet_check", False):
+                self.icon_status.set("Update failed - see Settings > Updates.")
+            return
+        if kind == "update-check":
+            info: updater.UpdateInfo = message
+            if info.available:
+                latest = info.latest or "a newer version"
+                changes = "\n".join(f"\u2022 {c}" for c in info.changes[:8])
+                more = f"\n... and {len(info.changes) - 8} more" if len(info.changes) > 8 else ""
+                self.update_status.set(f"Update available: {info.current} \u2192 {latest}\n{changes}{more}")
+                self.update_button.state(["!disabled"])
+                self.icon_status.set(f"Update available ({latest}) - Settings > Updates.")
+            else:
+                self.update_status.set(f"You have the latest version ({info.current}).")
+                self.update_button.state(["disabled"])
+            return
+        # update-done
+        self.update_status.set(message)
+        self.version_label.configure(text=f"Installed version: {updater.local_version()}")
+        if "Restart" in message:
+            self.restart_button.pack(anchor="w", pady=(6, 0))
+            self.icon_status.set("Update installed - restart the helper to use it.")
+
+    def _restart(self) -> None:
+        command, folder = updater.restart_command()
+        try:
+            subprocess.Popen(command, cwd=folder)
+        except OSError as exc:
+            self.update_status.set(f"Couldn't restart automatically ({exc}). Close and reopen the helper.")
+            return
+        self._close()
 
     def _main_screen_changed(self) -> None:
         for key, var in self.show_vars.items():
@@ -714,6 +803,9 @@ class App:
                 kind, message = self.icon_messages.get_nowait()
             except queue.Empty:
                 break
+            if kind.startswith("update"):
+                self._update_message(kind, message)
+                continue
             self.icon_status.set(message)
             if kind == "done":
                 self._load_icons()

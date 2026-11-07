@@ -44,6 +44,14 @@ python -m vshelper
    - **All evolutions**: every recipe in the game, grouped by expansion and type (evolutions,
      unions, gifts), with a search box. Items you hold are green; hidden expansions are left out.
 
+## Updating
+
+Open **Settings > Updates** and click **Check for updates**, then **Update now** and
+**Restart helper**. By default the helper also checks when it starts and says so in the status
+bar when an update is available. This uses Git (installed with Git for Windows), so it only works
+for a copy that was downloaded with `git clone`; if packages in `requirements.txt` changed, they
+are installed too. You can also update by hand with `git pull` in the project folder.
+
 ## Item pictures
 
 The game's artwork isn't included in this project. The first time the helper finds your game
@@ -135,5 +143,6 @@ Project layout:
 - `vshelper/wiki.py`: downloads and parses the wiki's Evolution page and item lists
 - `vshelper/gamedata.py`: reads the game's evolution data and compares it with the wiki
 - `vshelper/settings.py`: saved user settings
+- `vshelper/updater.py`: checks for and installs updates with git
 - `vshelper/diagnose.py`: detection report
 - `vshelper/ui.py`: the window

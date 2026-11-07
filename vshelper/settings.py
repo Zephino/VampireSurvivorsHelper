@@ -14,6 +14,7 @@ class Settings:
     # Expansions the user switched off; everything else is shown (so new DLC is on by default).
     hidden_expansions: list[str] = field(default_factory=list)
     dark_theme: bool = True
+    check_updates_on_start: bool = True
     # What the main screen shows (Settings > Main screen)
     show_holding: bool = True
     show_ready: bool = True
