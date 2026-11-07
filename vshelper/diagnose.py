@@ -232,6 +232,33 @@ def _pictures(out: Report) -> None:
 
 
 # ---- sections that read the game -------------------------------------------------
+def _dump_catalog_sources(il2: Il2Cpp, reader: GameReader, out: Report) -> None:
+    """How the game's item tables look, so a catalogue that can't be read can be fixed."""
+    session = reader._session
+    sources = reader.catalog_sources(session, reader.root_objects(session))
+    out.add(f"  item tables found: {', '.join(f for f, _ in sources) or 'none'}")
+    for field, table in sources:
+        try:
+            klass = il2.object_class(table)
+            out.add(f"  -- {field}: {il2.full_name(klass)}")
+            for f in il2.fields(klass):
+                if not f.is_static and not f.is_literal:
+                    out.add(f"       {f.name} (+0x{f.offset:X}, type 0x{f.type_code:02X}) = {_describe_value(il2, table, f)}")
+            entries = il2.try_ptr(table + il2.find_field(klass, ["_entries", "entries"]).offset)
+            if entries:
+                raw = il2.mem.read(entries + 0x20, 96)
+                out.add("       first entry bytes: " + raw.hex(" ", 8))
+            try:
+                values = reader._catalog_values(il2, table)
+                out.add(f"       readable item data: {len(values)}")
+                for v in values[:2]:
+                    _dump_object(il2, v, out, "       ")
+            except MemoryAccessError as exc:
+                out.add(f"       values not readable: {exc}")
+        except MemoryAccessError as exc:
+            out.add(f"       !! {exc}")
+
+
 def _walk_inventory_paths(il2: Il2Cpp, reader: GameReader, gmap: GameMap, found: dict, out: Report) -> None:
     """Follow each configured inventory path, dumping every object on the way and every item."""
     for root in gmap.roots:
@@ -350,6 +377,7 @@ def _read_game(out: Report, db: Database, gmap: GameMap, open_memory) -> ReadRes
                     out.add(f"  item catalogue read from the game: {len(catalog)} items (saved: {total})")
                 else:
                     out.add("  item catalogue: not found in the game's memory")
+                _dump_catalog_sources(il2, reader, out)
                 for kind, chain in reader._session.chains.items():
                     out.add(f"  {kind} read from: {gmap.roots[chain.root_index]['class']} -> {' -> '.join(chain.fields)}")
             if r.owned:

@@ -25,6 +25,7 @@ from .widgets import FlowFrame
 
 POLL_SECONDS = 1.0
 GAME_SEARCH_SECONDS = 10.0
+REEXTRACT_SECONDS = 600.0  # re-reading the game files is heavy: at most every 10 minutes
 
 
 class IconThread(threading.Thread):
@@ -46,10 +47,13 @@ class IconThread(threading.Thread):
         exe_name = self.map.process_name if self.map else "VampireSurvivors.exe"
         aliases = self.map.enum_aliases if self.map else {}
         announced = False
+        last_extract = None
         while not self.stopped.is_set():
             exe = process_exe_path(exe_name)
             game_dir = icons.find_game_dir(Path(exe) if exe else None)
-            if game_dir is not None and icons.needs_extraction(game_dir):
+            recently = last_extract is not None and time.monotonic() - last_extract < REEXTRACT_SECONDS
+            if game_dir is not None and not recently and icons.needs_extraction(game_dir):
+                last_extract = time.monotonic()
                 try:
                     report = icons.extract_icons(
                         game_dir, self.db, aliases,

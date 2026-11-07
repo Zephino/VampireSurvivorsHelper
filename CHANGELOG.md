@@ -1,5 +1,19 @@
 # Changelog
 
+## Version 00.18.03
+Date: 11/07/2026
+Time: 4:30 PM
+
+### Changes
+- Fixed held items whose game name differs slightly from the wiki's being reported as a number (e.g. "#1438"): the name read from the game is now kept when neither it nor the item number matches exactly, so near-identical spellings are recognised ("Sinistro Custos" in game = Sinestro Custos on the wiki).
+- The item catalogue is now read from all of the game's item tables (`AllWeaponData`, `_weaponData`, `_dlcWeaponData`) and merged, and tables whose values are lists, arrays or single data objects are all handled.
+- Picture names are also taken from each item you hold (its own data object), so items you've had get their picture even if the full catalogue can't be read. Background picture extraction runs again at most every 10 minutes to keep the game smooth.
+- The diagnose report shows the structure of the item tables (fields, first entry bytes, readable item data) to fix catalogue reading if it still fails.
+- Tests for the spelling case and picture names from held items.
+
+### Reason
+The user's diagnose report showed their second Custos weapon reported as "#1438" (the game spells it "Sinistro Custos") and the item catalogue not found, which kept Keremet and Custos weapons without pictures.
+
 ## Version 00.18.02
 Date: 11/07/2026
 Time: 4:19 PM

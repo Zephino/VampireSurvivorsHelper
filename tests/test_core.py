@@ -135,6 +135,29 @@ class GameReaderTests(unittest.TestCase):
         self.assertEqual(result.level_of("wine_glass"), (5, 8))
         self.assertEqual(result.level_of("whip"), (8, 8))
 
+    def test_game_spelling_differs_from_the_wiki(self):
+        g = FakeGame()
+        g.set_named(g.weapon_list, [("Dextro Custos", 6, 6), ("Sinistro Custos", 6, 6)], enum_value=1438)
+        result = _reader(g).poll()
+        self.assertEqual(result.owned, {"dextro_custos", "sinestro_custos"})
+        self.assertEqual(result.unrecognized, ())
+
+    def test_held_items_give_their_picture_names(self):
+        g = FakeGame()
+        e_arr = struct.unpack_from("<Q", g.m.heap, g.weapon_list + 0x10 - HEAP)[0]
+        g.set_named(g.weapon_list, [("Sinistro Custos", 6, 6)])
+        el = struct.unpack_from("<Q", g.m.heap, e_arr + 0x20 - HEAP)[0]
+        data = g.make_data("Sinistro Custos", "-05-TP_CUSTOS2.png", "TP_CUSTOS4")
+        g.m.w64(el + 0x18, data)
+        seen = []
+        reader = _reader(g)
+        reader.on_catalog = seen.append
+        reader.poll()
+        reader.poll()
+        held = [c for c in seen if "Sinistro Custos" in c]
+        self.assertEqual(len(held), 1)  # sent once, not every poll
+        self.assertEqual(held[0]["Sinistro Custos"]["frame"], "-05-TP_CUSTOS2.png")
+
     def test_reads_the_item_catalogue_once(self):
         g = FakeGame()
         g.set_named(g.weapon_list, [("Keremet Bubbles", 2, 8)])

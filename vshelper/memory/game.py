@@ -152,6 +152,7 @@ class _Session:
     last_discovery: float = 0.0
     rejected: set[tuple[str, ...]] = field(default_factory=set)  # paths that turned out not to be the inventory
     catalog_done: bool = False
+    held_seen: set[str] = field(default_factory=set)  # held items whose picture name was collected
 
 
 class GameReader:
@@ -261,6 +262,7 @@ class GameReader:
         levels: dict[str, tuple[int, int]] = {}
         unknown: list[str] = []
         unreadable = 0
+        new_catalog: dict[str, dict] = {}
         found_any = False
         for kind, chain in list(s.chains.items()):
             obj = roots.get(chain.root_index)
@@ -281,6 +283,11 @@ class GameReader:
                         unreadable += 1  # no name or type found on this item: say so, don't hide it
                         continue
                     item = self.matcher.match(raw, fuzzy=True)
+                    if item and item not in s.held_seen:
+                        s.held_seen.add(item)
+                        entry = self._held_catalog_entry(s.il2, el)
+                        if entry:
+                            new_catalog.update(entry)
                     if item:
                         owned.add(item)
                         lv = self.read_levels(s.il2, el)
@@ -294,6 +301,8 @@ class GameReader:
 
         if not found_any:
             return ReadResult("waiting", "Game found. Waiting for a run to start.")
+        if new_catalog and self.on_catalog is not None:
+            self.on_catalog(new_catalog)  # picture names of newly held items (works without the full catalogue)
         if not s.catalog_done and self.on_catalog is not None:
             s.catalog_done = True  # once per game session; the catalogue doesn't change
             try:
@@ -311,33 +320,74 @@ class GameReader:
                           tuple((i, lv, mx) for i, (lv, mx) in sorted(levels.items())))
 
     # ---- item catalogue ----------------------------------------------------
-    def read_catalog(self, s: _Session, roots: dict[int, int]) -> dict[str, dict]:
-        """Every item the game knows: {display name: {"frame": picture name, "evo_into": id}}.
-
-        Read from the game's own data (DataManager.AllWeaponData), so it includes DLC items whose
-        data isn't readable from the game files.
-        """
+    def catalog_sources(self, s: _Session, roots: dict[int, int]) -> list[tuple[str, int]]:
+        """(field name, object) of every item table found along catalog_path. The last step's
+        candidates are all used (e.g. AllWeaponData, _weaponData and _dlcWeaponData)."""
         il2 = s.il2
-        for root_i, obj in roots.items():
+        sources: list[tuple[str, int]] = []
+        if not self.map.catalog_path:
+            return sources
+        *steps, last = self.map.catalog_path
+        for obj in roots.values():
             try:
-                for candidates in self.map.catalog_path:
+                for candidates in steps:
                     obj = il2.read_field_ptr(obj, candidates)
                     if not obj:
                         break
                 if not obj:
                     continue
-                pairs = il2.dictionary_items(obj)
+                klass = il2.object_class(obj)
             except MemoryAccessError:
                 continue
-            catalog: dict[str, dict] = {}
-            for _key, value in pairs:
+            for name in last:
                 try:
-                    data = value
-                    if il2.class_name(il2.object_class(value)).startswith("List`"):
-                        elements = il2.collection_elements(value)
-                        if not elements:
-                            continue
-                        data = elements[0]  # level 1 holds the name and picture
+                    f = il2.find_field(klass, name)
+                except MemoryAccessError:
+                    continue
+                table = il2.try_ptr(obj + f.offset)
+                if table and all(table != t for _, t in sources):
+                    sources.append((f.name, table))
+            if sources:
+                break
+        return sources
+
+    def _catalog_values(self, il2: Il2Cpp, table: int) -> list[int]:
+        """Item data objects in a table: a Dictionary of (List of / array of / single) data,
+        or a plain list/array of data."""
+        name = il2.class_name(il2.object_class(table))
+        if name.startswith("Dictionary`"):
+            values = [v for _, v in il2.dictionary_items(table)]
+        else:
+            values = il2.collection_elements(table)
+        out = []
+        for value in values:
+            try:
+                vname = il2.class_name(il2.object_class(value))
+                if vname.startswith("List`") or vname.endswith("[]"):
+                    elements = il2.collection_elements(value)
+                    if elements:
+                        out.append(elements[0])  # level 1 holds the name and picture
+                else:
+                    out.append(value)
+            except MemoryAccessError:
+                continue
+        return out
+
+    def read_catalog(self, s: _Session, roots: dict[int, int]) -> dict[str, dict]:
+        """Every item the game knows: {display name: {"frame": picture name, "evo_into": id}}.
+
+        Read from the game's own data tables (DataManager.AllWeaponData / _weaponData /
+        _dlcWeaponData), so it includes DLC items whose data isn't readable from the game files.
+        """
+        il2 = s.il2
+        catalog: dict[str, dict] = {}
+        for _field, table in self.catalog_sources(s, roots):
+            try:
+                values = self._catalog_values(il2, table)
+            except MemoryAccessError:
+                continue  # a table we can't read; the others may still work
+            for data in values:
+                try:
                     name = self._read_text(il2, data, ["name", "<name>k__BackingField"])
                     frame = self._read_text(il2, data, ["frameName", "<frameName>k__BackingField"])
                     evo = self._read_text(il2, data, ["evoInto", "<evoInto>k__BackingField"])
@@ -345,8 +395,26 @@ class GameReader:
                     continue
                 if name and name not in catalog:
                     catalog[name] = {"frame": frame or "", "evo_into": evo or ""}
-            if catalog:
-                return catalog
+        return catalog
+
+    def _held_catalog_entry(self, il2: Il2Cpp, element: int) -> dict[str, dict]:
+        """{name: {"frame", "evo_into"}} from a held item's own data object, if readable."""
+        for path in self.map.name_paths:
+            try:
+                data = element
+                for candidates in path[:-1]:
+                    data = il2.read_field_ptr(data, candidates)
+                    if not data:
+                        break
+                if not data:
+                    continue
+                name = self._read_text(il2, data, path[-1])
+                frame = self._read_text(il2, data, ["frameName", "<frameName>k__BackingField"])
+                evo = self._read_text(il2, data, ["evoInto", "<evoInto>k__BackingField"])
+            except MemoryAccessError:
+                continue
+            if name and frame:
+                return {name: {"frame": frame, "evo_into": evo or ""}}
         return {}
 
     @staticmethod
@@ -416,14 +484,21 @@ class GameReader:
             klass = il2.object_class(element)
         except MemoryAccessError:
             return None
+        name = None
         for path in self.map.name_paths:
             raw = self._read_text_path(il2, element, path)
             if raw and self.matcher.match(raw):
                 return raw
+            name = name or raw
         raw = self._search_data_strings(il2, element, klass)
         if raw:
             return raw
-        return self._identify_by_enum(s, element, klass)
+        by_enum = self._identify_by_enum(s, element, klass)
+        if by_enum and self.matcher.match(by_enum):
+            return by_enum
+        # A readable name beats a bare number: it can still be matched by a near-identical
+        # spelling (the game says "Sinistro Custos", the wiki "Sinestro Custos") or looked up.
+        return name or by_enum
 
     def _read_text_path(self, il2: Il2Cpp, obj: int, path: list[list[str]]) -> str | None:
         try:
