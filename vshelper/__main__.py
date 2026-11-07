@@ -9,6 +9,20 @@ from .data import DatabaseError, load_database
 from .memory.game import GameMapError, load_game_map
 
 
+def _report_startup_error(message: str) -> None:
+    """Print the error, and also show it in a popup (pythonw has no console to print to)."""
+    print(f"Error: {message}")
+    try:
+        import tkinter
+        from tkinter import messagebox
+        root = tkinter.Tk()
+        root.withdraw()
+        messagebox.showerror("Vampire Survivors Helper", message)
+        root.destroy()
+    except Exception:  # no tkinter or no display: the printed message is all we can do
+        pass
+
+
 def main(argv: list[str]) -> int:
     if argv[:1] == ["diagnose"]:
         from . import diagnose
@@ -21,7 +35,7 @@ def main(argv: list[str]) -> int:
     try:
         db = load_database()
     except DatabaseError as exc:
-        print(f"Error: {exc}")
+        _report_startup_error(str(exc))
         return 1
     game_map, map_error = None, None
     try:

@@ -16,13 +16,16 @@ No extra packages are needed.
 
 ## Running
 
-From the project folder:
+Double-click **`Start Helper.bat`** in the project folder. It starts Vampire Survivors through
+Steam (unless it's already running) and opens the helper window without a console window.
+
+Or, from a terminal in the project folder:
 
 ```bash
 python -m vshelper
 ```
 
-1. Start Vampire Survivors and begin a run (the helper can be started before or after the game).
+1. Begin a run in Vampire Survivors. The game and the helper can be started in either order.
 2. The helper finds the game on its own. The first time after the game starts it searches memory
    for a few seconds; after that it updates about once per second.
 3. Evolutions are listed on the right:
@@ -44,7 +47,7 @@ Detection finds the game's data by class and field *names*, not fixed addresses,
 survive most game updates. If it stops working or the status bar shows "Unrecognized" items:
 
 1. Start a run in the game.
-2. Run `python -m vshelper diagnose`
+2. Double-click **`Diagnose.bat`** (or run `python -m vshelper diagnose`)
 3. Share the generated `vshelper-diagnose.txt` (it contains only game class/field/item names).
 
 Names used for detection live in `config/game_map.json`:

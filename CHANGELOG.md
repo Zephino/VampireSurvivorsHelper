@@ -1,5 +1,19 @@
 # Changelog
 
+## Version 00.01.01
+Date: 11/07/2026
+Time: 2:21 PM
+
+### Changes
+- Added `Start Helper.bat`: checks for Python, starts Vampire Survivors through Steam if it isn't running, and opens the helper without a console window.
+- Added `Diagnose.bat` to write the detection report with a double-click.
+- Startup errors are now also shown in a popup, since the helper runs without a console.
+- Added `.gitattributes` so `.bat` files keep Windows line endings.
+- Updated README run instructions.
+
+### Reason
+User wants to start everything with a double-click instead of using PowerShell.
+
 ## Version 00.01.00
 Date: 11/07/2026
 Time: 2:15 PM
