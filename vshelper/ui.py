@@ -123,6 +123,7 @@ class App:
         self.vars: dict[str, tk.BooleanVar] = {}
         self.checkbuttons: dict[str, ttk.Checkbutton] = {}
         self.results: "queue.Queue[ReadResult]" = queue.Queue()
+        self.detected: ReadResult | None = None  # latest auto-detect result (owned items and levels)
         self.icon_messages: "queue.Queue[tuple[str, str]]" = queue.Queue()
         self.icons: dict[str, tk.PhotoImage] = {}
         self.small_icons: dict[str, tk.PhotoImage] = {}
@@ -171,6 +172,9 @@ class App:
         self.output.tag_configure("result", font=("Segoe UI", 10, "bold"))
         self.output.tag_configure("detail", foreground="#666666", lmargin1=70, lmargin2=70)
         self.output.tag_configure("ready", foreground="#ffffff", background="#1b7f2a", font=("Segoe UI", 9, "bold"))
+        self.output.tag_configure("levelup", foreground="#ffffff", background="#d35400", font=("Segoe UI", 9, "bold"))
+        self.output.tag_configure("level", foreground="#d35400", font=("Segoe UI", 9))
+        self.output.tag_configure("maxed", foreground="#1b7f2a", font=("Segoe UI", 9, "bold"))
         body.add(results, weight=2)
 
         bar = ttk.Frame(root, relief="sunken")
@@ -276,7 +280,23 @@ class App:
                 cb.grid_remove()
 
     def owned(self) -> set[str]:
+        if self.auto_var.get() and self.detected is not None:
+            return set(self.detected.owned)  # includes items that aren't in any recipe
         return {i for i, v in self.vars.items() if v.get()}
+
+    def level_of(self, item_id: str) -> tuple[int, int] | None:
+        if self.auto_var.get() and self.detected is not None:
+            return self.detected.level_of(item_id)
+        return None
+
+    def _needs_leveling(self, s: Suggestion) -> list[tuple[str, int, int]]:
+        """Parts that must be max level but (according to the game) aren't yet."""
+        out = []
+        for item in s.evolution.max_level:
+            lv = self.level_of(item)
+            if lv and lv[0] < lv[1]:
+                out.append((item, lv[0], lv[1]))
+        return out
 
     def _load_icons(self) -> None:
         """Load cached pictures (if any) into the item list and results."""
@@ -300,18 +320,24 @@ class App:
         if self.game_reader is not None:
             self.game_reader.matcher.add_aliases(gamedata.internal_to_item(self.db, data))
 
-    def _insert_item(self, item_id: str, tag: str) -> None:
+    def _insert_item(self, item_id: str, tag: str, show_level: bool = False) -> None:
         img = self.icons.get(item_id)
         if img is not None:
             self.output.image_create("end", image=img, padx=2, align="center")
         self.output.insert("end", self.db.name(item_id), tag)
+        lv = self.level_of(item_id) if show_level else None
+        if lv:
+            self.output.insert("end", f" Lv {lv[0]}/{lv[1]}", "maxed" if lv[0] >= lv[1] else "level")
 
     def _details(self, s: Suggestion, skip_missing: bool = False) -> list[str]:
         evo = s.evolution
         details = []
         if s.missing and not skip_missing:
             details.append("need: " + ", ".join(self.db.name(m) for m in s.missing))
-        if evo.max_level:
+        leveling = self._needs_leveling(s)
+        if leveling:
+            details.append("level up first: " + ", ".join(f"{self.db.name(i)} {lv}/{mx}" for i, lv, mx in leveling))
+        elif evo.max_level:
             details.append("max level: " + ", ".join(self.db.name(m) for m in evo.max_level))
         if evo.notes:
             details.append(evo.notes)
@@ -363,7 +389,10 @@ class App:
                     self._insert_item(r, "have" if have else "missing")
                     out.insert("end", " \u2713" if have else " \u2717", "have" if have else "missing")
             if not s.missing:
-                out.insert("end", "    READY", "ready")
+                if self._needs_leveling(s):
+                    out.insert("end", "    LEVEL UP", "levelup")
+                else:
+                    out.insert("end", "    READY", "ready")
             out.insert("end", "\n")
             details = self._details(s, skip_missing=True)
             if details:
@@ -390,7 +419,7 @@ class App:
                 for i, item in enumerate(group):
                     if i:
                         out.insert("end", "    ")
-                    self._insert_item(item, "result")
+                    self._insert_item(item, "result", show_level=True)
                 out.insert("end", "\n")
 
         ready = suggest(self.db, owned, hidden).ready
@@ -442,12 +471,11 @@ class App:
         if latest is not None and self.auto_var.get():
             self.status.set(latest.message)
             if latest.state == "ok":
-                changed = False
+                changed = self.detected is None or (latest.owned, latest.levels) != (
+                    self.detected.owned, self.detected.levels)
+                self.detected = latest
                 for item_id, var in self.vars.items():
-                    want = item_id in latest.owned
-                    if var.get() != want:
-                        var.set(want)
-                        changed = True
+                    var.set(item_id in latest.owned)
                 if changed:
                     self._refresh()
         self.root.after(250, self._drain_results)

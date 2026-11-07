@@ -1,5 +1,20 @@
 # Changelog
 
+## Version 00.06.00
+Date: 11/07/2026
+Time: 2:55 PM
+
+### Changes
+- Items are now identified by name from the item's data object (`_currentWeaponData` / `CurrentAccessoryData`, field `name`), with a fallback that searches the item's *Data objects for any text naming a known item. The user's report showed the `WeaponType` enum values are not 0, 1, 2... (e.g. 1433), so enum numbers are only used when listed in `id_map` and are otherwise reported as `#number`.
+- Reads each item's level and max level (`Level` / `LevelsNumber`). Held items show "Lv 5/8"; a recipe whose parts aren't maxed shows an orange LEVEL UP tag and "level up first: Knife 5/8" instead of READY.
+- In auto-detect mode the results use exactly the detected items, including items that aren't part of any recipe.
+- New `game_map.json` keys `name_paths`, `level_field` and `max_level_field`; `_equipmentType` added to `type_field`.
+- The diagnose report shows each item's data object and its identified name and level.
+- The test fake now models the real equipment objects (enum number, WeaponData name, levels); added tests.
+
+### Reason
+The user's second diagnose report showed the helper now reaches the player's real weapons and accessories but couldn't identify them, because the game's item-type numbers don't follow the enum's declaration order.
+
 ## Version 00.05.00
 Date: 11/07/2026
 Time: 2:47 PM

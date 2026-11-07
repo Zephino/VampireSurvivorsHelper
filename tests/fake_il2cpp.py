@@ -6,7 +6,7 @@ import struct
 
 from vshelper.memory.il2cpp import (
     FIELD_ATTRIBUTE_LITERAL, FIELD_ATTRIBUTE_STATIC, METADATA_MAGIC, TYPE_CLASS, TYPE_GENERICINST,
-    TYPE_I4, TYPE_SZARRAY, TYPE_VALUETYPE,
+    TYPE_I4, TYPE_STRING, TYPE_SZARRAY, TYPE_VALUETYPE,
 )
 from vshelper.memory.winapi import MemoryAccessError
 
@@ -82,7 +82,12 @@ class FakeGame:
 
         self.list_cls = self.make_class("List`1", [("_items", TYPE_SZARRAY, 0x10, 0), ("_size", TYPE_I4, 0x18, 0)])
         self.array_cls = self.make_class("Equipment[]", [])
-        self.equip_cls = self.make_class("Equipment", [("_type", TYPE_VALUETYPE, 0x10, 0)])
+        # Like the real game: an enum id, a *Data object holding the name, and level fields.
+        self.equip_cls = self.make_class("Equipment", [
+            ("_equipmentType", TYPE_VALUETYPE, 0x10, 0), ("_currentWeaponData", TYPE_CLASS, 0x18, 0),
+            ("<Level>k__BackingField", TYPE_I4, 0x20, 0), ("<LevelsNumber>k__BackingField", TYPE_I4, 0x24, 0)])
+        self.data_cls = self.make_class("WeaponData", [("name", TYPE_STRING, 0x10, 0)])
+        self.string_cls = self.make_class("String", [])
         self.enum_cls = self.make_class(
             "WeaponType",
             [("value__", TYPE_I4, 0x10, 0)] + [(n, TYPE_VALUETYPE, 0, FIELD_ATTRIBUTE_LITERAL | FIELD_ATTRIBUTE_STATIC)
@@ -152,12 +157,35 @@ class FakeGame:
         return lst
 
     def set_list(self, lst: int, values: list[int]) -> None:
+        """Equipment identified only by its enum number (no data object, no levels)."""
         arr = struct.unpack_from("<Q", self.m.heap, lst + 0x10 - HEAP)[0]
         for i, v in enumerate(values):
-            e = self.obj(self.equip_cls, 0x18)
+            e = self.obj(self.equip_cls, 0x28)
             self.m.w32(e + 0x10, v)
             self.m.w64(arr + 0x20 + 8 * i, e)
         self.m.w32(lst + 0x18, len(values))
+
+    def make_string(self, text: str) -> int:
+        raw = text.encode("utf-16-le")
+        o = self.obj(self.string_cls, 0x14 + len(raw) + 2)
+        self.m.w32(o + 0x10, len(text))
+        self.m.heap[o + 0x14 - HEAP:o + 0x14 - HEAP + len(raw)] = raw
+        return o
+
+    def set_named(self, lst: int, items: list[tuple[str, int, int]], enum_value: int = 1433) -> None:
+        """Equipment like the real game: enum number that doesn't match the enum order, a
+        WeaponData object with the item's name, and level / max level."""
+        arr = struct.unpack_from("<Q", self.m.heap, lst + 0x10 - HEAP)[0]
+        for i, (name, level, max_level) in enumerate(items):
+            e = self.obj(self.equip_cls, 0x28)
+            self.m.w32(e + 0x10, enum_value)
+            data = self.obj(self.data_cls, 0x18)
+            self.m.w64(data + 0x10, self.make_string(name))
+            self.m.w64(e + 0x18, data)
+            self.m.w32(e + 0x20, level)
+            self.m.w32(e + 0x24, max_level)
+            self.m.w64(arr + 0x20 + 8 * i, e)
+        self.m.w32(lst + 0x18, len(items))
 
     def set_objects(self, lst: int, objects: list[int]) -> None:
         """Fill a list with existing object pointers (e.g. the players list)."""

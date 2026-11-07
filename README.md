@@ -81,7 +81,9 @@ Names used for detection live in `config/game_map.json`:
 | `process_name` | Game executable name |
 | `roots` | Class with a static field holding the game manager (tried in order) |
 | `inventories` | Field-name path from that object to the weapon / passive lists (candidate names per step; `field[0]` means the first element of a list field, e.g. `_mainCharacters[0]` for player 1) |
-| `type_field` | Field on each equipment object that identifies the item |
+| `name_paths` | Paths from an equipment object to its name (e.g. `_currentWeaponData` -> `name`); tried first |
+| `type_field` | Field on each equipment object holding its item-type number (fallback) |
+| `level_field`, `max_level_field` | Fields with the item's level and max level, shown as "Lv 5/8" |
 | `enum_classes` | Enum(s) the item type field uses |
 | `enum_aliases` | Game's internal item names -> item ids in the evolution database |
 | `id_map` | Extra raw value -> item id overrides (e.g. `"#42": "garlic"`) |

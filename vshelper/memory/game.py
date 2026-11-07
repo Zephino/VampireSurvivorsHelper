@@ -39,6 +39,10 @@ class GameMap:
     id_map: dict[str, str]
     search_depth: int = 4
     search_max_objects: int = 3000
+    # Paths from an equipment object to its name (each step: candidate field names).
+    name_paths: list[list[list[str]]] = field(default_factory=list)
+    level_field: list[str] = field(default_factory=list)
+    max_level_field: list[str] = field(default_factory=list)
 
 
 def load_game_map(path: Path | str = DEFAULT_GAME_MAP) -> GameMap:
@@ -55,6 +59,9 @@ def load_game_map(path: Path | str = DEFAULT_GAME_MAP) -> GameMap:
             id_map=raw.get("id_map", {}),
             search_depth=int(raw.get("search_depth", 4)),
             search_max_objects=int(raw.get("search_max_objects", 3000)),
+            name_paths=raw.get("name_paths", []),
+            level_field=raw.get("level_field", []),
+            max_level_field=raw.get("max_level_field", []),
         )
     except FileNotFoundError as exc:
         raise GameMapError(f"Game map not found: {path}") from exc
@@ -99,6 +106,13 @@ class ReadResult:
     message: str
     owned: frozenset[str] = frozenset()
     unrecognized: tuple[str, ...] = ()
+    levels: tuple[tuple[str, int, int], ...] = ()  # (item id, level, max level) when the game exposes them
+
+    def level_of(self, item_id: str) -> tuple[int, int] | None:
+        for i, lvl, mx in self.levels:
+            if i == item_id:
+                return lvl, mx
+        return None
 
 
 @dataclass
@@ -220,6 +234,7 @@ class GameReader:
                 s.chains.setdefault(kind, chain)
 
         owned: set[str] = set()
+        levels: dict[str, tuple[int, int]] = {}
         unknown: list[str] = []
         found_any = False
         for kind, chain in list(s.chains.items()):
@@ -242,6 +257,9 @@ class GameReader:
                     item = self.matcher.match(raw)
                     if item:
                         owned.add(item)
+                        lv = self.read_levels(s.il2, el)
+                        if lv:
+                            levels[item] = lv
                     elif raw not in unknown:
                         unknown.append(raw)
                 found_any = True
@@ -253,7 +271,8 @@ class GameReader:
         msg = f"Reading game: {len(owned)} item(s) detected."
         if unknown:
             msg += f" Unrecognized: {', '.join(unknown)}"
-        return ReadResult("ok", msg, frozenset(owned), tuple(unknown))
+        return ReadResult("ok", msg, frozenset(owned), tuple(unknown),
+                          tuple((i, lv, mx) for i, (lv, mx) in sorted(levels.items())))
 
     # ---- path helpers ----------------------------------------------------
     @staticmethod
@@ -306,10 +325,74 @@ class GameReader:
         return tuple(names)
 
     def identify(self, s: _Session, element: int) -> str | None:
-        """Return the raw identifier of an equipment object (enum name or string), if any."""
+        """Return the raw identifier of an equipment object (its name, or an enum name), if any.
+
+        Order: configured name paths (e.g. _currentWeaponData.name), then any text field on the
+        object's *Data objects that matches a known item, then the item-type enum field.
+        """
         il2 = s.il2
         try:
-            f = il2.find_field(il2.object_class(element), self.map.type_field)
+            klass = il2.object_class(element)
+        except MemoryAccessError:
+            return None
+        for path in self.map.name_paths:
+            raw = self._read_text_path(il2, element, path)
+            if raw and self.matcher.match(raw):
+                return raw
+        raw = self._search_data_strings(il2, element, klass)
+        if raw:
+            return raw
+        return self._identify_by_enum(s, element, klass)
+
+    def _read_text_path(self, il2: Il2Cpp, obj: int, path: list[list[str]]) -> str | None:
+        try:
+            for candidates in path[:-1]:
+                obj = il2.read_field_ptr(obj, candidates)
+                if not obj:
+                    return None
+            f = il2.find_field(il2.object_class(obj), path[-1])
+            if f.type_code not in (TYPE_STRING, TYPE_CLASS):
+                return None
+            str_obj = il2.try_ptr(obj + f.offset)
+            return il2.read_string(str_obj) if str_obj else None
+        except MemoryAccessError:
+            return None
+
+    def _search_data_strings(self, il2: Il2Cpp, element: int, klass: int) -> str | None:
+        """Look for a text field naming a known item, on the object or on objects it holds whose
+        class name ends in 'Data' (e.g. WeaponData)."""
+        targets = [(element, klass)]
+        for f in il2.fields(klass):
+            if f.is_static or f.type_code != TYPE_CLASS:
+                continue
+            child = il2.try_ptr(element + f.offset)
+            if not child:
+                continue
+            try:
+                ck = il2.object_class(child)
+            except MemoryAccessError:
+                continue
+            if il2.class_name(ck).endswith("Data"):
+                targets.append((child, ck))
+        for obj, k in targets:
+            for f in il2.fields(k):
+                if f.is_static or f.type_code != TYPE_STRING:
+                    continue
+                str_obj = il2.try_ptr(obj + f.offset)
+                if not str_obj:
+                    continue
+                try:
+                    text = il2.read_string(str_obj)
+                except MemoryAccessError:
+                    continue
+                if text and len(text) < 80 and self.matcher.match(text):
+                    return text
+        return None
+
+    def _identify_by_enum(self, s: _Session, element: int, klass: int) -> str | None:
+        il2 = s.il2
+        try:
+            f = il2.find_field(klass, self.map.type_field)
         except MemoryAccessError:
             return None
         addr = element + f.offset
@@ -319,15 +402,29 @@ class GameReader:
                 return il2.read_string(str_obj) if str_obj else None
             if f.type_code in (TYPE_I4, TYPE_U4, TYPE_VALUETYPE):
                 value = il2.i32(addr)
+                key = f"#{value}"
+                if key in self.matcher.id_map:
+                    return key
+                # Enum names are only trusted when the values are plain 0, 1, 2... (not always true)
                 for names in s.enums:
                     if 0 <= value < len(names) and self.matcher.match(names[value]):
                         return names[value]
-                if s.enums and 0 <= value < len(s.enums[0]):
-                    return s.enums[0][value]
-                return f"#{value}"
+                return key
         except MemoryAccessError:
             return None
         return None
+
+    def read_levels(self, il2: Il2Cpp, element: int) -> tuple[int, int] | None:
+        """(level, max level) of an equipment object, if the game map names those fields."""
+        if not self.map.level_field or not self.map.max_level_field:
+            return None
+        try:
+            klass = il2.object_class(element)
+            lvl = il2.i32(element + il2.find_field(klass, self.map.level_field).offset)
+            mx = il2.i32(element + il2.find_field(klass, self.map.max_level_field).offset)
+        except MemoryAccessError:
+            return None
+        return (lvl, mx) if 0 < lvl <= mx <= 99 else None
 
     def discover(self, s: _Session, roots: dict[int, int]) -> dict[str, Chain]:
         """Breadth-first search from the root objects for the player's weapon and passive lists."""

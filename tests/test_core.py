@@ -117,6 +117,16 @@ class GameReaderTests(unittest.TestCase):
         self.assertEqual(result.state, "ok", result.message)
         self.assertEqual(result.owned, {"whip", "spinach"})
 
+    def test_reads_names_and_levels_like_the_real_game(self):
+        g = FakeGame()
+        g.set_named(g.weapon_list, [("Wine Glass", 5, 8), ("Whip", 8, 8)])
+        g.set_named(g.passive_list, [("Hollow Heart", 2, 5)])
+        result = _reader(g).poll()
+        self.assertEqual(result.state, "ok", result.message)
+        self.assertEqual(result.owned, {"wine_glass", "whip", "hollow_heart"})
+        self.assertEqual(result.level_of("wine_glass"), (5, 8))
+        self.assertEqual(result.level_of("whip"), (8, 8))
+
     def test_discovery_steps_into_the_players_list(self):
         g = FakeGame()
         g.set_list(g.weapon_list, [1])
@@ -143,7 +153,7 @@ class GameReaderTests(unittest.TestCase):
         g.set_list(g.weapon_list, [1, 2])
         result = _reader(g).poll()
         self.assertEqual(result.owned, {"whip"})
-        self.assertEqual(result.unrecognized, ("MYSTERY",))
+        self.assertEqual(result.unrecognized, ("#2",))  # raw number: enum order isn't trusted
 
     def test_list_bigger_than_an_inventory_is_ignored(self):
         g = FakeGame()

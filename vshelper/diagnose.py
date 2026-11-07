@@ -93,10 +93,19 @@ def _walk_inventory_paths(il2: Il2Cpp, reader: GameReader, gmap, found: dict, ou
             if obj:
                 _dump_object(il2, obj, out, "  ")
                 try:
-                    for el in il2.collection_elements(obj)[:6]:
+                    for n, el in enumerate(il2.collection_elements(obj)[:6]):
                         _dump_object(il2, el, out, "    ")
+                        if n == 0:  # show the item's data objects (e.g. WeaponData) once
+                            klass = il2.object_class(el)
+                            for f in il2.fields(klass):
+                                child = il2.try_ptr(el + f.offset) if f.type_code in POINTER_TYPES else 0
+                                if child and il2.is_class(il2.try_ptr(child)) and \
+                                        il2.class_name(il2.try_ptr(child)).endswith("Data"):
+                                    out.append(f"      data object {f.name}:")
+                                    _dump_object(il2, child, out, "        ")
                         raw = reader.identify(reader._session, el) if reader._session else None
-                        out.append(f"      identified as: {raw}")
+                        lv = reader.read_levels(il2, el)
+                        out.append(f"      identified as: {raw}" + (f" (level {lv[0]}/{lv[1]})" if lv else ""))
                 except MemoryAccessError as exc:
                     out.append(f"  !! {exc}")
         break

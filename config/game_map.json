@@ -20,8 +20,14 @@
       ]
     }
   },
-  "type_field": ["Type", "_type", "<Type>k__BackingField", "WeaponType", "_weaponType", "<WeaponType>k__BackingField", "Id", "_id"],
+  "type_field": ["_equipmentType", "Type", "_type", "<Type>k__BackingField", "WeaponType", "_weaponType", "<WeaponType>k__BackingField", "Id", "_id"],
   "enum_classes": ["WeaponType"],
+  "name_paths": [
+    [["_currentWeaponData", "<CurrentAccessoryData>k__BackingField", "CurrentWeaponData", "CurrentAccessoryData", "_currentAccessoryData"],
+     ["name", "_name", "<name>k__BackingField", "Name", "<Name>k__BackingField"]]
+  ],
+  "level_field": ["<Level>k__BackingField", "Level", "_level"],
+  "max_level_field": ["<LevelsNumber>k__BackingField", "LevelsNumber", "_levelsNumber", "MaxLevel", "_maxLevel"],
   "search_depth": 5,
   "search_max_objects": 3000,
   "enum_aliases": {
