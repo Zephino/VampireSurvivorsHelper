@@ -184,11 +184,18 @@ class SettingsTests(unittest.TestCase):
             s, warning = settings.load(path)
             self.assertEqual((s.hidden_expansions, warning), ([], None))
             self.assertTrue(s.dark_theme)  # dark theme is on by default
+            self.assertTrue(all(getattr(s, key) for key, _ in settings.MAIN_SCREEN_OPTIONS))
             s.hidden_expansions = ["Emerald Diorama"]
             s.dark_theme = False
+            s.show_pictures = False
             self.assertIsNone(settings.save(s, path))
+            self.assertFalse(settings.load(path)[0].show_pictures)
             self.assertEqual(settings.load(path)[0].hidden_expansions, ["Emerald Diorama"])
             self.assertFalse(settings.load(path)[0].dark_theme)
+            path.write_text('{"show_ready": "yes", "show_levels": false}')  # bad types fall back per value
+            loaded = settings.load(path)[0]
+            self.assertTrue(loaded.show_ready)
+            self.assertFalse(loaded.show_levels)
             path.write_text("{broken")
             s, warning = settings.load(path)
             self.assertEqual(s.hidden_expansions, [])

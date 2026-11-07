@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 00.09.00
+Date: 11/07/2026
+Time: 3:09 PM
+
+### Changes
+- Added a "Main screen" group to Settings with switches for what the results pane shows: You're holding, Ready to evolve, How to evolve your items, items with no evolution, item levels (Lv x/y, LEVEL UP and "level up first"), details (max level, notes), game-file check marks and item pictures (also in the item list). All on by default, applied instantly and saved in `settings.json`.
+- The Settings tab now scrolls, so every group stays reachable as more settings are added.
+- Settings loading now falls back to the default for each value that is missing or has the wrong type, instead of all-or-nothing.
+- Added tests for the new settings; updated the README.
+
+### Reason
+User asked for a way in Settings to toggle what is shown on the main screen.
+
 ## Version 00.08.00
 Date: 11/07/2026
 Time: 3:07 PM

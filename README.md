@@ -60,7 +60,9 @@ The status bar at the bottom says what the helper is doing ("Waiting for a run t
 breaks after a game update). The *Filter* box searches the item list.
 
 **Settings tab:** next to the *Items* tab. *Appearance* has the **Dark theme** switch (on by
-default; changes apply instantly). Under *Expansions*, untick any DLC you don't own to hide its
+default; changes apply instantly). *Main screen* switches each part of the results pane on or off:
+You're holding, Ready to evolve, How to evolve your items, items with no evolution, item levels,
+details, game-file check marks and item pictures (all on by default). Under *Expansions*, untick any DLC you don't own to hide its
 items and evolutions (all are on by default). Settings are saved to `settings.json` in
 the project folder.
 

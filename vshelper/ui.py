@@ -134,7 +134,8 @@ class App:
         self.vars: dict[str, tk.BooleanVar] = {}
         self.checkbuttons: dict[str, ttk.Checkbutton] = {}
         self.results: "queue.Queue[ReadResult]" = queue.Queue()
-        self.detected: ReadResult | None = None  # latest auto-detect result (owned items and levels)
+        self.detected: ReadResult | None = None
+        self.canvases: list[tk.Canvas] = []  # scrollable areas, coloured by the theme  # latest auto-detect result (owned items and levels)
         self.icon_messages: "queue.Queue[tuple[str, str]]" = queue.Queue()
         self.icons: dict[str, tk.PhotoImage] = {}
         self.small_icons: dict[str, tk.PhotoImage] = {}
@@ -220,20 +221,28 @@ class App:
         root.after(200, self._drain_results)
         root.protocol("WM_DELETE_WINDOW", self._close)
 
-    def _item_list(self, parent: tk.Widget, sections: list[tuple[str, list[Item]]]) -> ttk.Frame:
-        """One scrollable list with a heading per section, in the order given."""
+    def _scrollable(self, parent: tk.Widget, stretch: bool = False) -> tuple[ttk.Frame, ttk.Frame]:
+        """(outer, inner): put widgets in inner; outer scrolls them vertically with bar and mouse wheel.
+        stretch=True makes inner as wide as the visible area."""
         outer = ttk.Frame(parent)
         canvas = tk.Canvas(outer, highlightthickness=0)
-        self.item_canvas = canvas
+        self.canvases.append(canvas)
         scroll = ttk.Scrollbar(outer, orient="vertical", command=canvas.yview)
         inner = ttk.Frame(canvas)
         inner.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-        canvas.create_window((0, 0), window=inner, anchor="nw")
+        window = canvas.create_window((0, 0), window=inner, anchor="nw")
+        if stretch:
+            canvas.bind("<Configure>", lambda e: canvas.itemconfigure(window, width=e.width))
         canvas.configure(yscrollcommand=scroll.set)
         canvas.pack(side="left", fill="both", expand=True)
         scroll.pack(side="right", fill="y")
         canvas.bind("<Enter>", lambda e: canvas.bind_all("<MouseWheel>", lambda ev: canvas.yview_scroll(-ev.delta // 120, "units")))
         canvas.bind("<Leave>", lambda e: canvas.unbind_all("<MouseWheel>"))
+        return outer, inner
+
+    def _item_list(self, parent: tk.Widget, sections: list[tuple[str, list[Item]]]) -> ttk.Frame:
+        """One scrollable list with a heading per section, in the order given."""
+        outer, inner = self._scrollable(parent)
         row = 0
         for title, items in sections:
             ttk.Label(inner, text=title, font=("Segoe UI", 11, "bold")).grid(
@@ -250,12 +259,22 @@ class App:
         return outer
 
     def _settings_tab(self, parent: tk.Widget) -> ttk.Frame:
-        frame = ttk.Frame(parent, padding=8)
+        outer, frame = self._scrollable(parent, stretch=True)
+        frame.configure(padding=8)
         appearance = ttk.LabelFrame(frame, text="Appearance", padding=8)
         appearance.pack(fill="x", anchor="n", pady=(0, 8))
         self.dark_var = tk.BooleanVar(value=self.settings.dark_theme)
         ttk.Checkbutton(appearance, text="Dark theme", variable=self.dark_var,
                         command=self._theme_changed).pack(anchor="w")
+
+        main = ttk.LabelFrame(frame, text="Main screen", padding=8)
+        main.pack(fill="x", anchor="n", pady=(0, 8))
+        ttk.Label(main, text="Choose what the results pane shows.", wraplength=280).pack(anchor="w", pady=(0, 6))
+        self.show_vars: dict[str, tk.BooleanVar] = {}
+        for key, label in user_settings.MAIN_SCREEN_OPTIONS:
+            var = tk.BooleanVar(value=getattr(self.settings, key))
+            ttk.Checkbutton(main, text=label, variable=var, command=self._main_screen_changed).pack(anchor="w")
+            self.show_vars[key] = var
         group = ttk.LabelFrame(frame, text="Expansions", padding=8)
         group.pack(fill="x", anchor="n")
         ttk.Label(group, text="Untick an expansion to hide its items and evolutions.",
@@ -268,7 +287,16 @@ class App:
         buttons.pack(anchor="w", pady=(6, 0))
         ttk.Button(buttons, text="All on", command=lambda: self._set_all_expansions(True)).pack(side="left")
         ttk.Button(buttons, text="All off", command=lambda: self._set_all_expansions(False)).pack(side="left", padx=6)
-        return frame
+        return outer
+
+    def _main_screen_changed(self) -> None:
+        for key, var in self.show_vars.items():
+            setattr(self.settings, key, var.get())
+        error = user_settings.save(self.settings)
+        if error:
+            self.icon_status.set(error)
+        self._apply_list_pictures()
+        self._refresh()
 
     def _theme_changed(self) -> None:
         self.settings.dark_theme = self.dark_var.get()
@@ -309,7 +337,8 @@ class App:
             style.theme_use(self.native_theme)
             self.root.configure(background=style.lookup("TFrame", "background") or "SystemButtonFace")
         canvas_bg = pal["bg"] or style.lookup("TFrame", "background") or "SystemButtonFace"
-        self.item_canvas.configure(background=canvas_bg)
+        for canvas in self.canvases:
+            canvas.configure(background=canvas_bg)
         self.output.configure(background=pal["text_bg"], foreground=pal["fg"], insertbackground=pal["fg"],
                               selectbackground=pal["select"])
         self.output.tag_configure("have", foreground=pal["have"])
@@ -351,6 +380,8 @@ class App:
         return {i for i, v in self.vars.items() if v.get()}
 
     def level_of(self, item_id: str) -> tuple[int, int] | None:
+        if not self.settings.show_levels:
+            return None  # also hides LEVEL UP and "level up first"
         if self.auto_var.get() and self.detected is not None:
             return self.detected.level_of(item_id)
         return None
@@ -373,9 +404,14 @@ class App:
                 continue  # unreadable cache file; the item just shows without a picture
             self.icons[item_id] = img
             self.small_icons[item_id] = img.subsample(2)
+        self._apply_list_pictures()
+
+    def _apply_list_pictures(self) -> None:
         for item_id, cb in self.checkbuttons.items():
-            if item_id in self.small_icons:
+            if self.settings.show_pictures and item_id in self.small_icons:
                 cb.configure(image=self.small_icons[item_id], compound="left")
+            else:
+                cb.configure(image="", compound="none")
 
     def _load_game_data(self) -> None:
         """Use evolution data read from the game files: check recipes and learn internal item names."""
@@ -387,7 +423,7 @@ class App:
             self.game_reader.matcher.add_aliases(gamedata.internal_to_item(self.db, data))
 
     def _insert_item(self, item_id: str, tag: str, show_level: bool = False) -> None:
-        img = self.icons.get(item_id)
+        img = self.icons.get(item_id) if self.settings.show_pictures else None
         if img is not None:
             self.output.image_create("end", image=img, padx=2, align="center")
         self.output.insert("end", self.db.name(item_id), tag)
@@ -398,18 +434,19 @@ class App:
     def _details(self, s: Suggestion, skip_missing: bool = False) -> list[str]:
         evo = s.evolution
         details = []
-        if s.missing and not skip_missing:
+        show = self.settings.show_details
+        if s.missing and not skip_missing and show:
             details.append("need: " + ", ".join(self.db.name(m) for m in s.missing))
         leveling = self._needs_leveling(s)
         if leveling:
             details.append("level up first: " + ", ".join(f"{self.db.name(i)} {lv}/{mx}" for i, lv, mx in leveling))
-        elif evo.max_level:
+        elif evo.max_level and show:
             details.append("max level: " + ", ".join(self.db.name(m) for m in evo.max_level))
-        if evo.notes:
+        if evo.notes and show:
             details.append(evo.notes)
-        if not evo.verified:
+        if not evo.verified and show:
             details.append("unverified data - double-check in game")
-        check = self.checks.get(evo.result)
+        check = self.checks.get(evo.result) if self.settings.show_game_check else None
         if check and check.status == "match":
             details.append("\u2713 matches game files")
         elif check:
@@ -476,27 +513,34 @@ class App:
             out.configure(state="disabled")
             return
 
-        out.insert("end", "YOU'RE HOLDING\n", "header")
-        held = held_in_order(self.db, owned)
-        for kind in ("weapon", "passive"):
-            group = [i for i in held if self.db.items[i].kind == kind]
-            if group:
-                out.insert("end", "  ")
-                for i, item in enumerate(group):
-                    if i:
-                        out.insert("end", "    ")
-                    self._insert_item(item, "result", show_level=True)
-                out.insert("end", "\n")
+        opts = self.settings
+        if opts.show_holding:
+            out.insert("end", "YOU'RE HOLDING\n", "header")
+            held = held_in_order(self.db, owned)
+            for kind in ("weapon", "passive"):
+                group = [i for i in held if self.db.items[i].kind == kind]
+                if group:
+                    out.insert("end", "  ")
+                    for i, item in enumerate(group):
+                        if i:
+                            out.insert("end", "    ")
+                        self._insert_item(item, "result", show_level=True)
+                    out.insert("end", "\n")
 
-        ready = suggest(self.db, owned, hidden).ready
+        ready = suggest(self.db, owned, hidden).ready if opts.show_ready else []
         if ready:
             out.insert("end", "READY TO EVOLVE - max the weapon, then open a chest\n", "header")
             for s in ready:
                 self._insert_suggestion(s)
 
-        out.insert("end", "HOW TO EVOLVE YOUR ITEMS\n", "header")
-        for plan in plans_for_held(self.db, owned, hidden):
-            self._insert_plan(plan, owned)
+        if opts.show_how_to:
+            out.insert("end", "HOW TO EVOLVE YOUR ITEMS\n", "header")
+            for plan in plans_for_held(self.db, owned, hidden):
+                if plan.options or opts.show_no_evolution:
+                    self._insert_plan(plan, owned)
+
+        if not (opts.show_holding or opts.show_ready or opts.show_how_to):
+            out.insert("end", "Everything is switched off in Settings > Main screen.")
         out.configure(state="disabled")
 
     def _clear(self) -> None:
