@@ -163,7 +163,12 @@ class App:
         self.tabs = ttk.Notebook(root)
         self.tabs.pack(fill="both", expand=True, padx=6, pady=(6, 0))
         self.results_tabs = self.tabs  # Overview / How to evolve / All evolutions live here too
-        overview_frame, self.overview_text = self._text_pane(self.tabs)
+        # Overview: the item list on the left (hidden automatically while auto-detect is on),
+        # your items and what's ready on the right.
+        self.overview_paned = ttk.PanedWindow(self.tabs, orient="horizontal")
+        overview_frame = self.overview_paned
+        self.items_frame = ttk.Frame(self.overview_paned)
+        overview_results, self.overview_text = self._text_pane(self.overview_paned)
         howto_frame, self.howto_text = self._text_pane(self.tabs)
         self.howto_frame = howto_frame
         guide_frame = ttk.Frame(self.tabs)
@@ -178,10 +183,9 @@ class App:
         guide_body.pack(fill="both", expand=True)
         self._guide_job: str | None = None
 
-        # Items tab: the manual list (Clear + Filter on top). Only items that take part in a
-        # recipe are listed; the rest can't evolve anything.
+        # The item list (Clear + Filter on top). Only items that take part in a recipe are
+        # listed; the rest can't evolve anything.
         in_recipes = {i for e in db.evolutions for i in (e.result, *e.requires)}
-        self.items_frame = ttk.Frame(self.tabs)
         list_bar = FlowFrame(self.items_frame, padding=(4, 4))
         list_bar.pack(fill="x")
         list_bar.add(ttk.Button(list_bar, text="Clear", command=self._clear))
@@ -193,12 +197,13 @@ class App:
             ("Evolved Weapons", [i for i in db.weapons() if i.evolved and i.id in in_recipes]),
         ])
         item_list.pack(fill="both", expand=True)
+        self.overview_paned.add(self.items_frame, weight=1)
+        self.overview_paned.add(overview_results, weight=2)
         self.settings_frame = self._settings_tab(self.tabs)
 
         self.tabs.add(overview_frame, text="Overview")
         self.tabs.add(howto_frame, text="How to evolve")
         self.tabs.add(guide_frame, text="All evolutions")
-        self.tabs.add(self.items_frame, text="Items")
         self.tabs.add(self.settings_frame, text="Settings")
         body = self.tabs
 
@@ -292,9 +297,10 @@ class App:
                                           command=self._toggle_auto, style="Setting.TCheckbutton")
         self.auto_check.pack(anchor="w")
         self.hide_items_var = tk.BooleanVar(value=self.settings.hide_items_when_auto)
-        ttk.Checkbutton(detection, text="Hide the Items tab while auto-detect is on", variable=self.hide_items_var,
+        ttk.Checkbutton(detection, text="Hide the item list while auto-detect is on", variable=self.hide_items_var,
                         command=self._hide_items_changed, style="Setting.TCheckbutton").pack(anchor="w")
-        ttk.Label(detection, text="With auto-detect off, tick what you're holding in the Items tab.",
+        ttk.Label(detection, text="With auto-detect off, tick what you're holding in the item list on the "
+                             "Overview tab.",
                   wraplength=280, style="Wrap.TLabel").pack(anchor="w", pady=(4, 0))
 
         appearance = ttk.LabelFrame(frame, text="Appearance", padding=8)
@@ -388,19 +394,20 @@ class App:
         style.configure("List.TCheckbutton", wraplength=getattr(self, "_list_wrap", 260))
         style.configure("Setting.TCheckbutton", wraplength=getattr(self, "_settings_wrap", 260))
 
-    # ---- Items tab visibility ----
+    # ---- item list visibility (left side of Overview) ----
     def _hide_items_changed(self) -> None:
         self.settings.hide_items_when_auto = self.hide_items_var.get()
         self._save_settings()
         self._update_items_tab()
 
     def _update_items_tab(self) -> None:
-        """Hide the manual Items tab while auto-detect reads the game (if that setting is on)."""
+        """Hide the item list on Overview while auto-detect reads the game (if that setting is on)."""
         hide = self.auto_var.get() and self.reader_thread is not None and self.settings.hide_items_when_auto
-        if hide:
-            self.tabs.hide(self.items_frame)
-        else:
-            self.tabs.add(self.items_frame)  # re-adding a hidden tab restores it in place
+        shown = str(self.items_frame) in self.overview_paned.panes()
+        if hide and shown:
+            self.overview_paned.forget(self.items_frame)
+        elif not hide and not shown:
+            self.overview_paned.insert(0, self.items_frame, weight=1)
 
     def _save_settings(self) -> None:
         error = user_settings.save(self.settings)
@@ -814,8 +821,8 @@ class App:
         else:
             self.results_tabs.hide(self.howto_frame)
 
-    WAITING = ("Waiting for your items. Start a run with Auto-detect on, "
-               "or tick the items you're holding in the Items list.")
+    WAITING = ("Waiting for your items. Start a run with auto-detect on (Settings > Detection), "
+               "or turn it off and tick the items you're holding in the list on the left.")
 
     def _render_overview(self, owned: set[str], hidden: set[str]) -> None:
         out = self._begin(self.overview_text)

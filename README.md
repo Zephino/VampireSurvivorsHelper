@@ -87,12 +87,13 @@ were found.
 The status bar at the bottom says what the helper is doing ("Waiting for a run to start",
 "Reading game: 4 item(s) detected", etc.).
 
-**Tabs:** Overview, How to evolve, All evolutions, Items and Settings sit in one row across the
-window. Text and buttons wrap onto the next line when the window is made narrow.
+**Tabs:** Overview, How to evolve, All evolutions and Settings sit in one row across the window.
+Text and buttons wrap onto the next line when the window is made narrow.
 
 **Detection (Settings):** *Auto-detect items from the game* is on by default. While it is on, the
-manual **Items** tab is hidden (switch off *Hide the Items tab while auto-detect is on* to keep it).
-Turn auto-detect off to tick your items yourself in the Items tab (with Clear and Filter on top).
+item list on the left of **Overview** is hidden so the results use the full width (switch off
+*Hide the item list while auto-detect is on* to keep it). Turn auto-detect off to tick your items
+yourself in that list (with Clear and Filter on top).
 
 **Settings tab:** *Appearance* has the **Dark theme** switch (on by
 default; changes apply instantly). *Main screen* switches parts of the results on or off:

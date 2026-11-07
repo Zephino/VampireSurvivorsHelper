@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 00.15.01
+Date: 11/07/2026
+Time: 3:34 PM
+
+### Changes
+- The item list is back on the Overview tab, on the left beside your results, instead of a separate Items tab. "Hide the item list while auto-detect is on" (Settings > Detection) hides it there, so Overview uses the full width while the game is being read.
+- Updated the waiting message and Settings text to match; README updated.
+
+### Reason
+User wants the items on the Overview page.
+
 ## Version 00.15.00
 Date: 11/07/2026
 Time: 3:32 PM

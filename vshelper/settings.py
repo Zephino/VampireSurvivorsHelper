@@ -18,7 +18,7 @@ class Settings:
     dark_theme: bool = True
     check_updates_on_start: bool = True
     auto_detect: bool = True            # read items from the game (Settings > Detection)
-    hide_items_when_auto: bool = True   # hide the manual Items tab while auto-detect is on
+    hide_items_when_auto: bool = True   # hide the item list on Overview while auto-detect is on
     # What the main screen shows (Settings > Main screen)
     show_holding: bool = True
     show_ready: bool = True
