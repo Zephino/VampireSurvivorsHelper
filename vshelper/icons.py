@@ -18,6 +18,8 @@ from .data import CACHE_ROOT, Database
 
 CACHE_DIR = CACHE_ROOT / "icons"
 MANIFEST = "manifest.json"
+SPRITE_NAMES = "sprite_names.txt"  # every sprite name in the game files, for the diagnose report
+EXTRACTOR_VERSION = 2  # bump to make existing installs extract again after matching improvements
 ICON_SIZE = 32
 STEAM_APP_ID = "1794680"
 GAME_FOLDER = "Vampire Survivors"
@@ -215,20 +217,27 @@ def extract_icons(game_dir: Path, db: Database, aliases: dict[str, str], out_dir
         if '"frameName"' in text or '"frame"' in text:
             for item_id, frame in frame_names_from_json(text, lookup).items():
                 frames.setdefault(item_id, frame)
-        if '"evoInto"' in text:
+        if '"evoInto"' in text or '"frameName"' in text:
             game_data.merge(gamedata.parse_game_json(text))
     # The game's evolution data is saved next to the icons folder to double-check the wiki data.
     gamedata.save(game_data, out_dir.parent)
+    # The game's own data names each item's picture; internal ids are mapped to items by
+    # name or by elimination over recipes (see gamedata.internal_to_item).
+    for internal, item_id in gamedata.internal_to_item(db, game_data).items():
+        if internal in game_data.frames:
+            frames.setdefault(item_id, game_data.frames[internal])
     frame_lookup = {canon(Path(f).stem): item_id for item_id, f in frames.items()}
 
     report = ExtractReport(sprite_count=len(sprites))
     by_frame: dict[str, object] = {}
     by_name: dict[str, object] = {}
+    sprite_names: set[str] = set()
     for obj in sprites:
         try:
             name = obj.peek_name() or ""
         except Exception:
             continue
+        sprite_names.add(name)
         c = canon(name)
         if c in frame_lookup:
             by_frame.setdefault(frame_lookup[c], (name, obj))
@@ -249,7 +258,9 @@ def extract_icons(game_dir: Path, db: Database, aliases: dict[str, str], out_dir
         except Exception:
             report.missing.append(item_id)
 
+    (out_dir / SPRITE_NAMES).write_text("\n".join(sorted(sprite_names)), encoding="utf-8")
     (out_dir / MANIFEST).write_text(json.dumps({
+        "extractor_version": EXTRACTOR_VERSION,
         "game_dir": str(game_dir),
         "build": _build_marker(game_dir),
         "sprite_count": report.sprite_count,
@@ -270,6 +281,8 @@ def read_manifest(out_dir: Path | None = None) -> dict | None:
 def needs_extraction(game_dir: Path | None, out_dir: Path | None = None) -> bool:
     manifest = read_manifest(out_dir)
     if manifest is None or not ((out_dir or CACHE_DIR).parent / gamedata.GAME_DATA_FILE).exists():
+        return True
+    if manifest.get("extractor_version", 1) < EXTRACTOR_VERSION:
         return True
     return game_dir is not None and manifest.get("build") != _build_marker(game_dir)
 

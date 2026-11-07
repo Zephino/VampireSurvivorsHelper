@@ -193,7 +193,9 @@ class DiagnoseTests(unittest.TestCase):
             self.assertEqual(diagnose.run(out, open_memory=lambda _name: g.m), 0)
             text = out.read_text(encoding="utf-8")
         self.assertIn("state: ok", text)
-        self.assertIn("Lists with recognisable items", text)
+        self.assertIn("All lists with recognisable items", text)
+        self.assertIn("Class layouts", text)
+        self.assertNotIn("this section failed", text)
         self.assertIn("YOU'RE HOLDING", text)
 
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 00.07.00
+Date: 11/07/2026
+Time: 3:00 PM
+
+### Changes
+- The diagnose report now collects everything needed for troubleshooting in one file: setup (helper, Python, Windows, admin, UnityPy versions, game folder and build), settings and cache files, class layouts of the key game classes (characters, weapon/accessory managers, equipment, WeaponData and more), static fields, item enums, detection result with levels, every held item with all its fields and data objects, all candidate item lists, related metadata names, the game's internal item names with their mapping and picture names, and similar game sprite names for every item without a picture.
+- Each report section catches its own errors and writes them into the report, so one failure no longer stops the report.
+- `Diagnose.bat` now explains the steps, waits for a key press while you start a run, and opens the folder with the report selected.
+- Picture extraction also saves the game's sprite names (`cache/icons/sprite_names.txt`) and the picture name of each item from the game data, and uses those to find more pictures. Existing installs extract once more after updating.
+
+### Reason
+User asked for Diagnose.bat to gather everything that might be needed, such as the full game structure and item data.
+
 ## Version 00.06.00
 Date: 11/07/2026
 Time: 2:55 PM

@@ -25,19 +25,19 @@ def _canon(text: str) -> str:
 class GameData:
     names: dict[str, str] = field(default_factory=dict)         # internal id -> display name
     recipes: dict[str, dict] = field(default_factory=dict)      # internal id -> {"into": id, "synergy": [ids]}
+    frames: dict[str, str] = field(default_factory=dict)        # internal id -> sprite (picture) name
 
     def merge(self, other: "GameData") -> None:
-        for k, v in other.names.items():
-            self.names.setdefault(k, v)
-        for k, v in other.recipes.items():
-            self.recipes.setdefault(k, v)
+        for mine, theirs in ((self.names, other.names), (self.recipes, other.recipes), (self.frames, other.frames)):
+            for k, v in theirs.items():
+                mine.setdefault(k, v)
 
     def to_json(self) -> dict:
-        return {"names": self.names, "recipes": self.recipes}
+        return {"names": self.names, "recipes": self.recipes, "frames": self.frames}
 
     @classmethod
     def from_json(cls, raw: dict) -> "GameData":
-        return cls(dict(raw.get("names", {})), dict(raw.get("recipes", {})))
+        return cls(dict(raw.get("names", {})), dict(raw.get("recipes", {})), dict(raw.get("frames", {})))
 
 
 def parse_game_json(text: str) -> GameData:
@@ -59,6 +59,9 @@ def parse_game_json(text: str) -> GameData:
             name = level.get("name")
             if isinstance(name, str) and name.strip() and key not in out.names:
                 out.names[key] = name.strip()
+            frame = level.get("frameName")
+            if isinstance(frame, str) and frame and key not in out.frames:
+                out.frames[key] = frame
             into = level.get("evoInto")
             if isinstance(into, str) and into and key not in out.recipes:
                 synergy = level.get("evoSynergy") or []
