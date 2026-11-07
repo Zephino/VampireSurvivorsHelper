@@ -88,10 +88,10 @@ WIKI_REFRESH_DAYS = 7
 PALETTES = {
     "light": {"bg": None, "panel": None, "fg": "#000000", "text_bg": "#ffffff", "muted": "#666666",
               "have": "#1b7f2a", "missing": "#c0392b", "level": "#d35400", "select": "#cce4f7",
-              "border": "#a0a0a0"},
+              "border": "#a0a0a0", "card": "#f4f4f4"},
     "dark": {"bg": "#1e1f22", "panel": "#2b2d31", "fg": "#e3e5e8", "text_bg": "#232428", "muted": "#9a9da3",
              "have": "#5fd068", "missing": "#ff6b6b", "level": "#ffa94d", "select": "#3d4250",
-             "border": "#3f4147"},
+             "border": "#3f4147", "card": "#2b2d31"},
 }
 
 
@@ -136,7 +136,8 @@ class App:
         self.results: "queue.Queue[ReadResult]" = queue.Queue()
         self.detected: ReadResult | None = None
         self.canvases: list[tk.Canvas] = []  # scrollable areas, coloured by the theme
-        self.texts: list[tk.Text] = []  # result panes, coloured by the theme  # latest auto-detect result (owned items and levels)
+        self.texts: list[tk.Text] = []  # result panes, coloured by the theme
+        self.cards: dict[tk.Text, list[tk.Frame]] = {}  # item cards embedded in each pane  # latest auto-detect result (owned items and levels)
         self.icon_messages: "queue.Queue[tuple[str, str]]" = queue.Queue()
         self.icons: dict[str, tk.PhotoImage] = {}
         self.small_icons: dict[str, tk.PhotoImage] = {}
@@ -310,6 +311,7 @@ class App:
         if error:
             self.icon_status.set(error)
         self.apply_theme()
+        self._refresh()  # item cards are drawn with the theme's colours
 
     def apply_theme(self) -> None:
         """Colour every widget for the light or dark theme (instant, no restart needed)."""
@@ -351,6 +353,7 @@ class App:
             text.tag_configure("have", foreground=pal["have"])
             text.tag_configure("missing", foreground=pal["missing"])
             text.tag_configure("detail", foreground=pal["muted"])
+            text.tag_configure("carddetail", foreground=pal["muted"])
             text.tag_configure("level", foreground=pal["level"])
             text.tag_configure("maxed", foreground=pal["have"])
             text.tag_configure("subheader", foreground=pal["muted"])
@@ -478,35 +481,30 @@ class App:
             out.insert("end", "  |  ".join(details) + "\n", "detail")
 
     def _insert_plan(self, out: tk.Text, plan: ItemPlan, owned: set[str]) -> None:
-        """A held item followed by each evolution it can make and what that still needs."""
-        out.insert("end", "  ")
-        self._insert_item(out, plan.item, "result")
+        """A held item card, then for each evolution: result card, the parts it needs, and its status."""
+        self._card(out, plan.item, "held")
         out.insert("end", "\n")
         if not plan.options:
             text = "already evolved" if self.db.items[plan.item].evolved else "no evolution"
-            out.insert("end", text + "\n", "detail")
+            out.insert("end", text + "\n", "carddetail")
             return
         for s in plan.options:
-            out.insert("end", "        \u2192  ")
-            self._insert_item(out, s.evolution.result, "result")
+            out.insert("end", "      \u2192  ", "result")
+            self._card(out, s.evolution.result, "result")
             others = [r for r in s.evolution.requires if r != plan.item]
             if others:
-                out.insert("end", "    needs  ")
-                for j, r in enumerate(others):
-                    if j:
-                        out.insert("end", ",  ")
-                    have = r in owned
-                    self._insert_item(out, r, "have" if have else "missing")
-                    out.insert("end", " \u2713" if have else " \u2717", "have" if have else "missing")
+                out.insert("end", "  needs  ", "result")
+                for r in others:
+                    self._card(out, r, "have" if r in owned else "missing")
             if not s.missing:
                 if self._needs_leveling(s):
-                    out.insert("end", "    LEVEL UP", "levelup")
+                    self._badge(out, "LEVEL UP", "#d35400")
                 else:
-                    out.insert("end", "    READY", "ready")
+                    self._badge(out, "READY", "#1b7f2a")
             out.insert("end", "\n")
             details = self._details(s, skip_missing=True)
             if details:
-                out.insert("end", "  |  ".join(details) + "\n", "detail")
+                out.insert("end", "  |  ".join(details) + "\n", "carddetail")
 
     def _text_pane(self, parent: tk.Widget) -> tuple[ttk.Frame, tk.Text]:
         """A read-only, scrollable rich-text pane for results."""
@@ -522,6 +520,7 @@ class App:
         text.tag_configure("missing", font=("Segoe UI", 10, "bold"))
         text.tag_configure("result", font=("Segoe UI", 10, "bold"))
         text.tag_configure("detail", lmargin1=70, lmargin2=70)
+        text.tag_configure("carddetail", lmargin1=40, lmargin2=40, spacing3=8)
         text.tag_configure("ready", foreground="#ffffff", background="#1b7f2a", font=("Segoe UI", 9, "bold"))
         text.tag_configure("levelup", foreground="#ffffff", background="#d35400", font=("Segoe UI", 9, "bold"))
         text.tag_configure("level", font=("Segoe UI", 9))
@@ -529,11 +528,77 @@ class App:
         self.texts.append(text)
         return frame, text
 
-    @staticmethod
-    def _begin(out: tk.Text) -> tk.Text:
+    def _begin(self, out: tk.Text) -> tk.Text:
         out.configure(state="normal")
         out.delete("1.0", "end")
+        for card in self.cards.pop(out, []):  # embedded cards aren't destroyed by delete()
+            card.destroy()
         return out
+
+    # ---- item cards: picture top-left, level top-right, name along the bottom ----
+    CARD_WIDTH = 132
+    CARD_HEIGHT = 76
+
+    def _card(self, out: tk.Text, item_id: str, state: str = "plain") -> None:
+        """Insert an item card. state: held (shows level), have (owned, check mark),
+        missing (red border, 'need'), result (an evolution) or plain."""
+        pal = PALETTES["dark" if self.settings.dark_theme else "light"]
+        border = {"held": pal["border"], "have": pal["have"], "missing": pal["missing"]}.get(state, pal["border"])
+        card = tk.Frame(out, width=self.CARD_WIDTH, height=self.CARD_HEIGHT, background=pal["card"],
+                        highlightthickness=2, highlightbackground=border, highlightcolor=border)
+        card.grid_propagate(False)
+        card.columnconfigure(1, weight=1)
+        card.rowconfigure(1, weight=1)
+        img = self.icons.get(item_id) if self.settings.show_pictures else None
+        icon = tk.Label(card, image=img, background=pal["card"]) if img else \
+            tk.Frame(card, width=32, height=32, background=pal["card"])
+        icon.grid(row=0, column=0, sticky="nw", padx=(4, 0), pady=(4, 0))
+
+        level_text, level_color = "", pal["muted"]
+        lv = self.level_of(item_id) if state == "held" else None
+        if lv:
+            level_text = f"Lv {lv[0]}/{lv[1]}"
+            level_color = pal["have"] if lv[0] >= lv[1] else pal["level"]
+        elif state == "have":
+            level_text, level_color = "\u2713 have", pal["have"]
+        elif state == "missing":
+            level_text, level_color = "\u2717 need", pal["missing"]
+        tk.Label(card, text=level_text, background=pal["card"], foreground=level_color,
+                 font=("Segoe UI", 9, "bold")).grid(row=0, column=1, sticky="ne", padx=(0, 6), pady=(4, 0))
+
+        name_color = pal["missing"] if state == "missing" else pal["fg"]
+        tk.Label(card, text=self.db.name(item_id), background=pal["card"], foreground=name_color,
+                 font=("Segoe UI", 9, "bold"), wraplength=self.CARD_WIDTH - 12, justify="left",
+                 anchor="w").grid(row=1, column=0, columnspan=2, sticky="ew", padx=6, pady=(2, 4))
+
+        def scroll(event: tk.Event) -> str:  # keep the mouse wheel working over cards
+            out.yview_scroll(-event.delta // 120, "units")
+            return "break"
+        for widget in (card, *card.winfo_children()):
+            widget.bind("<MouseWheel>", scroll)
+        out.window_create("end", window=card, padx=3, pady=3, align="center")
+        self.cards.setdefault(out, []).append(card)
+
+    def _badge(self, out: tk.Text, text: str, color: str) -> None:
+        """A small coloured status label (READY / LEVEL UP) next to the cards."""
+        badge = tk.Label(out, text=text, background=color, foreground="#ffffff",
+                         font=("Segoe UI", 9, "bold"), padx=8, pady=2)
+        out.window_create("end", window=badge, padx=8, align="center")
+        self.cards.setdefault(out, []).append(badge)
+
+    def _card_recipe(self, out: tk.Text, s: Suggestion) -> None:
+        """card + card = card, then the details line."""
+        evo = s.evolution
+        for i, req in enumerate(evo.requires):
+            if i:
+                out.insert("end", "  +  ", "result")
+            self._card(out, req, "missing" if req in s.missing else "have")
+        out.insert("end", "  =  ", "result")
+        self._card(out, evo.result, "result")
+        out.insert("end", "\n")
+        details = self._details(s, skip_missing=True)
+        if details:
+            out.insert("end", "  |  ".join(details) + "\n", "carddetail")
 
     def _refresh(self) -> None:
         owned = self.owned()
@@ -559,20 +624,18 @@ class App:
             if opts.show_holding:
                 out.insert("end", "YOU'RE HOLDING\n", "header")
                 held = held_in_order(self.db, owned)
-                for kind in ("weapon", "passive"):
+                for kind, title in (("weapon", "Weapons"), ("passive", "Passive items")):
                     group = [i for i in held if self.db.items[i].kind == kind]
                     if group:
-                        out.insert("end", "  ")
-                        for i, item in enumerate(group):
-                            if i:
-                                out.insert("end", "    ")
-                            self._insert_item(out, item, "result", show_level=True)
+                        out.insert("end", title + "\n", "subheader")
+                        for item in group:
+                            self._card(out, item, "held")
                         out.insert("end", "\n")
             ready = suggest(self.db, owned, hidden).ready if opts.show_ready else []
             if ready:
                 out.insert("end", "READY TO EVOLVE - max the weapon, then open a chest\n", "header")
                 for s in ready:
-                    self._insert_suggestion(out, s)
+                    self._card_recipe(out, s)
             elif opts.show_ready:
                 out.insert("end", "READY TO EVOLVE\n", "header")
                 out.insert("end", "Nothing yet - see the How to evolve tab for what to pick up.\n", "detail")

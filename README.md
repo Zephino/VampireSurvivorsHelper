@@ -36,7 +36,8 @@ python -m vshelper
 2. The helper finds the game on its own. The first time after the game starts it searches memory
    for a few seconds; after that it updates about once per second.
 3. The right side has three tabs:
-   - **Overview**: what you're holding (weapons, then passive items, with levels) and what is
+   - **Overview**: what you're holding as item cards (picture, level, name; weapons, then
+     passive items) and what is
      **ready to evolve**. Get the weapon to max level, then open a chest (usually after 10:00).
    - **How to evolve**: each held item, what it evolves into, and the other parts it needs
      (green check mark = you have it, red cross = pick it up; READY / LEVEL UP tags).

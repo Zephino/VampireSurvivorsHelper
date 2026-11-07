@@ -1,5 +1,20 @@
 # Changelog
 
+## Version 00.11.00
+Date: 11/07/2026
+Time: 3:16 PM
+
+### Changes
+- Items on the Overview and How to evolve tabs are now shown as cards in the user's layout: picture top-left, level top-right, name along the bottom. All cards are the same size so they line up in rows.
+- Overview: "You're holding" shows weapon cards, then passive item cards; Ready to evolve shows card + card = card.
+- How to evolve: the held item's card, then for each evolution the result card and the cards of the parts it needs.
+- Card borders and the level corner show status: Lv x/y (orange until maxed, green when maxed) for held items, "have" with a green border, "need" with a red border.
+- READY / LEVEL UP are now small badges instead of tall blocks.
+- Cards follow the dark/light theme and the picture / level / details settings; the mouse wheel scrolls over cards. The All evolutions guide keeps its compact text lines.
+
+### Reason
+User asked for the main screen to use their card layout (icon, level, name) because it is easier to see.
+
 ## Version 00.10.00
 Date: 11/07/2026
 Time: 3:11 PM
