@@ -1,0 +1,24 @@
+---
+description: Evaluate and document new packages before adding them
+alwaysApply: true
+---
+
+# Dependency Rule
+
+## Before proposing a package
+
+1. Check whether the project already has a suitable dependency or built-in facility.
+2. Confirm the new package solves a real requirement.
+3. Check compatibility with the project's runtime, operating system, and existing versions.
+4. Consider ongoing maintenance and distribution needs.
+
+If a new dependency is needed, name it and explain why in the two-line proposal or confidence summary required by `think-before-acting.mdc`. Do not add it before the user approves the change.
+
+## When adding it
+
+- Use the project's established package manager and version conventions.
+- Update manifests and lockfiles together where applicable.
+- Update setup instructions and any needed configuration.
+- Run the relevant install, build, or verification command if available.
+
+Do not add a package solely to avoid a small, clear change using existing tools.

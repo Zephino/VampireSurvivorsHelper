@@ -1,0 +1,23 @@
+---
+description: Update maintained documentation when a change affects setup or operation
+alwaysApply: true
+---
+
+# Documentation Rule
+
+Update relevant maintained documentation as part of the same approved change when the work changes:
+
+- Installation, setup, dependencies, or build commands
+- Wiring, pinouts, hardware configuration, or calibration
+- User-visible controls, behavior, or operating instructions
+- Configuration keys, interfaces, or expected inputs and outputs
+
+## How to update
+
+1. Find the document people already use for that topic.
+2. Edit that document instead of making a redundant copy.
+3. Make commands, examples, and diagrams agree with the final implementation.
+4. Explain any physical action the user must perform; software edits do not perform rewiring.
+5. Preserve historical changelog entries. Use the separate `changelog.mdc` rule for new history.
+
+If the approved change has no documentation impact, do not add filler documentation.

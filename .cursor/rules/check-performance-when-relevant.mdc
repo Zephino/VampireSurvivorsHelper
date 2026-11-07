@@ -1,0 +1,16 @@
+---
+description: Avoid needless work and measure before making complex optimizations
+alwaysApply: true
+---
+
+# Check Performance When Relevant
+
+Performance work should be tied to a user requirement or a plausible regression in the changed path.
+
+1. Identify where time, memory, network calls, or database work is spent.
+2. Avoid repeated expensive work inside loops or frequently called paths.
+3. Measure or profile before introducing a complicated optimization.
+4. Compare the same workload before and after a performance change when practical.
+5. Preserve readability and correctness; document any important tradeoff.
+
+Do not add caching, concurrency, or a new dependency just because it might be faster. If performance was not relevant to the request or affected path, do not perform unrelated optimization.

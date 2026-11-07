@@ -1,0 +1,39 @@
+---
+description: One changelog entry per modifying user message; newest first; match VERSION
+alwaysApply: true
+---
+
+# Changelog Rule
+
+Every user message that results in one or more project modifications must create **one** new entry in root `CHANGELOG.md`.
+
+## Entry contents
+
+Each entry must include:
+
+- The new version number
+- The date
+- The timestamp using a 12-hour clock with AM/PM
+- What was changed
+- Why the change was made
+
+## Template
+
+```markdown
+## Version XX.XX.XX
+Date: MM/DD/YYYY
+Time: H:MM AM/PM
+
+### Changes
+- ...
+
+### Reason
+...
+```
+
+## Rules
+
+- Multiple modifications in one user message → **one** changelog entry only.
+- Place new entries **above** older ones (newest first).
+- Never remove, overwrite, or alter previous entries unless the user specifically requests it.
+- Changelog version must always match the current project version in `VERSION`.

@@ -1,0 +1,22 @@
+---
+description: Handle expected failures without hiding errors or exposing sensitive details
+alwaysApply: true
+---
+
+# Handle Errors Clearly
+
+## Design
+
+1. Identify realistic failure modes at the boundary being changed: invalid input, missing files, network failures, timeouts, or unavailable services.
+2. Handle expected failures at an appropriate layer.
+3. Give users an actionable message and developers enough diagnostic context.
+4. Preserve the original cause when propagating or wrapping an error.
+
+## Avoid
+
+- Empty catch blocks and success-shaped fallback values that conceal failure
+- Catching every exception when only specific failures are expected
+- Logging passwords, tokens, private data, or unnecessary full payloads
+- Retry loops without a clear stopping condition
+
+Add a relevant failure-path test when the behavior is important and testable. Keep error handling consistent with the project's existing conventions.
