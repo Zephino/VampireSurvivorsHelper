@@ -60,6 +60,8 @@ python -m vshelper
    - **Overview**: what you're holding as item cards (picture, level, name; weapons, then
      passive items) and what is
      **ready to evolve**. Get the weapon to max level, then open a chest (usually after 10:00).
+     Below that, **what your items evolve into**: one line per evolution of each held weapon,
+     with the parts you have or still need.
    - **How to evolve**: each held item, what it evolves into, and the other parts it needs
      (green check mark = you have it, red cross = pick it up; READY / LEVEL UP tags).
    - **All evolutions**: every recipe in the game, grouped by expansion and type (evolutions,

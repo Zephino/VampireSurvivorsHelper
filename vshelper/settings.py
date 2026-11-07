@@ -23,6 +23,7 @@ class Settings:
     # What the main screen shows (Settings > Main screen)
     show_holding: bool = True
     show_ready: bool = True
+    show_evolve_into: bool = True
     show_how_to: bool = True
     show_no_evolution: bool = True
     show_levels: bool = True
@@ -35,6 +36,7 @@ class Settings:
 MAIN_SCREEN_OPTIONS = [
     ("show_holding", "Overview: You're holding"),
     ("show_ready", "Overview: Ready to evolve"),
+    ("show_evolve_into", "Overview: What your items evolve into"),
     ("show_how_to", "How to evolve tab"),
     ("show_no_evolution", "Items with no evolution"),
     ("show_levels", "Item levels (Lv 5/8, LEVEL UP)"),

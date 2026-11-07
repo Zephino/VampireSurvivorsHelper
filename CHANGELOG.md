@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 00.18.01
+Date: 11/07/2026
+Time: 4:04 PM
+
+### Changes
+- Overview has a new "What your items evolve into" section under Ready to evolve: one compact line per evolution of each held weapon that still needs parts (e.g. Dextro Custos -> Trinum Custodem, needs Centralis Custos and Sinestro Custos, union), with have / need marks. Recipes already under Ready to evolve aren't repeated.
+- New switch in Settings > Main screen: "Overview: What your items evolve into" (on by default). README updated.
+
+### Reason
+User expected to see Dextro Custos' recipe on Overview, which only listed evolutions that were already ready.
+
 ## Version 00.18.00
 Date: 11/07/2026
 Time: 3:51 PM

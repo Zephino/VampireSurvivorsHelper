@@ -982,12 +982,41 @@ class App:
                 out.insert("end", "WITH YOUR PLANNED ITEMS\n", "header")
                 for s in planned:
                     self._card_recipe(out, s)
+            if opts.show_evolve_into:
+                self._render_evolve_into(out, owned, hidden)
             if not all_ready and opts.show_ready:
                 out.insert("end", "READY TO EVOLVE\n", "header")
                 out.insert("end", "Nothing yet - see the How to evolve tab for what to pick up.\n", "detail")
-            if not (opts.show_holding or opts.show_ready):
+            if not (opts.show_holding or opts.show_ready or opts.show_evolve_into):
                 out.insert("end", "Overview is switched off in Settings > Main screen.")
         out.configure(state="disabled")
+
+    def _render_evolve_into(self, out: tk.Text, owned: set[str], hidden: set[str]) -> None:
+        """One compact line per evolution of each held weapon that still needs parts
+        (recipes with every part are already under Ready to evolve)."""
+        rows = [(plan.item, s) for plan in plans_for_held(self.db, owned, hidden)
+                if self.db.items[plan.item].kind == "weapon" for s in plan.options if s.missing]
+        if not rows:
+            return
+        out.insert("end", "WHAT YOUR ITEMS EVOLVE INTO\n", "header")
+        for item, s in rows:
+            out.insert("end", "  ")
+            self._insert_item(out, item, "result")
+            out.insert("end", "  \u2192  ")
+            self._insert_item(out, s.evolution.result, "result")
+            others = [r for r in s.evolution.requires if r != item]
+            if others:
+                out.insert("end", "    needs  ")
+                for j, r in enumerate(others):
+                    if j:
+                        out.insert("end", ",  ")
+                    have = r in owned
+                    tag = "have" if have else "missing"
+                    self._insert_item(out, r, tag)
+                    out.insert("end", " \u2713" if have else " \u2717", tag)
+            if s.evolution.kind == "union":
+                out.insert("end", "   (union)", "detail")
+            out.insert("end", "\n")
 
     def _render_howto(self, owned: set[str], hidden: set[str]) -> None:
         out = self._begin(self.howto_text)
