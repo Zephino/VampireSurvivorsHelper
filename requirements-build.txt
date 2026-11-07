@@ -1,0 +1,2 @@
+# Only needed to build the standalone exe ("Build Exe.bat"), not to run the helper.
+pyinstaller>=6,<7

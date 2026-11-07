@@ -26,7 +26,9 @@ from .memory.game import POINTER_TYPES, GameMap, GameReader, ReadResult, load_ga
 from .memory.il2cpp import TYPE_STRING, Il2Cpp
 from .memory.winapi import MemoryAccessError, ProcessMemory, process_exe_path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+from .paths import FROZEN, RESOURCE_ROOT, USER_ROOT
+
+PROJECT_ROOT = RESOURCE_ROOT
 KEYWORDS = re.compile(rb"[A-Za-z_]*(Weapon|Accessor|Equipment|GameManager|PlayerCharacter|CharacterController|"
                       rb"Inventory|LevelUp|Evolution)[A-Za-z_`0-9]*")
 # Classes whose field layout is worth knowing (looked up by name in one memory pass).
@@ -124,6 +126,7 @@ def _environment(out: Report, gmap: GameMap | None) -> None:
     version = (PROJECT_ROOT / "VERSION").read_text(encoding="utf-8").strip() if (PROJECT_ROOT / "VERSION").exists() else "?"
     out.add(f"  helper version: {version}")
     out.add(f"  python: {sys.version.split()[0]} ({platform.architecture()[0]}) {sys.executable}")
+    out.add(f"  running as: {'standalone exe' if FROZEN else 'Python source'}; saving files in {USER_ROOT}")
     out.add(f"  system: {platform.platform()}")
     if sys.platform == "win32":
         try:
@@ -367,7 +370,10 @@ def _read_game(out: Report, db: Database, gmap: GameMap, open_memory) -> ReadRes
     return result[0] if result else None
 
 
-def run(output: Path = Path("vshelper-diagnose.txt"), open_memory=ProcessMemory.open_by_name) -> int:
+REPORT_PATH = USER_ROOT / "vshelper-diagnose.txt"
+
+
+def run(output: Path = REPORT_PATH, open_memory=ProcessMemory.open_by_name) -> int:
     out = Report()
     out.add("Vampire Survivors Helper - diagnostic report")
     out.add(time.strftime("created %Y-%m-%d %H:%M"))
@@ -388,6 +394,7 @@ def run(output: Path = Path("vshelper-diagnose.txt"), open_memory=ProcessMemory.
     out.section("Game files: item names, recipes, pictures (and wiki check)", lambda: _game_files(out, db))
     out.section("Item pictures", lambda: _pictures(out))
 
+    output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text("\n".join(out.lines) + "\n", encoding="utf-8")
     if result is not None:
         print(f"Detection: {result.state} - {result.message}")

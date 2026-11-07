@@ -1,0 +1,52 @@
+# Builds the standalone Windows exe and publishes it as a GitHub Release whenever VERSION
+# changes on main (or when started by hand from the Actions tab). Friends download it from
+# https://github.com/Zephino/VampireSurvivorsHelper/releases/latest
+name: Build exe
+
+on:
+  push:
+    branches: [main]
+    paths: [VERSION]
+  workflow_dispatch:
+
+permissions:
+  contents: write  # needed to create the release
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install packages
+        run: python -m pip install -r requirements.txt -r requirements-build.txt
+
+      - name: Run tests
+        run: python -m unittest -v
+
+      - name: Build exe
+        run: python -m PyInstaller --noconfirm --clean VampireSurvivorsHelper.spec
+
+      - name: Read version
+        id: version
+        shell: bash
+        run: echo "version=$(tr -d '\r\n' < VERSION)" >> "$GITHUB_OUTPUT"
+
+      - name: Publish release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="v${{ steps.version.outputs.version }}"
+          # Release notes: the newest changelog entry
+          awk '/^## Version /{n++} n==1' CHANGELOG.md > notes.md
+          if gh release view "$tag" > /dev/null 2>&1; then
+            gh release upload "$tag" dist/VampireSurvivorsHelper.exe --clobber
+          else
+            gh release create "$tag" dist/VampireSurvivorsHelper.exe \
+              --title "Vampire Survivors Helper $tag" --notes-file notes.md
+          fi

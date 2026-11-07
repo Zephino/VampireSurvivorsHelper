@@ -16,7 +16,9 @@ from .il2cpp import (
 )
 from .winapi import MemoryAccessError, ProcessMemory, ProcessNotFound
 
-DEFAULT_GAME_MAP = Path(__file__).resolve().parents[2] / "config" / "game_map.json"
+from ..paths import RESOURCE_ROOT
+
+DEFAULT_GAME_MAP = RESOURCE_ROOT / "config" / "game_map.json"
 POINTER_TYPES = (TYPE_CLASS, TYPE_GENERICINST, TYPE_SZARRAY)
 INDEXED_STEP = re.compile(r"(.+)\[(\d+)\]")
 LIST_ELEMENTS_TO_EXPLORE = 4  # e.g. the players in _mainCharacters

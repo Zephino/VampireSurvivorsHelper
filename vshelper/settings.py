@@ -6,7 +6,9 @@ import json
 from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 
-SETTINGS_PATH = Path(__file__).resolve().parents[1] / "settings.json"
+from .paths import USER_ROOT
+
+SETTINGS_PATH = USER_ROOT / "settings.json"
 
 
 @dataclass
@@ -68,6 +70,7 @@ def save(settings: Settings, path: Path | None = None) -> str | None:
     """Write settings; returns an error message instead of raising so the UI can show it."""
     path = path or SETTINGS_PATH
     try:
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(asdict(settings), indent=2), encoding="utf-8")
     except OSError as exc:
         return f"Could not save settings to {path} ({exc})."

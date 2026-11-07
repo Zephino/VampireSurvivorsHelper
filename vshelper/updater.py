@@ -1,18 +1,27 @@
-"""Checks for and installs updates from GitHub using git (the helper is installed with git clone).
+"""Checks for and installs updates from GitHub.
 
+From source (installed with git clone): updates with git. As the standalone .exe: compares the
+version with GitHub and points to the download page (an exe can't replace itself while running).
 All functions raise UpdateError with a message that can be shown to the user.
 """
 
 from __future__ import annotations
 
+import re
 import subprocess
 import sys
+import urllib.error
+import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+from .paths import FROZEN, RESOURCE_ROOT
+
+PROJECT_ROOT = RESOURCE_ROOT
 BRANCH = "main"
 REPO_URL = "https://github.com/Zephino/VampireSurvivorsHelper"
+DOWNLOAD_URL = REPO_URL + "/releases/latest"
+RAW_VERSION_URL = "https://raw.githubusercontent.com/Zephino/VampireSurvivorsHelper/main/VERSION"
 GIT_TIMEOUT = 90
 CREATE_NO_WINDOW = 0x08000000  # don't flash a console window on Windows
 
@@ -69,8 +78,33 @@ def _require_git_checkout(root: Path) -> None:
                           f"Download the latest version from {REPO_URL} (Code > Download ZIP).")
 
 
+def version_key(version: str) -> tuple[int, ...]:
+    """'00.13.01' -> (0, 13, 1) so versions compare correctly."""
+    return tuple(int(n) for n in re.findall(r"\d+", version))
+
+
+def check_online(current: str, url: str = RAW_VERSION_URL) -> UpdateInfo:
+    """For the standalone exe: read the latest version number from GitHub."""
+    req = urllib.request.Request(url, headers={"User-Agent": "VampireSurvivorsHelper"})
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            latest = resp.read().decode("utf-8").strip()
+    except urllib.error.HTTPError as exc:
+        raise UpdateError(f"Couldn't check for updates (GitHub said {exc.code}). If the project is private, "
+                          "ask whoever gave you the app for the newest version.") from exc
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        raise UpdateError(f"Couldn't reach GitHub to check for updates ({exc}).") from exc
+    if not version_key(latest):
+        raise UpdateError(f"GitHub returned an unexpected version: {latest[:40]!r}")
+    newer = version_key(latest) > version_key(current)
+    changes = [f"Download version {latest} from the GitHub page"] if newer else []
+    return UpdateInfo(current, latest, 1 if newer else 0, changes)
+
+
 def check(root: Path = PROJECT_ROOT) -> UpdateInfo:
-    """Fetch from GitHub and report whether a newer version exists (changes nothing locally)."""
+    """Report whether a newer version exists (changes nothing locally)."""
+    if FROZEN:
+        return check_online(local_version(root))
     _require_git_checkout(root)
     _git("fetch", "--quiet", "origin", BRANCH, root=root)
     remote = f"origin/{BRANCH}"
@@ -85,6 +119,8 @@ def check(root: Path = PROJECT_ROOT) -> UpdateInfo:
 
 def apply(root: Path = PROJECT_ROOT) -> str:
     """Download and install the latest version. Returns a short summary."""
+    if FROZEN:
+        raise UpdateError(f"The standalone app can't replace itself. Download the new version from {DOWNLOAD_URL}")
     _require_git_checkout(root)
     before = _git("rev-parse", "HEAD", root=root)
     try:
@@ -105,5 +141,7 @@ def apply(root: Path = PROJECT_ROOT) -> str:
 
 
 def restart_command(root: Path = PROJECT_ROOT) -> tuple[list[str], Path]:
-    """Command (and folder) that starts a new copy of the helper with the same Python."""
+    """Command (and folder) that starts a new copy of the helper."""
+    if FROZEN:
+        return [sys.executable], Path(sys.executable).parent
     return [sys.executable, "-m", "vshelper"], root

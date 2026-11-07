@@ -6,8 +6,10 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-DEFAULT_DB_PATH = Path(__file__).parent / "data" / "evolutions.json"
-CACHE_ROOT = Path(__file__).resolve().parents[1] / "cache"
+from .paths import RESOURCE_ROOT, USER_ROOT
+
+DEFAULT_DB_PATH = RESOURCE_ROOT / "vshelper" / "data" / "evolutions.json"
+CACHE_ROOT = USER_ROOT / "cache"
 # A newer copy downloaded from the wiki at runtime (see vshelper/wiki.py) is preferred when valid.
 CACHED_DB_PATH = CACHE_ROOT / "wiki_evolutions.json"
 

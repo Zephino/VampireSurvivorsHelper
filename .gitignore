@@ -3,6 +3,5 @@ __pycache__/
 vshelper-diagnose.txt
 build/
 dist/
-*.spec
 cache/
 settings.json

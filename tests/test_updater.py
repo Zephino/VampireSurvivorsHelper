@@ -73,5 +73,28 @@ class UpdaterTests(unittest.TestCase):
         self.assertIn("Download ZIP", str(ctx.exception))
 
 
+class OnlineCheckTests(unittest.TestCase):
+    """The exe's check reads a VERSION file over HTTP; a file:// URL stands in for GitHub."""
+
+    def check(self, remote_version: str, current: str) -> updater.UpdateInfo:
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "VERSION"
+            f.write_text(remote_version + "\n")
+            return updater.check_online(current, f.as_uri())
+
+    def test_newer_and_same(self):
+        self.assertTrue(self.check("00.14.00", "00.13.01").available)
+        self.assertFalse(self.check("00.13.01", "00.13.01").available)
+        self.assertFalse(self.check("00.09.00", "00.13.01").available)  # compares numbers, not text
+
+    def test_bad_response(self):
+        with self.assertRaises(updater.UpdateError):
+            self.check("<html>not found</html>", "00.13.01")
+
+    def test_unreachable(self):
+        with self.assertRaises(updater.UpdateError):
+            updater.check_online("00.13.01", "file:///does/not/exist/VERSION")
+
+
 if __name__ == "__main__":
     unittest.main()

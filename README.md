@@ -6,7 +6,28 @@ passive items you currently have, so you don't have to look them up mid-run.
 It reads your inventory **automatically** from the running game. It only *reads* memory and
 never changes anything in the game, so it gives no gameplay advantage.
 
-## Requirements
+## For friends: just run the exe
+
+Download **VampireSurvivorsHelper.exe** from the
+[latest release](https://github.com/Zephino/VampireSurvivorsHelper/releases/latest) and double-click
+it. Nothing else to install. Windows may show "Windows protected your PC" because the exe isn't
+signed: click **More info > Run anyway**. Some antivirus programs are wary of new exes that read
+another program's memory; the helper only *reads* the game and never changes it.
+
+The exe saves its settings and picture cache in `%LOCALAPPDATA%\VampireSurvivorsHelper`.
+Settings > Updates tells you when a newer exe is available, and Settings > Troubleshooting >
+**Create diagnose report** makes the report to send if detection doesn't work.
+
+## Building the exe (for sharing)
+
+- **Automatically:** whenever `VERSION` changes on `main`, the GitHub Actions workflow
+  (`.github/workflows/build-exe.yml`) builds the exe on Windows, runs the tests and publishes it as
+  a release. You can also start it by hand from the repository's **Actions** tab.
+- **On your PC:** double-click **`Build Exe.bat`**. It installs PyInstaller (build tool only,
+  `requirements-build.txt`) and writes `dist\VampireSurvivorsHelper.exe`, then opens that folder.
+  The recipe is `VampireSurvivorsHelper.spec`.
+
+## Requirements (running from source)
 
 - Windows 10/11 (64-bit) with the Steam version of Vampire Survivors
 - [Python 3.10 or newer](https://www.python.org/downloads/) (tick "Add python.exe to PATH" when
@@ -146,6 +167,8 @@ Project layout:
 - `vshelper/wiki.py`: downloads and parses the wiki's Evolution page and item lists
 - `vshelper/gamedata.py`: reads the game's evolution data and compares it with the wiki
 - `vshelper/settings.py`: saved user settings
-- `vshelper/updater.py`: checks for and installs updates with git
+- `vshelper/updater.py`: checks for and installs updates (git from source, version check for the exe)
+- `vshelper/paths.py`: where bundled files are read and user files are saved (source vs exe)
+- `run_helper.py`, `VampireSurvivorsHelper.spec`: entry point and build recipe for the exe
 - `vshelper/diagnose.py`: detection report
 - `vshelper/ui.py`: the window

@@ -12,6 +12,7 @@ import json
 import time
 
 import subprocess
+import sys
 import webbrowser
 
 from . import gamedata, icons, updater
@@ -296,7 +297,11 @@ class App:
         buttons.pack(anchor="w", pady=(6, 0))
         self.check_button = ttk.Button(buttons, text="Check for updates", command=self._check_updates)
         self.check_button.pack(side="left")
-        self.update_button = ttk.Button(buttons, text="Update now", command=self._apply_update, state="disabled")
+        if updater.FROZEN:  # the standalone exe can't replace itself: open the download page instead
+            self.update_button = ttk.Button(buttons, text="Download page", state="disabled",
+                                            command=lambda: webbrowser.open(updater.DOWNLOAD_URL))
+        else:
+            self.update_button = ttk.Button(buttons, text="Update now", command=self._apply_update, state="disabled")
         self.update_button.pack(side="left", padx=6)
         self.restart_button = ttk.Button(buttons, text="Restart helper", command=self._restart)
         self.update_status = tk.StringVar(value="")
@@ -323,6 +328,15 @@ class App:
         buttons.pack(anchor="w", pady=(6, 0))
         ttk.Button(buttons, text="All on", command=lambda: self._set_all_expansions(True)).pack(side="left")
         ttk.Button(buttons, text="All off", command=lambda: self._set_all_expansions(False)).pack(side="left", padx=6)
+
+        trouble = ttk.LabelFrame(frame, text="Troubleshooting", padding=8)
+        trouble.pack(fill="x", anchor="n", pady=(8, 0))
+        ttk.Label(trouble, text="If your items aren't detected: start a run in the game, pause it, then create a "
+                                "report and send the file it makes.", wraplength=280, justify="left").pack(anchor="w")
+        self.report_button = ttk.Button(trouble, text="Create diagnose report", command=self._create_report)
+        self.report_button.pack(anchor="w", pady=(6, 0))
+        self.report_status = tk.StringVar(value="")
+        ttk.Label(trouble, textvariable=self.report_status, wraplength=280, justify="left").pack(anchor="w", pady=(6, 0))
         return outer
 
     # ---- side panel (item list + settings) ----
@@ -342,6 +356,29 @@ class App:
         error = user_settings.save(self.settings)
         if error:
             self.icon_status.set(error)
+
+    # ---- diagnose report ----
+    def _create_report(self) -> None:
+        from . import diagnose
+        self.report_button.state(["disabled"])
+        self.report_status.set("Collecting information - this can take a minute or two...")
+
+        def work() -> None:
+            try:
+                diagnose.run(diagnose.REPORT_PATH)
+                self.icon_messages.put(("report-done", str(diagnose.REPORT_PATH)))
+            except Exception as exc:  # show any failure instead of losing it in a background thread
+                self.icon_messages.put(("report-error", f"The report couldn't be created: {exc!r}"))
+        threading.Thread(target=work, daemon=True).start()
+
+    def _report_message(self, kind: str, message: str) -> None:
+        self.report_button.state(["!disabled"])
+        if kind == "report-error":
+            self.report_status.set(message)
+            return
+        self.report_status.set(f"Report saved: {message}")
+        if sys.platform == "win32":
+            subprocess.Popen(["explorer", f"/select,{message}"])
 
     # ---- updates ----
     def _update_on_start_changed(self) -> None:
@@ -829,6 +866,9 @@ class App:
                 break
             if kind.startswith("update"):
                 self._update_message(kind, message)
+                continue
+            if kind.startswith("report"):
+                self._report_message(kind, message)
                 continue
             self.icon_status.set(message)
             if kind == "done":

@@ -1,5 +1,20 @@
 # Changelog
 
+## Version 00.14.00
+Date: 11/07/2026
+Time: 3:27 PM
+
+### Changes
+- The helper can be built into a single `VampireSurvivorsHelper.exe` that friends can run without Python or Git: `Build Exe.bat` (uses PyInstaller, a build-only tool in `requirements-build.txt`), recipe `VampireSurvivorsHelper.spec`, entry point `run_helper.py`.
+- Added a GitHub Actions workflow that builds the exe on Windows, runs the tests and publishes it as a GitHub Release whenever `VERSION` changes on main (or when started by hand).
+- New `vshelper/paths.py`: as an exe, bundled data is read from inside the exe and settings, cache and reports are saved in `%LOCALAPPDATA%\VampireSurvivorsHelper`. Running from source is unchanged.
+- Settings > Updates in the exe checks the version on GitHub and offers a "Download page" button (an exe can't replace itself); Restart works for the exe too.
+- Added Settings > Troubleshooting > "Create diagnose report" (runs in the background, then opens the folder with the report selected), so exe users don't need Diagnose.bat.
+- README: "For friends" and "Building the exe" sections. Tests for the online version check.
+
+### Reason
+User wants an easy way to give the app to friends as an exe they can just run, and is making the repository public so friends can download it.
+
 ## Version 00.13.01
 Date: 11/07/2026
 Time: 3:22 PM
