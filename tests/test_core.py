@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 from vshelper.data import DatabaseError, load_database, parse_database
-from vshelper.evolutions import format_suggestions, suggest
+from vshelper.evolutions import suggest
 from vshelper.memory.game import GameReader, ItemMatcher, load_game_map
 from vshelper.memory.il2cpp import Il2Cpp, normalize_name
 from vshelper.memory.winapi import ProcessNotFound
@@ -43,13 +43,20 @@ class SuggestionTests(unittest.TestCase):
         self.assertNotIn("bloody_tear", [x.evolution.result for x in s.ready])
         self.assertIn("fuwalafuwaloo", [x.evolution.result for x in s.one_away])
 
-    def test_format_mentions_missing_item(self):
-        text = format_suggestions(self.db, suggest(self.db, {"knife"}))
-        self.assertIn("Thousand Edge", text)
-        self.assertIn("need: Bracer", text)
+    def test_plans_start_from_held_items_weapons_first(self):
+        from vshelper.evolutions import plans_for_held
+        plans = plans_for_held(self.db, {"bracer", "knife", "whip", "hollow_heart"})
+        self.assertEqual([p.item for p in plans][:2], ["knife", "whip"])  # weapons before passives
+        knife = plans[0]
+        self.assertEqual(knife.options[0].evolution.result, "thousand_edge")
+        self.assertEqual(knife.options[0].missing, ())
 
-    def test_empty(self):
-        self.assertIn("Select", format_suggestions(self.db, suggest(self.db, set())))
+    def test_plan_text(self):
+        from vshelper.evolutions import format_plan
+        text = format_plan(self.db, {"knife"})
+        self.assertIn("YOU'RE HOLDING: Knife", text)
+        self.assertIn("Thousand Edge: needs Bracer (need)", text)
+        self.assertEqual(format_plan(self.db, set()), "No items held.")
 
 
 class MatcherTests(unittest.TestCase):
@@ -128,6 +135,20 @@ class GameReaderTests(unittest.TestCase):
         result = _reader(g).poll()
         self.assertEqual(result.owned, {"whip"})
         self.assertEqual(result.unrecognized, ("MYSTERY",))
+
+    def test_list_bigger_than_an_inventory_is_ignored(self):
+        g = FakeGame()
+        g.set_list(g.weapon_list, [0] * 13)  # 13 whips: a pool or ground items, not what you hold
+        result = _reader(g).poll()
+        self.assertEqual(result.owned, frozenset())
+
+    def test_inventory_scoring(self):
+        from vshelper.memory.game import score_inventory_path
+        held = score_inventory_path(("_player", "_weaponsManager", "_activeEquipment"), 3, 3)
+        ground = score_inventory_path(("_pickupManager", "_activePickups"), 3, 3)
+        self.assertGreater(held, ground)
+        self.assertLessEqual(ground, 0)
+        self.assertEqual(score_inventory_path(("_player", "_weapons"), 30, 30), 0)
 
     def test_game_not_running(self):
         def missing(_name):

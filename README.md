@@ -35,11 +35,12 @@ python -m vshelper
 1. Begin a run in Vampire Survivors. The game and the helper can be started in either order.
 2. The helper finds the game on its own. The first time after the game starts it searches memory
    for a few seconds; after that it updates about once per second.
-3. Evolutions are listed on the right as `weapon + item = evolution`, with pictures. Items you
-   have are green; items you still need are red.
-   - **READY**: you have every part. Get the weapon to max level, then open a chest after 10:00.
-   - **ONE ITEM AWAY**: what to pick up next.
-   - **OTHER EVOLUTIONS FOR YOUR ITEMS**: longer-term options.
+3. The right side shows, in order:
+   - **YOU'RE HOLDING**: your weapons, then your passive items.
+   - **READY TO EVOLVE**: recipes you have every part for. Get the weapon to max level, then
+     open a chest (usually after 10:00).
+   - **HOW TO EVOLVE YOUR ITEMS**: each held item, what it evolves into, and the other parts
+     it needs (green check mark = you have it, red cross = pick it up).
 
 ## Item pictures
 

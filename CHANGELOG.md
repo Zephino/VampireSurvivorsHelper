@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 00.04.00
+Date: 11/07/2026
+Time: 2:39 PM
+
+### Changes
+- Results are now built around what you're holding: "YOU'RE HOLDING" (weapons, then passive items), "READY TO EVOLVE", then "HOW TO EVOLVE YOUR ITEMS", which lists each held item with its evolutions and the other parts needed (have or need). Replaces the "one item away" and "other evolutions" lists. The results pane now has a scrollbar.
+- Memory detection is stricter about which list is your inventory: lists with more than 12 items are rejected (also while playing), list paths through names like pickup, drop, pool, available, chest or level-up are rejected, and paths through player, equipment, weapon or accessory names are preferred.
+- The diagnose report lists every candidate list with its score and items, and shows the new results text.
+- Added tests for the held-items view and inventory scoring; updated the README.
+
+### Reason
+User reported the helper was reading items on the ground rather than the items they hold, and wants it to show what they're holding first and then how to evolve those items.
+
 ## Version 00.03.00
 Date: 11/07/2026
 Time: 2:34 PM

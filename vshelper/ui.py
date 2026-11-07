@@ -14,7 +14,7 @@ import time
 from . import gamedata, icons
 from . import settings as user_settings
 from .data import CACHE_ROOT, CACHED_DB_PATH, Database, DatabaseError, Item, parse_database
-from .evolutions import Suggestion, suggest
+from .evolutions import ItemPlan, Suggestion, held_in_order, plans_for_held, suggest
 from .memory.game import GameMap, GameReader, ReadResult
 from .memory.winapi import process_exe_path
 
@@ -159,13 +159,19 @@ class App:
         left.add(item_list, text="Items")
         left.add(self._settings_tab(left), text="Settings")
 
-        self.output = tk.Text(body, wrap="word", state="disabled", font=("Segoe UI", 10), spacing1=2, spacing3=2)
+        results = ttk.Frame(body)
+        self.output = tk.Text(results, wrap="word", state="disabled", font=("Segoe UI", 10), spacing1=2, spacing3=2)
+        results_scroll = ttk.Scrollbar(results, orient="vertical", command=self.output.yview)
+        self.output.configure(yscrollcommand=results_scroll.set)
+        results_scroll.pack(side="right", fill="y")
+        self.output.pack(side="left", fill="both", expand=True)
         self.output.tag_configure("header", font=("Segoe UI", 11, "bold"), spacing1=10)
         self.output.tag_configure("have", foreground="#1b7f2a")
         self.output.tag_configure("missing", foreground="#c0392b", font=("Segoe UI", 10, "bold"))
         self.output.tag_configure("result", font=("Segoe UI", 10, "bold"))
-        self.output.tag_configure("detail", foreground="#666666", lmargin1=40, lmargin2=40)
-        body.add(self.output, weight=2)
+        self.output.tag_configure("detail", foreground="#666666", lmargin1=70, lmargin2=70)
+        self.output.tag_configure("ready", foreground="#ffffff", background="#1b7f2a", font=("Segoe UI", 9, "bold"))
+        body.add(results, weight=2)
 
         bar = ttk.Frame(root, relief="sunken")
         bar.pack(fill="x", side="bottom")
@@ -300,19 +306,10 @@ class App:
             self.output.image_create("end", image=img, padx=2, align="center")
         self.output.insert("end", self.db.name(item_id), tag)
 
-    def _insert_suggestion(self, s: Suggestion) -> None:
+    def _details(self, s: Suggestion, skip_missing: bool = False) -> list[str]:
         evo = s.evolution
-        out = self.output
-        out.insert("end", "  ")
-        for i, req in enumerate(evo.requires):
-            if i:
-                out.insert("end", "   +   ")
-            self._insert_item(req, "missing" if req in s.missing else "have")
-        out.insert("end", "   =   ")
-        self._insert_item(evo.result, "result")
-        out.insert("end", "\n")
         details = []
-        if s.missing:
+        if s.missing and not skip_missing:
             details.append("need: " + ", ".join(self.db.name(m) for m in s.missing))
         if evo.max_level:
             details.append("max level: " + ", ".join(self.db.name(m) for m in evo.max_level))
@@ -325,26 +322,86 @@ class App:
             details.append("\u2713 matches game files")
         elif check:
             details.append("\u26a0 game files say: " + " + ".join(self.db.name(r) for r in check.game_requires))
+        return details
+
+    def _insert_suggestion(self, s: Suggestion) -> None:
+        """One recipe line: weapon + item = evolution."""
+        evo = s.evolution
+        out = self.output
+        out.insert("end", "  ")
+        for i, req in enumerate(evo.requires):
+            if i:
+                out.insert("end", "   +   ")
+            self._insert_item(req, "missing" if req in s.missing else "have")
+        out.insert("end", "   =   ")
+        self._insert_item(evo.result, "result")
+        out.insert("end", "\n")
+        details = self._details(s)
         if details:
             out.insert("end", "  |  ".join(details) + "\n", "detail")
 
+    def _insert_plan(self, plan: ItemPlan, owned: set[str]) -> None:
+        """A held item followed by each evolution it can make and what that still needs."""
+        out = self.output
+        out.insert("end", "  ")
+        self._insert_item(plan.item, "result")
+        out.insert("end", "\n")
+        if not plan.options:
+            text = "already evolved" if self.db.items[plan.item].evolved else "no evolution"
+            out.insert("end", text + "\n", "detail")
+            return
+        for s in plan.options:
+            out.insert("end", "        \u2192  ")
+            self._insert_item(s.evolution.result, "result")
+            others = [r for r in s.evolution.requires if r != plan.item]
+            if others:
+                out.insert("end", "    needs  ")
+                for j, r in enumerate(others):
+                    if j:
+                        out.insert("end", ",  ")
+                    have = r in owned
+                    self._insert_item(r, "have" if have else "missing")
+                    out.insert("end", " \u2713" if have else " \u2717", "have" if have else "missing")
+            if not s.missing:
+                out.insert("end", "    READY", "ready")
+            out.insert("end", "\n")
+            details = self._details(s, skip_missing=True)
+            if details:
+                out.insert("end", "  |  ".join(details) + "\n", "detail")
+
     def _refresh(self) -> None:
-        suggestions = suggest(self.db, self.owned(), self.hidden_expansions())
+        owned = self.owned()
+        hidden = self.hidden_expansions()
         out = self.output
         out.configure(state="normal")
         out.delete("1.0", "end")
-        sections = (
-            ("READY - open a chest after 10:00", suggestions.ready),
-            ("ONE ITEM AWAY", suggestions.one_away),
-            ("OTHER EVOLUTIONS FOR YOUR ITEMS", suggestions.further),
-        )
-        if not any(group for _, group in sections):
-            out.insert("end", "Select the weapons and passive items you have to see possible evolutions.")
-        for title, group in sections:
+        if not owned:
+            out.insert("end", "Waiting for your items. Start a run with Auto-detect on, "
+                              "or tick the items you're holding in the Items list.")
+            out.configure(state="disabled")
+            return
+
+        out.insert("end", "YOU'RE HOLDING\n", "header")
+        held = held_in_order(self.db, owned)
+        for kind in ("weapon", "passive"):
+            group = [i for i in held if self.db.items[i].kind == kind]
             if group:
-                out.insert("end", title + "\n", "header")
-                for s in group:
-                    self._insert_suggestion(s)
+                out.insert("end", "  ")
+                for i, item in enumerate(group):
+                    if i:
+                        out.insert("end", "    ")
+                    self._insert_item(item, "result")
+                out.insert("end", "\n")
+
+        ready = suggest(self.db, owned, hidden).ready
+        if ready:
+            out.insert("end", "READY TO EVOLVE - max the weapon, then open a chest\n", "header")
+            for s in ready:
+                self._insert_suggestion(s)
+
+        out.insert("end", "HOW TO EVOLVE YOUR ITEMS\n", "header")
+        for plan in plans_for_held(self.db, owned, hidden):
+            self._insert_plan(plan, owned)
         out.configure(state="disabled")
 
     def _clear(self) -> None:

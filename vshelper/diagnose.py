@@ -12,7 +12,7 @@ from pathlib import Path
 
 from . import gamedata, icons
 from .data import CACHE_ROOT, load_best_database
-from .evolutions import format_suggestions, suggest
+from .evolutions import format_plan
 from .memory.game import POINTER_TYPES, GameReader, load_game_map
 from .memory.il2cpp import TYPE_STRING, Il2Cpp
 from .memory.winapi import MemoryAccessError, ProcessMemory
@@ -109,10 +109,16 @@ def run(output: Path = Path("vshelper-diagnose.txt")) -> int:
         out.append(f"  items: {', '.join(sorted(db.name(i) for i in result.owned)) or '(none)'}")
         if result.owned:
             out.append("")
-            out.append(format_suggestions(db, suggest(db, set(result.owned))))
+            out.append(format_plan(db, set(result.owned)))
         session = reader._session
         if session:
             roots = reader.root_objects(session)
+            out.append("")
+            out.append("== Lists with recognisable items (highest score is used; <= 0 rejected) ==")
+            for c in sorted(reader.find_candidates(session, roots), key=lambda c: -c.score):
+                out.append(f"  {c.score:7.1f} {c.kind:8} {gmap.roots[c.chain.root_index]['class']} -> "
+                           f"{' -> '.join(c.chain.fields)}: {', '.join(db.name(i) for i in c.items)}")
+            out.append("")
             for kind, chain in session.chains.items():
                 out.append(f"  {kind}: root {gmap.roots[chain.root_index]['class']} -> {' -> '.join(chain.fields)}")
                 obj = roots.get(chain.root_index)

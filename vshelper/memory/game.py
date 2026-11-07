@@ -113,6 +113,7 @@ class _Session:
     enums: list[list[str]] = field(default_factory=list)
     chains: dict[str, Chain] = field(default_factory=dict)
     last_discovery: float = 0.0
+    rejected: set[tuple[str, ...]] = field(default_factory=set)  # paths that turned out not to be the inventory
 
 
 class GameReader:
@@ -227,7 +228,12 @@ class GameReader:
                 coll = self._follow(s.il2, obj, chain.fields)
                 if not coll:
                     continue  # e.g. no player yet
-                for el in s.il2.collection_elements(coll):
+                elements = s.il2.collection_elements(coll)
+                if len(elements) > MAX_SLOTS:
+                    s.rejected.add(chain.fields)
+                    del s.chains[kind]
+                    continue
+                for el in elements:
                     raw = self.identify(s, el)
                     if raw is None:
                         continue
@@ -297,9 +303,20 @@ class GameReader:
         return None
 
     def discover(self, s: _Session, roots: dict[int, int]) -> dict[str, Chain]:
-        """Breadth-first search from the root objects for lists of recognizable equipment."""
+        """Breadth-first search from the root objects for the player's weapon and passive lists."""
+        best: dict[str, tuple[float, Chain]] = {}
+        for c in self.find_candidates(s, roots):
+            if c.score <= 0 or c.chain.fields in s.rejected:
+                continue
+            if c.score > best.get(c.kind, (0.0,))[0]:
+                best[c.kind] = (c.score, c.chain)
+        return {kind: chain for kind, (_, chain) in best.items()}
+
+    def find_candidates(self, s: _Session, roots: dict[int, int]) -> list["Candidate"]:
+        """Every list reachable from the roots that holds recognisable items, scored by how
+        likely it is to be the player's inventory (rather than e.g. pickups on the ground)."""
         il2 = s.il2
-        best: dict[str, tuple[int, Chain]] = {}
+        found: list[Candidate] = []
         visited: set[int] = set()
         queue: list[tuple[int, int, tuple[str, ...]]] = [(obj, i, ()) for i, obj in roots.items()]
         budget = self.map.search_max_objects
@@ -315,22 +332,21 @@ class GameReader:
                 continue
             cname = il2.class_name(klass)
             if cname.startswith("List`") or cname.endswith("[]"):
-                weapons = passives = 0
                 try:
                     elements = il2.collection_elements(obj)[:64]
                 except MemoryAccessError:
                     elements = []
+                items = []
                 for el in elements:
                     raw = self.identify(s, el)
                     item = self.matcher.match(raw) if raw else None
                     if item:
-                        if self.db.items[item].kind == "weapon":
-                            weapons += 1
-                        else:
-                            passives += 1
-                for kind, score in (("weapons", weapons), ("passives", passives)):
-                    if score and score >= max(weapons, passives) and score > best.get(kind, (0,))[0]:
-                        best[kind] = (score, Chain(root_i, path))
+                        items.append(item)
+                if items:
+                    weapons = sum(1 for i in items if self.db.items[i].kind == "weapon")
+                    kind = "weapons" if weapons >= len(items) - weapons else "passives"
+                    score = score_inventory_path(path, len(elements), len(items))
+                    found.append(Candidate(kind, Chain(root_i, path), score, tuple(items)))
                 continue
             if len(path) >= self.map.search_depth:
                 continue
@@ -340,4 +356,35 @@ class GameReader:
                 child = il2.try_ptr(obj + f.offset)
                 if child and child not in visited:
                     queue.append((child, root_i, path + (f.name,)))
-        return {kind: chain for kind, (_, chain) in best.items()}
+        return found
+
+
+MAX_SLOTS = 12  # inventories hold at most a dozen of each kind, even with extra slots
+GOOD_WORDS = ("player", "character", "equip", "weapon", "accessor", "inventory", "slot", "active", "owned")
+BAD_WORDS = ("pool", "available", "pickup", "drop", "ground", "spawn", "unlock", "banish", "seen",
+             "collection", "shop", "store", "reward", "treasure", "chest", "levelup", "choice", "offer",
+             "allweapons", "allitems", "allaccessories", "enemy", "enemies", "factory", "prefab", "cache")
+
+
+def score_inventory_path(path: tuple[str, ...], size: int, recognised: int) -> float:
+    """Higher = more likely to be what the player is holding. 0 or less = rejected."""
+    if size > MAX_SLOTS or recognised == 0:
+        return 0.0
+    names = [normalize(n) for n in path]
+    score = recognised + recognised / max(size, 1)  # mostly-recognised lists beat noisy ones
+    if any(w in n for n in names for w in BAD_WORDS):
+        score -= 100
+    score += 3 * sum(1 for n in names if any(w in n for w in GOOD_WORDS))
+    return score
+
+
+def normalize(name: str) -> str:
+    return re.sub(r"[^a-z]", "", name.lower())
+
+
+@dataclass(frozen=True)
+class Candidate:
+    kind: str
+    chain: Chain
+    score: float
+    items: tuple[str, ...]
