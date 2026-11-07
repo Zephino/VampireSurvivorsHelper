@@ -156,13 +156,17 @@ class App:
         top = ttk.Frame(root, padding=6)
         top.pack(fill="x")
         self.auto_var = tk.BooleanVar(value=game_map is not None)
+        self.panel_button = ttk.Button(top, command=self._toggle_side_panel, width=11)
+        self.panel_button.pack(side="left", padx=(0, 8))
         auto = ttk.Checkbutton(top, text="Auto-detect from game", variable=self.auto_var, command=self._toggle_auto)
         auto.pack(side="left")
-        ttk.Button(top, text="Clear", command=self._clear).pack(side="left", padx=6)
-        ttk.Label(top, text="Filter:").pack(side="left", padx=(12, 2))
+        self.list_controls = ttk.Frame(top)  # only useful while the item list is visible
+        self.list_controls.pack(side="left")
+        ttk.Button(self.list_controls, text="Clear", command=self._clear).pack(side="left", padx=6)
+        ttk.Label(self.list_controls, text="Filter:").pack(side="left", padx=(12, 2))
         self.filter_var = tk.StringVar()
         self.filter_var.trace_add("write", lambda *_: self._apply_filter())
-        ttk.Entry(top, textvariable=self.filter_var, width=24).pack(side="left")
+        ttk.Entry(self.list_controls, textvariable=self.filter_var, width=24).pack(side="left")
 
         body = ttk.PanedWindow(root, orient="horizontal")
         body.pack(fill="both", expand=True, padx=6)
@@ -170,6 +174,7 @@ class App:
         in_recipes = {i for e in db.evolutions for i in (e.result, *e.requires)}
         left = ttk.Notebook(body)
         body.add(left, weight=1)
+        self.body, self.side_panel = body, left
         item_list = self._item_list(left, [
             ("Weapons", [i for i in db.weapons() if not i.evolved and i.id in in_recipes]),
             ("Passive Items", [i for i in db.passives() if i.id in in_recipes]),
@@ -200,7 +205,7 @@ class App:
         self.results_tabs.add(guide_frame, text="All evolutions")
 
         bar = ttk.Frame(root, relief="sunken")
-        bar.pack(fill="x", side="bottom")
+        bar.pack(fill="x", side="bottom", before=body)  # packed first so it is never squeezed out
         self.status = tk.StringVar(value="")
         ttk.Label(bar, textvariable=self.status, anchor="w", padding=4).pack(side="left", fill="x", expand=True)
         self.icon_status = tk.StringVar(value=notice or "")
@@ -227,6 +232,7 @@ class App:
             auto.state(["disabled"])
             self.status.set(f"Auto-detect unavailable: {map_error}")
         self.apply_theme()
+        self._show_side_panel(self.settings.show_side_panel)
         self._toggle_auto()
         self._apply_filter()
         self._refresh()
@@ -318,6 +324,24 @@ class App:
         ttk.Button(buttons, text="All on", command=lambda: self._set_all_expansions(True)).pack(side="left")
         ttk.Button(buttons, text="All off", command=lambda: self._set_all_expansions(False)).pack(side="left", padx=6)
         return outer
+
+    # ---- side panel (item list + settings) ----
+    def _show_side_panel(self, show: bool) -> None:
+        shown = str(self.side_panel) in self.body.panes()
+        if show and not shown:
+            self.body.insert(0, self.side_panel, weight=1)
+            self.list_controls.pack(side="left")
+        elif not show and shown:
+            self.body.forget(self.side_panel)
+            self.list_controls.pack_forget()
+        self.panel_button.configure(text="\u25c0 Hide list" if show else "\u25b6 Show list")
+
+    def _toggle_side_panel(self) -> None:
+        self.settings.show_side_panel = not self.settings.show_side_panel
+        self._show_side_panel(self.settings.show_side_panel)
+        error = user_settings.save(self.settings)
+        if error:
+            self.icon_status.set(error)
 
     # ---- updates ----
     def _update_on_start_changed(self) -> None:

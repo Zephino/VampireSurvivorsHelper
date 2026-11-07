@@ -1,5 +1,17 @@
 # Changelog
 
+## Version 00.13.00
+Date: 11/07/2026
+Time: 3:21 PM
+
+### Changes
+- Added a "Hide list" / "Show list" button at the top left. It hides the item list and Settings panel so the results use the whole window, and hides the Clear and Filter controls with it. The choice is saved (`show_side_panel` in `settings.json`).
+- Fixed the status bar being pushed off the bottom of the window when there wasn't enough height (since the results tabs were added).
+- README updated.
+
+### Reason
+User asked for a way to hide the weapon list.
+
 ## Version 00.12.00
 Date: 11/07/2026
 Time: 3:18 PM

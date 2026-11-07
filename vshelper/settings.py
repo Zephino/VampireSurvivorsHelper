@@ -15,6 +15,7 @@ class Settings:
     hidden_expansions: list[str] = field(default_factory=list)
     dark_theme: bool = True
     check_updates_on_start: bool = True
+    show_side_panel: bool = True  # the item list + settings on the left ("Hide list" button)
     # What the main screen shows (Settings > Main screen)
     show_holding: bool = True
     show_ready: bool = True

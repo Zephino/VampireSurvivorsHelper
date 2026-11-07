@@ -66,6 +66,9 @@ were found.
 The status bar at the bottom says what the helper is doing ("Waiting for a run to start",
 "Reading game: 4 item(s) detected", etc.).
 
+**Hide list:** the button at the top left hides the item list and Settings so the results use the
+whole window; click **Show list** to bring them back (remembered between runs).
+
 **Manual mode:** untick *Auto-detect from game* to tick items yourself (useful if detection ever
 breaks after a game update). The *Filter* box searches the item list.
 
