@@ -87,13 +87,14 @@ were found.
 The status bar at the bottom says what the helper is doing ("Waiting for a run to start",
 "Reading game: 4 item(s) detected", etc.).
 
-**Hide list:** the button at the top left hides the item list and Settings so the results use the
-whole window; click **Show list** to bring them back (remembered between runs).
+**Tabs:** Overview, How to evolve, All evolutions, Items and Settings sit in one row across the
+window. Text and buttons wrap onto the next line when the window is made narrow.
 
-**Manual mode:** untick *Auto-detect from game* to tick items yourself (useful if detection ever
-breaks after a game update). The *Filter* box searches the item list.
+**Detection (Settings):** *Auto-detect items from the game* is on by default. While it is on, the
+manual **Items** tab is hidden (switch off *Hide the Items tab while auto-detect is on* to keep it).
+Turn auto-detect off to tick your items yourself in the Items tab (with Clear and Filter on top).
 
-**Settings tab:** next to the *Items* tab. *Appearance* has the **Dark theme** switch (on by
+**Settings tab:** *Appearance* has the **Dark theme** switch (on by
 default; changes apply instantly). *Main screen* switches parts of the results on or off:
 Overview's You're holding and Ready to evolve, the How to evolve tab, items with no evolution,
 item levels, details, game-file check marks and item pictures (all on by default). Under *Expansions*, untick any DLC you don't own to hide its

@@ -21,6 +21,7 @@ from .data import CACHE_ROOT, CACHED_DB_PATH, Database, DatabaseError, Item, par
 from .evolutions import ItemPlan, Suggestion, held_in_order, plans_for_held, suggest
 from .memory.game import GameMap, GameReader, ReadResult
 from .memory.winapi import process_exe_path
+from .widgets import FlowFrame
 
 POLL_SECONDS = 1.0
 GAME_SEARCH_SECONDS = 10.0
@@ -152,65 +153,66 @@ class App:
         root.title(f"Vampire Survivors Helper v{updater.local_version()}")
         self.native_theme = ttk.Style(root).theme_use()
         root.geometry("1000x620")
-        root.minsize(640, 400)
+        root.minsize(480, 320)
 
-        top = ttk.Frame(root, padding=6)
-        top.pack(fill="x")
-        self.auto_var = tk.BooleanVar(value=game_map is not None)
-        self.panel_button = ttk.Button(top, command=self._toggle_side_panel, width=11)
-        self.panel_button.pack(side="left", padx=(0, 8))
-        auto = ttk.Checkbutton(top, text="Auto-detect from game", variable=self.auto_var, command=self._toggle_auto)
-        auto.pack(side="left")
-        self.list_controls = ttk.Frame(top)  # only useful while the item list is visible
-        self.list_controls.pack(side="left")
-        ttk.Button(self.list_controls, text="Clear", command=self._clear).pack(side="left", padx=6)
-        ttk.Label(self.list_controls, text="Filter:").pack(side="left", padx=(12, 2))
+        self.auto_var = tk.BooleanVar(value=game_map is not None and self.settings.auto_detect)
         self.filter_var = tk.StringVar()
         self.filter_var.trace_add("write", lambda *_: self._apply_filter())
-        ttk.Entry(self.list_controls, textvariable=self.filter_var, width=24).pack(side="left")
 
-        body = ttk.PanedWindow(root, orient="horizontal")
-        body.pack(fill="both", expand=True, padx=6)
-        # Only items that take part in a recipe are listed; the rest can't evolve anything.
+        # One row of tabs across the whole window.
+        self.tabs = ttk.Notebook(root)
+        self.tabs.pack(fill="both", expand=True, padx=6, pady=(6, 0))
+        self.results_tabs = self.tabs  # Overview / How to evolve / All evolutions live here too
+        overview_frame, self.overview_text = self._text_pane(self.tabs)
+        howto_frame, self.howto_text = self._text_pane(self.tabs)
+        self.howto_frame = howto_frame
+        guide_frame = ttk.Frame(self.tabs)
+        search_bar = FlowFrame(guide_frame, padding=(4, 4))
+        search_bar.pack(fill="x")
+        search_bar.add(ttk.Label(search_bar, text="Search:"))
+        self.guide_search = tk.StringVar()
+        self.guide_search.trace_add("write", lambda *_: self._schedule_guide_refresh())
+        search_bar.add(ttk.Entry(search_bar, textvariable=self.guide_search, width=30))
+        search_bar.add(ttk.Label(search_bar, text="weapon, item or evolution name"))
+        guide_body, self.guide_text = self._text_pane(guide_frame)
+        guide_body.pack(fill="both", expand=True)
+        self._guide_job: str | None = None
+
+        # Items tab: the manual list (Clear + Filter on top). Only items that take part in a
+        # recipe are listed; the rest can't evolve anything.
         in_recipes = {i for e in db.evolutions for i in (e.result, *e.requires)}
-        left = ttk.Notebook(body)
-        body.add(left, weight=1)
-        self.body, self.side_panel = body, left
-        item_list = self._item_list(left, [
+        self.items_frame = ttk.Frame(self.tabs)
+        list_bar = FlowFrame(self.items_frame, padding=(4, 4))
+        list_bar.pack(fill="x")
+        list_bar.add(ttk.Button(list_bar, text="Clear", command=self._clear))
+        list_bar.add(ttk.Label(list_bar, text="Filter:"), 8)
+        list_bar.add(ttk.Entry(list_bar, textvariable=self.filter_var, width=24))
+        item_list = self._item_list(self.items_frame, [
             ("Weapons", [i for i in db.weapons() if not i.evolved and i.id in in_recipes]),
             ("Passive Items", [i for i in db.passives() if i.id in in_recipes]),
             ("Evolved Weapons", [i for i in db.weapons() if i.evolved and i.id in in_recipes]),
         ])
-        left.add(item_list, text="Items")
-        left.add(self._settings_tab(left), text="Settings")
+        item_list.pack(fill="both", expand=True)
+        self.settings_frame = self._settings_tab(self.tabs)
 
-        # Right side: Overview / How to evolve / All evolutions
-        self.results_tabs = ttk.Notebook(body)
-        body.add(self.results_tabs, weight=2)
-        overview_frame, self.overview_text = self._text_pane(self.results_tabs)
-        howto_frame, self.howto_text = self._text_pane(self.results_tabs)
-        self.howto_frame = howto_frame
-        guide_frame = ttk.Frame(self.results_tabs)
-        search_bar = ttk.Frame(guide_frame, padding=(4, 4))
-        search_bar.pack(fill="x")
-        ttk.Label(search_bar, text="Search:").pack(side="left")
-        self.guide_search = tk.StringVar()
-        self.guide_search.trace_add("write", lambda *_: self._schedule_guide_refresh())
-        ttk.Entry(search_bar, textvariable=self.guide_search, width=30).pack(side="left", padx=4)
-        ttk.Label(search_bar, text="weapon, item or evolution name").pack(side="left")
-        guide_body, self.guide_text = self._text_pane(guide_frame)
-        guide_body.pack(fill="both", expand=True)
-        self._guide_job: str | None = None
-        self.results_tabs.add(overview_frame, text="Overview")
-        self.results_tabs.add(howto_frame, text="How to evolve")
-        self.results_tabs.add(guide_frame, text="All evolutions")
+        self.tabs.add(overview_frame, text="Overview")
+        self.tabs.add(howto_frame, text="How to evolve")
+        self.tabs.add(guide_frame, text="All evolutions")
+        self.tabs.add(self.items_frame, text="Items")
+        self.tabs.add(self.settings_frame, text="Settings")
+        body = self.tabs
 
-        bar = ttk.Frame(root, relief="sunken")
+        bar = FlowFrame(root, gap_x=16, gap_y=0, relief="sunken", padding=(4, 2))
         bar.pack(fill="x", side="bottom", before=body)  # packed first so it is never squeezed out
         self.status = tk.StringVar(value="")
-        ttk.Label(bar, textvariable=self.status, anchor="w", padding=4).pack(side="left", fill="x", expand=True)
         self.icon_status = tk.StringVar(value=notice or "")
-        ttk.Label(bar, textvariable=self.icon_status, anchor="e", padding=4).pack(side="right")
+        status_labels = [bar.add(ttk.Label(bar, textvariable=self.status, justify="left")),
+                         bar.add(ttk.Label(bar, textvariable=self.icon_status, justify="left"))]
+
+        def wrap_status(event: tk.Event) -> None:  # long messages wrap instead of being cut off
+            for label in status_labels:
+                label.configure(wraplength=max(event.width - 16, 100))
+        bar.bind("<Configure>", wrap_status, add="+")
 
         self.checks: dict[str, gamedata.Check] = {}
         self.game_reader: GameReader | None = None
@@ -230,19 +232,19 @@ class App:
             self.reader_thread.start()
         else:
             self.auto_var.set(False)
-            auto.state(["disabled"])
+            self.auto_check.state(["disabled"])
             self.status.set(f"Auto-detect unavailable: {map_error}")
         self.apply_theme()
-        self._show_side_panel(self.settings.show_side_panel)
-        self._toggle_auto()
+        self._toggle_auto(save=False)
         self._apply_filter()
         self._refresh()
         root.after(200, self._drain_results)
         root.protocol("WM_DELETE_WINDOW", self._close)
 
-    def _scrollable(self, parent: tk.Widget, stretch: bool = False) -> tuple[ttk.Frame, ttk.Frame]:
+    def _scrollable(self, parent: tk.Widget, stretch: bool = False,
+                    on_width=None) -> tuple[ttk.Frame, ttk.Frame]:
         """(outer, inner): put widgets in inner; outer scrolls them vertically with bar and mouse wheel.
-        stretch=True makes inner as wide as the visible area."""
+        stretch=True makes inner as wide as the visible area; on_width(width) is called on resize."""
         outer = ttk.Frame(parent)
         canvas = tk.Canvas(outer, highlightthickness=0)
         self.canvases.append(canvas)
@@ -250,8 +252,12 @@ class App:
         inner = ttk.Frame(canvas)
         inner.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
         window = canvas.create_window((0, 0), window=inner, anchor="nw")
-        if stretch:
-            canvas.bind("<Configure>", lambda e: canvas.itemconfigure(window, width=e.width))
+        def on_resize(event: tk.Event) -> None:
+            if stretch:
+                canvas.itemconfigure(window, width=event.width)
+            if on_width:
+                on_width(event.width)
+        canvas.bind("<Configure>", on_resize)
         canvas.configure(yscrollcommand=scroll.set)
         canvas.pack(side="left", fill="both", expand=True)
         scroll.pack(side="right", fill="y")
@@ -261,7 +267,7 @@ class App:
 
     def _item_list(self, parent: tk.Widget, sections: list[tuple[str, list[Item]]]) -> ttk.Frame:
         """One scrollable list with a heading per section, in the order given."""
-        outer, inner = self._scrollable(parent)
+        outer, inner = self._scrollable(parent, stretch=True, on_width=self._list_width_changed)
         row = 0
         for title, items in sections:
             ttk.Label(inner, text=title, font=("Segoe UI", 11, "bold")).grid(
@@ -270,7 +276,7 @@ class App:
             for item in sorted(items, key=lambda i: i.name.lower()):
                 var = tk.BooleanVar()
                 label = item.name if item.dlc in ("Base game", "") else f"{item.name}  ({item.dlc})"
-                cb = ttk.Checkbutton(inner, text=label, variable=var, command=self._refresh)
+                cb = ttk.Checkbutton(inner, text=label, variable=var, command=self._refresh, style="List.TCheckbutton")
                 cb.grid(row=row, column=0, sticky="w", padx=14, pady=1)
                 row += 1
                 self.vars[item.id] = var
@@ -278,81 +284,125 @@ class App:
         return outer
 
     def _settings_tab(self, parent: tk.Widget) -> ttk.Frame:
-        outer, frame = self._scrollable(parent, stretch=True)
+        outer, frame = self._scrollable(parent, stretch=True, on_width=self._settings_width_changed)
         frame.configure(padding=8)
+        detection = ttk.LabelFrame(frame, text="Detection", padding=8)
+        detection.pack(fill="x", anchor="n", pady=(0, 8))
+        self.auto_check = ttk.Checkbutton(detection, text="Auto-detect items from the game", variable=self.auto_var,
+                                          command=self._toggle_auto, style="Setting.TCheckbutton")
+        self.auto_check.pack(anchor="w")
+        self.hide_items_var = tk.BooleanVar(value=self.settings.hide_items_when_auto)
+        ttk.Checkbutton(detection, text="Hide the Items tab while auto-detect is on", variable=self.hide_items_var,
+                        command=self._hide_items_changed, style="Setting.TCheckbutton").pack(anchor="w")
+        ttk.Label(detection, text="With auto-detect off, tick what you're holding in the Items tab.",
+                  wraplength=280, style="Wrap.TLabel").pack(anchor="w", pady=(4, 0))
+
         appearance = ttk.LabelFrame(frame, text="Appearance", padding=8)
         appearance.pack(fill="x", anchor="n", pady=(0, 8))
         self.dark_var = tk.BooleanVar(value=self.settings.dark_theme)
-        ttk.Checkbutton(appearance, text="Dark theme", variable=self.dark_var,
+        ttk.Checkbutton(appearance, text="Dark theme", variable=self.dark_var, style="Setting.TCheckbutton",
                         command=self._theme_changed).pack(anchor="w")
 
         updates = ttk.LabelFrame(frame, text="Updates", padding=8)
         updates.pack(fill="x", anchor="n", pady=(0, 8))
-        self.version_label = ttk.Label(updates, text=f"Installed version: {updater.local_version()}")
+        self.version_label = ttk.Label(updates, text=f"Installed version: {updater.local_version()}",
+                                       wraplength=280, style="Wrap.TLabel")
         self.version_label.pack(anchor="w")
         self.update_on_start_var = tk.BooleanVar(value=self.settings.check_updates_on_start)
         ttk.Checkbutton(updates, text="Check for updates when the helper starts", variable=self.update_on_start_var,
+                        style="Setting.TCheckbutton",
                         command=self._update_on_start_changed).pack(anchor="w", pady=(4, 0))
-        buttons = ttk.Frame(updates)
-        buttons.pack(anchor="w", pady=(6, 0))
-        self.check_button = ttk.Button(buttons, text="Check for updates", command=self._check_updates)
-        self.check_button.pack(side="left")
+        buttons = FlowFrame(updates)
+        buttons.pack(fill="x", pady=(6, 0))
+        self.check_button = buttons.add(ttk.Button(buttons, text="Check for updates", command=self._check_updates))
         if updater.FROZEN:  # the standalone exe can't replace itself: open the download page instead
             self.update_button = ttk.Button(buttons, text="Download page", state="disabled",
                                             command=lambda: webbrowser.open(updater.DOWNLOAD_URL))
         else:
             self.update_button = ttk.Button(buttons, text="Update now", command=self._apply_update, state="disabled")
-        self.update_button.pack(side="left", padx=6)
+        buttons.add(self.update_button)
         self.restart_button = ttk.Button(buttons, text="Restart helper", command=self._restart)
+        self.update_buttons = buttons
         self.update_status = tk.StringVar(value="")
-        ttk.Label(updates, textvariable=self.update_status, wraplength=280, justify="left").pack(anchor="w", pady=(6, 0))
+        ttk.Label(updates, textvariable=self.update_status, wraplength=280, justify="left", style="Wrap.TLabel").pack(anchor="w", pady=(6, 0))
         self.web_button = ttk.Button(updates, text="Open GitHub page", command=lambda: webbrowser.open(updater.REPO_URL))
 
         main = ttk.LabelFrame(frame, text="Main screen", padding=8)
         main.pack(fill="x", anchor="n", pady=(0, 8))
-        ttk.Label(main, text="Choose what the results pane shows.", wraplength=280).pack(anchor="w", pady=(0, 6))
+        ttk.Label(main, text="Choose what the results pane shows.", wraplength=280, style="Wrap.TLabel").pack(anchor="w", pady=(0, 6))
         self.show_vars: dict[str, tk.BooleanVar] = {}
         for key, label in user_settings.MAIN_SCREEN_OPTIONS:
             var = tk.BooleanVar(value=getattr(self.settings, key))
-            ttk.Checkbutton(main, text=label, variable=var, command=self._main_screen_changed).pack(anchor="w")
+            ttk.Checkbutton(main, text=label, variable=var, command=self._main_screen_changed,
+                            style="Setting.TCheckbutton").pack(anchor="w")
             self.show_vars[key] = var
         group = ttk.LabelFrame(frame, text="Expansions", padding=8)
         group.pack(fill="x", anchor="n")
         ttk.Label(group, text="Untick an expansion to hide its items and evolutions.",
-                  wraplength=280).pack(anchor="w", pady=(0, 6))
+                  wraplength=280, style="Wrap.TLabel").pack(anchor="w", pady=(0, 6))
         for name in self.db.expansions():
             var = tk.BooleanVar(value=name not in self.settings.hidden_expansions)
-            ttk.Checkbutton(group, text=name, variable=var, command=self._expansions_changed).pack(anchor="w")
+            ttk.Checkbutton(group, text=name, variable=var, command=self._expansions_changed,
+                            style="Setting.TCheckbutton").pack(anchor="w")
             self.expansion_vars[name] = var
-        buttons = ttk.Frame(group)
-        buttons.pack(anchor="w", pady=(6, 0))
-        ttk.Button(buttons, text="All on", command=lambda: self._set_all_expansions(True)).pack(side="left")
-        ttk.Button(buttons, text="All off", command=lambda: self._set_all_expansions(False)).pack(side="left", padx=6)
+        buttons = FlowFrame(group)
+        buttons.pack(fill="x", pady=(6, 0))
+        buttons.add(ttk.Button(buttons, text="All on", command=lambda: self._set_all_expansions(True)))
+        buttons.add(ttk.Button(buttons, text="All off", command=lambda: self._set_all_expansions(False)))
 
         trouble = ttk.LabelFrame(frame, text="Troubleshooting", padding=8)
         trouble.pack(fill="x", anchor="n", pady=(8, 0))
         ttk.Label(trouble, text="If your items aren't detected: start a run in the game, pause it, then create a "
-                                "report and send the file it makes.", wraplength=280, justify="left").pack(anchor="w")
+                                "report and send the file it makes.", wraplength=280, justify="left", style="Wrap.TLabel").pack(anchor="w")
         self.report_button = ttk.Button(trouble, text="Create diagnose report", command=self._create_report)
         self.report_button.pack(anchor="w", pady=(6, 0))
         self.report_status = tk.StringVar(value="")
-        ttk.Label(trouble, textvariable=self.report_status, wraplength=280, justify="left").pack(anchor="w", pady=(6, 0))
+        ttk.Label(trouble, textvariable=self.report_status, wraplength=280, justify="left", style="Wrap.TLabel").pack(anchor="w", pady=(6, 0))
         return outer
 
-    # ---- side panel (item list + settings) ----
-    def _show_side_panel(self, show: bool) -> None:
-        shown = str(self.side_panel) in self.body.panes()
-        if show and not shown:
-            self.body.insert(0, self.side_panel, weight=1)
-            self.list_controls.pack(side="left")
-        elif not show and shown:
-            self.body.forget(self.side_panel)
-            self.list_controls.pack_forget()
-        self.panel_button.configure(text="\u25c0 Hide list" if show else "\u25b6 Show list")
+    # ---- keep text readable when panels are narrow ----
+    def _list_width_changed(self, width: int) -> None:
+        self._list_wrap = max(width - 60, 80)  # room for the checkbox and picture
+        ttk.Style(self.root).configure("List.TCheckbutton", wraplength=self._list_wrap)
 
-    def _toggle_side_panel(self) -> None:
-        self.settings.show_side_panel = not self.settings.show_side_panel
-        self._show_side_panel(self.settings.show_side_panel)
+    def _settings_width_changed(self, width: int) -> None:
+        self._settings_wrap = max(width - 60, 80)
+        style = ttk.Style(self.root)
+        style.configure("Setting.TCheckbutton", wraplength=self._settings_wrap)
+        for label in self._wrap_labels():
+            label.configure(wraplength=self._settings_wrap)
+
+    def _wrap_labels(self) -> list[tk.Widget]:
+        """Settings labels that should wrap to the panel width (marked with style Wrap.TLabel)."""
+        found, stack = [], [self.settings_frame]
+        while stack:
+            w = stack.pop()
+            stack.extend(w.winfo_children())
+            if isinstance(w, ttk.Label) and str(w.cget("style")) == "Wrap.TLabel":
+                found.append(w)
+        return found
+
+    def _reapply_wrapping(self) -> None:
+        """Theme changes reset style options, so restore the current wrap widths."""
+        style = ttk.Style(self.root)
+        style.configure("List.TCheckbutton", wraplength=getattr(self, "_list_wrap", 260))
+        style.configure("Setting.TCheckbutton", wraplength=getattr(self, "_settings_wrap", 260))
+
+    # ---- Items tab visibility ----
+    def _hide_items_changed(self) -> None:
+        self.settings.hide_items_when_auto = self.hide_items_var.get()
+        self._save_settings()
+        self._update_items_tab()
+
+    def _update_items_tab(self) -> None:
+        """Hide the manual Items tab while auto-detect reads the game (if that setting is on)."""
+        hide = self.auto_var.get() and self.reader_thread is not None and self.settings.hide_items_when_auto
+        if hide:
+            self.tabs.hide(self.items_frame)
+        else:
+            self.tabs.add(self.items_frame)  # re-adding a hidden tab restores it in place
+
+    def _save_settings(self) -> None:
         error = user_settings.save(self.settings)
         if error:
             self.icon_status.set(error)
@@ -434,7 +484,8 @@ class App:
         self.update_status.set(message)
         self.version_label.configure(text=f"Installed version: {updater.local_version()}")
         if "Restart" in message:
-            self.restart_button.pack(anchor="w", pady=(6, 0))
+            if not self.update_buttons.contains(self.restart_button):
+                self.update_buttons.add(self.restart_button)
             self.icon_status.set("Update installed - restart the helper to use it.")
 
     def _restart(self) -> None:
@@ -494,6 +545,7 @@ class App:
         else:
             style.theme_use(self.native_theme)
             self.root.configure(background=style.lookup("TFrame", "background") or "SystemButtonFace")
+        self._reapply_wrapping()
         canvas_bg = pal["bg"] or style.lookup("TFrame", "background") or "SystemButtonFace"
         for canvas in self.canvases:
             canvas.configure(background=canvas_bg)
@@ -845,7 +897,12 @@ class App:
             v.set(False)
         self._refresh()
 
-    def _toggle_auto(self) -> None:
+    def _toggle_auto(self, save: bool = True) -> None:
+        if save and self.reader_thread is not None:
+            self.settings.auto_detect = self.auto_var.get()
+            self._save_settings()
+        self._update_items_tab()
+        self._refresh()
         auto = self.auto_var.get() and self.reader_thread is not None
         for cb in self.checkbuttons.values():
             cb.state(["disabled"] if auto else ["!disabled"])

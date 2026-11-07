@@ -1,5 +1,19 @@
 # Changelog
 
+## Version 00.15.00
+Date: 11/07/2026
+Time: 3:32 PM
+
+### Changes
+- All tabs are now in one row across the window: Overview, How to evolve, All evolutions, Items, Settings. The separate left panel and its Hide list / Show list button are gone.
+- New Settings > Detection group: "Auto-detect items from the game" (moved here from the top bar, now remembered between runs) and "Hide the Items tab while auto-detect is on" (on by default), which hides the manual weapon list automatically while the game is being read.
+- Clear and Filter moved to the top of the Items tab.
+- Text and buttons now wrap instead of being cut off when the window or panel is narrow: item names in the list, all Settings text and switches, the Settings button rows, the All evolutions search bar and the status bar (new `vshelper/widgets.py` FlowFrame). The minimum window size is smaller (480x320).
+- Settings `show_side_panel` replaced by `auto_detect` and `hide_items_when_auto`. README updated.
+
+### Reason
+User reported that narrowing the list hid words and buttons, then asked for all tabs in one row, for the weapon list to hide automatically (toggleable in Settings), and for auto-detect to move into Settings.
+
 ## Version 00.14.00
 Date: 11/07/2026
 Time: 3:27 PM
