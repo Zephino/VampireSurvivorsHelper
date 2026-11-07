@@ -80,7 +80,8 @@ class Il2CppTests(unittest.TestCase):
         il2 = Il2Cpp(g.m)
         klass = il2.find_class("GameManager")
         self.assertEqual(klass, g.gm_obj_cls)
-        self.assertEqual(il2.find_field(klass, "player").name, "_player")
+        self.assertEqual(il2.find_field(klass, "MainCharacters").name, "_mainCharacters")
+        self.assertEqual(il2.find_class("GM", "VampireSurvivors.Framework"), g.root_cls)
         self.assertEqual(il2.read_static_ptr(il2.find_class("GM"), "Core"), g.gm)
         self.assertEqual(il2.enum_names(g.enum_cls), g.enum_names)
 
@@ -100,8 +101,8 @@ def _reader(game: FakeGame, **map_overrides):
 class GameReaderTests(unittest.TestCase):
     def test_reads_inventory_through_configured_path(self):
         g = FakeGame()
-        g.set_list(g.weapon_list, [0, 1])   # WHIP, MAGIC_MISSILE
-        g.set_list(g.passive_list, [3])     # MAXHEALTH -> Hollow Heart
+        g.set_list(g.weapon_list, [1, 2])   # WHIP, MAGIC_MISSILE
+        g.set_list(g.passive_list, [4])     # MAXHEALTH -> Hollow Heart
         result = _reader(g).poll()
         self.assertEqual(result.state, "ok", result.message)
         self.assertEqual(result.owned, {"whip", "magic_wand", "hollow_heart"})
@@ -109,36 +110,44 @@ class GameReaderTests(unittest.TestCase):
     def test_discovers_lists_when_names_differ(self):
         g = FakeGame(root_name="GameManager2", root_field="Instance", player_field="somethingElse",
                      weapons_field="renamedList")
-        g.set_list(g.weapon_list, [0])
-        g.set_list(g.passive_list, [2])
+        g.set_list(g.weapon_list, [1])
+        g.set_list(g.passive_list, [3])
         reader = _reader(g, roots=[{"class": "GameManager2", "static_field": ["Instance"]}])
         result = reader.poll()
         self.assertEqual(result.state, "ok", result.message)
         self.assertEqual(result.owned, {"whip", "spinach"})
 
+    def test_discovery_steps_into_the_players_list(self):
+        g = FakeGame()
+        g.set_list(g.weapon_list, [1])
+        gmap_paths = {"weapons": [["Nope"]], "passives": [["Nope"]]}
+        result = _reader(g, inventories=gmap_paths).poll()
+        self.assertEqual(result.state, "ok", result.message)
+        self.assertEqual(result.owned, {"whip"})
+
     def test_updates_when_inventory_changes(self):
         g = FakeGame()
-        g.set_list(g.weapon_list, [0])
+        g.set_list(g.weapon_list, [1])
         reader = _reader(g)
         self.assertEqual(reader.poll().owned, {"whip"})
-        g.set_list(g.weapon_list, [0, 1])
+        g.set_list(g.weapon_list, [1, 2])
         self.assertEqual(reader.poll().owned, {"whip", "magic_wand"})
 
     def test_waiting_when_no_run(self):
         g = FakeGame()
-        g.m.w64(g.gm + 0x10, 0)  # no player
+        g.set_objects(g.players, [])  # no player yet
         self.assertEqual(_reader(g).poll().state, "waiting")
 
     def test_unrecognized_item_reported(self):
-        g = FakeGame(enum_names=("WHIP", "MYSTERY"))
-        g.set_list(g.weapon_list, [0, 1])
+        g = FakeGame(enum_names=("VOID", "WHIP", "MYSTERY"))
+        g.set_list(g.weapon_list, [1, 2])
         result = _reader(g).poll()
         self.assertEqual(result.owned, {"whip"})
         self.assertEqual(result.unrecognized, ("MYSTERY",))
 
     def test_list_bigger_than_an_inventory_is_ignored(self):
         g = FakeGame()
-        g.set_list(g.weapon_list, [0] * 13)  # 13 whips: a pool or ground items, not what you hold
+        g.set_list(g.weapon_list, [1] * 13)  # 13 whips: a pool or ground items, not what you hold
         result = _reader(g).poll()
         self.assertEqual(result.owned, frozenset())
 
@@ -161,6 +170,21 @@ class GameReaderTests(unittest.TestCase):
         result = _reader(g, roots=[{"class": "Nope", "static_field": ["X"]}]).poll()
         self.assertEqual(result.state, "error")
         self.assertIn("diagnose", result.message)
+
+
+class DiagnoseTests(unittest.TestCase):
+    def test_report_runs_end_to_end(self):
+        from vshelper import diagnose
+        g = FakeGame()
+        g.set_list(g.weapon_list, [1, 2])
+        g.set_list(g.passive_list, [4])
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d) / "report.txt"
+            self.assertEqual(diagnose.run(out, open_memory=lambda _name: g.m), 0)
+            text = out.read_text(encoding="utf-8")
+        self.assertIn("state: ok", text)
+        self.assertIn("Lists with recognisable items", text)
+        self.assertIn("YOU'RE HOLDING", text)
 
 
 class GameMapTests(unittest.TestCase):

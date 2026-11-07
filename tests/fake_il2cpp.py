@@ -15,6 +15,14 @@ META = 0x2000_0000
 
 
 class FakeMemory:
+    pid = 1234
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return None
+
     def __init__(self) -> None:
         self.heap = bytearray(0x10000)
         self.top = 0x100
@@ -62,10 +70,12 @@ class FakeMemory:
 
 
 class FakeGame:
-    """A tiny object graph shaped like a Unity game manager -> player -> equipment lists."""
+    """A tiny object graph shaped like the real game (from a diagnose report):
+    GM.Core -> GameManager._mainCharacters[0] -> CharacterController
+            -> WeaponsManager / AccessoriesManager -> ActiveEquipment (List of Equipment)."""
 
-    def __init__(self, root_name="GM", root_field="Core", player_field="_player",
-                 weapons_field="_activeEquipment", enum_names=("WHIP", "MAGIC_MISSILE", "POWER", "MAXHEALTH")):
+    def __init__(self, root_name="GM", root_field="Core", player_field="_mainCharacters",
+                 weapons_field="ActiveEquipment", enum_names=("VOID", "WHIP", "MAGIC_MISSILE", "POWER", "MAXHEALTH")):
         self.m = FakeMemory()
         self._pending_names: list[tuple[int, int]] = []  # (address to patch, string offset)
         self.enum_names = list(enum_names)
@@ -82,8 +92,9 @@ class FakeGame:
         self.am_cls = self.make_class("AccessoriesManager", [(weapons_field, TYPE_GENERICINST, 0x10, 0)])
         self.player_cls = self.make_class("CharacterController", [
             ("_weaponsManager", TYPE_CLASS, 0x10, 0), ("_accessoriesManager", TYPE_CLASS, 0x18, 0)])
-        self.gm_obj_cls = self.make_class("GameManager", [(player_field, TYPE_CLASS, 0x10, 0)])
-        self.root_cls = self.make_class(root_name, [(root_field, TYPE_CLASS, 0x0, FIELD_ATTRIBUTE_STATIC)])
+        self.gm_obj_cls = self.make_class("GameManager", [(player_field, TYPE_GENERICINST, 0x10, 0)])
+        self.root_cls = self.make_class(root_name, [(root_field, TYPE_CLASS, 0x0, FIELD_ATTRIBUTE_STATIC)],
+                                        namespace="VampireSurvivors.Framework")
 
         self.weapon_list = self.make_list([])
         self.passive_list = self.make_list([])
@@ -95,7 +106,9 @@ class FakeGame:
         self.m.w64(self.player + 0x10, wm)
         self.m.w64(self.player + 0x18, am)
         self.gm = self.obj(self.gm_obj_cls, 0x18)
-        self.m.w64(self.gm + 0x10, self.player)
+        self.players = self.make_list([])
+        self.set_objects(self.players, [self.player])
+        self.m.w64(self.gm + 0x10, self.players)
         statics = self.m.alloc(0x10)
         self.m.w64(statics, self.gm)
         self.m.w64(self.root_cls + 0xB8, statics)
@@ -104,10 +117,11 @@ class FakeGame:
         for addr, off in self._pending_names:
             self.m.w64(addr, self.m.meta_addr(off))
 
-    def make_class(self, name: str, fields: list[tuple[str, int, int, int]], parent: int = 0) -> int:
+    def make_class(self, name: str, fields: list[tuple[str, int, int, int]], parent: int = 0,
+                   namespace: str = "Game") -> int:
         klass = self.m.alloc(0x120)
         self._pending_names.append((klass + 0x10, self.m.string(name)))
-        self._pending_names.append((klass + 0x18, self.m.string("Game")))
+        self._pending_names.append((klass + 0x18, self.m.string(namespace)))
         for off in (0x40, 0x48, 0x78):
             self.m.w64(klass + off, klass)
         self.m.w64(klass + 0x58, parent)
@@ -144,3 +158,10 @@ class FakeGame:
             self.m.w32(e + 0x10, v)
             self.m.w64(arr + 0x20 + 8 * i, e)
         self.m.w32(lst + 0x18, len(values))
+
+    def set_objects(self, lst: int, objects: list[int]) -> None:
+        """Fill a list with existing object pointers (e.g. the players list)."""
+        arr = struct.unpack_from("<Q", self.m.heap, lst + 0x10 - HEAP)[0]
+        for i, o in enumerate(objects):
+            self.m.w64(arr + 0x20 + 8 * i, o)
+        self.m.w32(lst + 0x18, len(objects))

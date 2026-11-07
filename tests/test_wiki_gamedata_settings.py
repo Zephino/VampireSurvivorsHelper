@@ -144,6 +144,17 @@ class GameDataTests(unittest.TestCase):
         mapping = gamedata.internal_to_item(load_database(), gamedata.parse_game_json(self.GAME_JSON))
         self.assertEqual(mapping["MAXHEALTH"], "hollow_heart")
 
+    def test_unknown_internal_names_are_worked_out_from_recipes(self):
+        text = json.dumps({
+            "C1_SHRINK_GUARDI": [{"level": 1}],  # the game gives no display name
+            "C1_CLEARDEBRIS": [{"name": "Clear Debris", "evoInto": "C1_ASTEROIDS", "evoSynergy": ["C1_SHRINK_GUARDI"]}],
+            "C1_ASTEROIDS": [{"name": "Clear Asteroids"}],
+        })
+        db = load_database()
+        data = gamedata.parse_game_json(text)
+        self.assertEqual(gamedata.internal_to_item(db, data)["C1_SHRINK_GUARDI"], "mini_guardian")
+        self.assertEqual(gamedata.compare(db, data)["clear_asteroids"].status, "match")
+
     def test_non_game_text_is_ignored(self):
         self.assertEqual(gamedata.parse_game_json("hello").recipes, {})
         self.assertEqual(gamedata.parse_game_json("[1, 2]").names, {})

@@ -18,6 +18,8 @@ from .winapi import MemoryAccessError, ProcessMemory, ProcessNotFound
 
 DEFAULT_GAME_MAP = Path(__file__).resolve().parents[2] / "config" / "game_map.json"
 POINTER_TYPES = (TYPE_CLASS, TYPE_GENERICINST, TYPE_SZARRAY)
+INDEXED_STEP = re.compile(r"(.+)\[(\d+)\]")
+LIST_ELEMENTS_TO_EXPLORE = 4  # e.g. the players in _mainCharacters
 REDISCOVER_SECONDS = 5.0
 REATTACH_SECONDS = 30.0  # a failed class search is slow; don't repeat it every poll
 
@@ -254,22 +256,47 @@ class GameReader:
         return ReadResult("ok", msg, frozenset(owned), tuple(unknown))
 
     # ---- path helpers ----------------------------------------------------
+    @staticmethod
+    def _split_index(step: str) -> tuple[str, int | None]:
+        """'_mainCharacters[0]' -> ('_mainCharacters', 0); '_player' -> ('_player', None)."""
+        m = INDEXED_STEP.fullmatch(step)
+        return (m.group(1), int(m.group(2))) if m else (step, None)
+
+    def _step(self, il2: Il2Cpp, obj: int, step: str) -> int:
+        """Follow one path step: a field, or 'field[i]' for element i of a list/array field."""
+        name, index = self._split_index(step)
+        obj = il2.read_field_ptr(obj, name)
+        if index is not None and obj:
+            elements = il2.collection_elements(obj)
+            obj = elements[index] if index < len(elements) else 0
+        return obj
+
     def _follow(self, il2: Il2Cpp, obj: int, names: tuple[str, ...]) -> int:
         for name in names:
             if not obj:
                 return 0
-            obj = il2.read_field_ptr(obj, name)
+            obj = self._step(il2, obj, name)
         return obj
 
     def _follow_candidates(self, il2: Il2Cpp, obj: int, path: list[list[str]]) -> tuple[str, ...] | None:
         names: list[str] = []
         for candidates in path:
-            try:
-                f = il2.find_field(il2.object_class(obj), candidates)
-            except Il2CppError:
+            resolved = None
+            for cand in candidates:
+                base, index = self._split_index(cand)
+                try:
+                    f = il2.find_field(il2.object_class(obj), base)
+                except MemoryAccessError:
+                    continue
+                resolved = f.name if index is None else f"{f.name}[{index}]"
+                break
+            if resolved is None:
                 return None
-            names.append(f.name)
-            obj = il2.try_ptr(obj + f.offset)
+            try:
+                obj = self._step(il2, obj, resolved)
+            except MemoryAccessError:
+                return None
+            names.append(resolved)
             if not obj:
                 return None
         try:
@@ -347,6 +374,11 @@ class GameReader:
                     kind = "weapons" if weapons >= len(items) - weapons else "passives"
                     score = score_inventory_path(path, len(elements), len(items))
                     found.append(Candidate(kind, Chain(root_i, path), score, tuple(items)))
+                elif path and len(path) < self.map.search_depth and "[" not in path[-1]:
+                    # a list of other objects (e.g. the players): look inside its first few elements
+                    for i, el in enumerate(elements[:LIST_ELEMENTS_TO_EXPLORE]):
+                        if el not in visited:
+                            queue.append((el, root_i, path[:-1] + (f"{path[-1]}[{i}]",)))
                 continue
             if len(path) >= self.map.search_depth:
                 continue
@@ -363,7 +395,8 @@ MAX_SLOTS = 12  # inventories hold at most a dozen of each kind, even with extra
 GOOD_WORDS = ("player", "character", "equip", "weapon", "accessor", "inventory", "slot", "active", "owned")
 BAD_WORDS = ("pool", "available", "pickup", "drop", "ground", "spawn", "unlock", "banish", "seen",
              "collection", "shop", "store", "reward", "treasure", "chest", "levelup", "choice", "offer",
-             "allweapons", "allitems", "allaccessories", "enemy", "enemies", "factory", "prefab", "cache")
+             "allweapons", "allitems", "allaccessories", "enemy", "enemies", "factory", "prefab", "cache",
+             "cheat", "stats", "tileset", "store", "weighted")
 
 
 def score_inventory_path(path: tuple[str, ...], size: int, recognised: int) -> float:

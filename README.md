@@ -80,7 +80,7 @@ Names used for detection live in `config/game_map.json`:
 | --- | --- |
 | `process_name` | Game executable name |
 | `roots` | Class with a static field holding the game manager (tried in order) |
-| `inventories` | Field-name path from that object to the weapon / passive lists (candidate names per step) |
+| `inventories` | Field-name path from that object to the weapon / passive lists (candidate names per step; `field[0]` means the first element of a list field, e.g. `_mainCharacters[0]` for player 1) |
 | `type_field` | Field on each equipment object that identifies the item |
 | `enum_classes` | Enum(s) the item type field uses |
 | `enum_aliases` | Game's internal item names -> item ids in the evolution database |

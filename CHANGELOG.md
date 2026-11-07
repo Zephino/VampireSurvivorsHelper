@@ -1,5 +1,20 @@
 # Changelog
 
+## Version 00.05.00
+Date: 11/07/2026
+Time: 2:47 PM
+
+### Changes
+- Fixed inventory detection using the user's diagnose report: the player is now found at `GM.Core._mainCharacters[0]` (namespace `VampireSurvivors.Framework`), then the weapon / accessory managers, then `ActiveEquipment`. Path steps can now index into lists (`field[0]`), and the automatic search looks inside lists of objects such as the players list.
+- Item numbers are only translated with the `WeaponType` enum; `ItemType` (pickups like coins and gems) was causing wrong items.
+- Lists under the game's cheat-code, stats, tileset and weighted-store objects are rejected as inventories.
+- Internal game names without a display name (e.g. `C1_SHRINK_GUARDI`, `REVIVAL`) are worked out from recipes by elimination. This removes the false "mismatch" results and lets auto-detect recognise those items.
+- The diagnose report no longer crashes at the end (a variable was reused), walks each inventory path step by step showing every object's fields and how each item was identified, and lists up to 3000 related names.
+- The test fake now mirrors the real game layout; added tests for list-index paths, the players-list search, name elimination and an end-to-end diagnose run.
+
+### Reason
+The user's diagnose report showed the helper was reading a list from the game's cheat-code system instead of the player's inventory, and the diagnose script crashed at the end.
+
 ## Version 00.04.00
 Date: 11/07/2026
 Time: 2:39 PM

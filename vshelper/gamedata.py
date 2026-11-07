@@ -82,9 +82,39 @@ def load(out_dir: Path) -> GameData | None:
 
 
 def internal_to_item(db: Database, game_data: GameData) -> dict[str, str]:
-    """Internal game id -> database item id, matched by display name."""
+    """Internal game id -> database item id.
+
+    First by display name; then by elimination: if a game recipe and a wiki recipe for the same
+    evolution differ by exactly one unknown internal id, that id must be the remaining item
+    (e.g. C1_SHRINK_GUARDI -> Mini Guardian, REVIVAL -> Tirajisú).
+    """
     by_name = {_canon(i.name): i.id for i in db.items.values()}
-    return {k: by_name[_canon(n)] for k, n in game_data.names.items() if _canon(n) in by_name}
+    mapping = {k: by_name[_canon(n)] for k, n in game_data.names.items() if _canon(n) in by_name}
+    by_result: dict[str, list] = {}
+    for evo in db.evolutions:
+        by_result.setdefault(evo.result, []).append(evo)
+
+    changed = True
+    while changed:
+        changed = False
+        for base, recipe in game_data.recipes.items():
+            parts = list(dict.fromkeys([base, *recipe["synergy"]]))
+            into = recipe["into"]
+            unknown = [p for p in parts if p not in mapping]
+            known = {mapping[p] for p in parts if p in mapping}
+            if into in mapping and len(unknown) == 1:
+                for evo in by_result.get(mapping[into], []):
+                    leftover = [r for r in evo.requires if r not in known]
+                    if len(evo.requires) == len(parts) and len(leftover) == 1 and leftover[0] not in mapping.values():
+                        mapping[unknown[0]] = leftover[0]
+                        changed = True
+                        break
+            elif into not in mapping and not unknown:
+                matches = [e.result for e in db.evolutions if set(e.requires) == known]
+                if len(matches) == 1 and matches[0] not in mapping.values():
+                    mapping[into] = matches[0]
+                    changed = True
+    return mapping
 
 
 @dataclass(frozen=True)

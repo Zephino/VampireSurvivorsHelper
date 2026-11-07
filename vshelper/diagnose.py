@@ -50,13 +50,65 @@ def _dump_object(il2: Il2Cpp, obj: int, out: list[str], indent: str = "  ") -> N
         out.append(f"{indent}  {f.name} (+0x{f.offset:X}, type 0x{f.type_code:02X}) = {_describe_value(il2, obj, f)}")
 
 
-def run(output: Path = Path("vshelper-diagnose.txt")) -> int:
+def _walk_inventory_paths(il2: Il2Cpp, reader: GameReader, gmap, found: dict, out: list[str]) -> None:
+    """Follow each configured inventory path, dumping every object on the way."""
+    for root in gmap.roots:
+        klass = found.get(root["class"])
+        if not klass:
+            continue
+        try:
+            start = il2.read_static_ptr(klass, root["static_field"])
+        except MemoryAccessError as exc:
+            out.append(f"  {root['class']}: {exc}")
+            continue
+        for kind, path in gmap.inventories.items():
+            out.append("")
+            out.append(f"== Walking the {kind} path from {root['class']} ==")
+            obj = start
+            for candidates in path:
+                if not obj:
+                    out.append("  (null - is a run in progress?)")
+                    break
+                _dump_object(il2, obj, out, "  ")
+                step = None
+                for cand in candidates:
+                    base, _index = reader._split_index(cand)
+                    try:
+                        il2.find_field(il2.object_class(obj), base)
+                        step = cand
+                        break
+                    except MemoryAccessError:
+                        continue
+                if step is None:
+                    out.append(f"  !! none of these fields exist here: {', '.join(candidates)}")
+                    obj = 0
+                    break
+                out.append(f"  --> following {step}")
+                try:
+                    obj = reader._step(il2, obj, step)
+                except MemoryAccessError as exc:
+                    out.append(f"  !! {exc}")
+                    obj = 0
+                    break
+            if obj:
+                _dump_object(il2, obj, out, "  ")
+                try:
+                    for el in il2.collection_elements(obj)[:6]:
+                        _dump_object(il2, el, out, "    ")
+                        raw = reader.identify(reader._session, el) if reader._session else None
+                        out.append(f"      identified as: {raw}")
+                except MemoryAccessError as exc:
+                    out.append(f"  !! {exc}")
+        break
+
+
+def run(output: Path = Path("vshelper-diagnose.txt"), open_memory=ProcessMemory.open_by_name) -> int:
     db, _warning = load_best_database()
     gmap = load_game_map()
     out: list[str] = ["Vampire Survivors Helper - diagnostic report", ""]
 
     try:
-        mem = ProcessMemory.open_by_name(gmap.process_name)
+        mem = open_memory(gmap.process_name)
     except MemoryAccessError as exc:
         print(f"Error: {exc}")
         return 1
@@ -101,7 +153,11 @@ def run(output: Path = Path("vshelper-diagnose.txt")) -> int:
                 out.append("  " + ", ".join(f"{i}:{n}" for i, n in enumerate(il2.enum_names(found[name]))))
 
         reader = GameReader(db, gmap, open_memory=lambda _name: mem)
+        game = gamedata.load(CACHE_ROOT)
+        if game is not None:
+            reader.matcher.add_aliases(gamedata.internal_to_item(db, game))
         result = reader.poll()
+        _walk_inventory_paths(il2, reader, gmap, found, out)
         out.append("")
         out.append("== Detection result ==")
         out.append(f"  state: {result.state}")
@@ -135,7 +191,7 @@ def run(output: Path = Path("vshelper-diagnose.txt")) -> int:
             names = sorted({m.group(0).decode() for m in KEYWORDS.finditer(strings[1])})
             out.append("")
             out.append(f"== Related names in metadata ({len(names)}) ==")
-            out.extend(f"  {n}" for n in names[:400])
+            out.extend(f"  {n}" for n in names[:3000])
 
     out.append("")
     out.append("== Item pictures ==")
@@ -157,10 +213,10 @@ def run(output: Path = Path("vshelper-diagnose.txt")) -> int:
         checks = gamedata.compare(db, game)
         matches = sum(1 for c in checks.values() if c.status == "match")
         out.append(f"  game recipes found: {len(game.recipes)}; compared: {len(checks)}; match: {matches}")
-        for result, c in sorted(checks.items()):
+        for evolved, c in sorted(checks.items()):
             if c.status == "mismatch":
-                wiki = next(e for e in db.evolutions if e.result == result)
-                out.append(f"  MISMATCH {db.name(result)}: wiki {' + '.join(db.name(r) for r in wiki.requires)}"
+                wiki = next(e for e in db.evolutions if e.result == evolved)
+                out.append(f"  MISMATCH {db.name(evolved)}: wiki {' + '.join(db.name(r) for r in wiki.requires)}"
                            f" / game {' + '.join(db.name(r) for r in c.game_requires)}")
 
     output.write_text("\n".join(out) + "\n", encoding="utf-8")

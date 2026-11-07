@@ -2,28 +2,27 @@
   "_comment": "Names (not addresses) the helper uses to find your inventory in Vampire Survivors' memory. Each list holds candidate names tried in order. If the configured path fails, the helper searches the game objects automatically for weapon/passive lists. Run 'python -m vshelper diagnose' to check what was found.",
   "process_name": "VampireSurvivors.exe",
   "roots": [
-    {"class": "GM", "static_field": ["Core", "_core", "<Core>k__BackingField"]},
-    {"class": "GameManager", "static_field": ["Instance", "_instance", "<Instance>k__BackingField", "Core"]}
+    {"class": "GM", "namespace": "VampireSurvivors.Framework", "static_field": ["Core", "_core", "<Core>k__BackingField"]}
   ],
   "inventories": {
     "weapons": {
       "path": [
-        ["Player", "_player", "PlayerOne", "_playerOne", "MainPlayer"],
-        ["WeaponsManager", "_weaponsManager"],
-        ["ActiveEquipment", "_activeEquipment", "ActiveWeapons", "_activeWeapons", "Weapons", "_weapons"]
+        ["_mainCharacters[0]", "MainCharacters[0]", "_characters[0]"],
+        ["WeaponsManager", "_weaponsManager", "<WeaponsManager>k__BackingField", "_characterWeaponsManager"],
+        ["ActiveEquipment", "_activeEquipment", "<ActiveEquipment>k__BackingField", "ActiveWeapons", "_activeWeapons"]
       ]
     },
     "passives": {
       "path": [
-        ["Player", "_player", "PlayerOne", "_playerOne", "MainPlayer"],
-        ["AccessoriesManager", "_accessoriesManager"],
-        ["ActiveEquipment", "_activeEquipment", "ActiveAccessories", "_activeAccessories", "Accessories", "_accessories"]
+        ["_mainCharacters[0]", "MainCharacters[0]", "_characters[0]"],
+        ["AccessoriesManager", "_accessoriesManager", "<AccessoriesManager>k__BackingField", "_characterAccessoriesManager"],
+        ["ActiveEquipment", "_activeEquipment", "<ActiveEquipment>k__BackingField", "ActiveAccessories", "_activeAccessories"]
       ]
     }
   },
-  "type_field": ["Type", "_type", "<Type>k__BackingField", "WeaponType", "_weaponType", "ItemType", "_itemType", "Id", "_id"],
-  "enum_classes": ["WeaponType", "ItemType"],
-  "search_depth": 4,
+  "type_field": ["Type", "_type", "<Type>k__BackingField", "WeaponType", "_weaponType", "<WeaponType>k__BackingField", "Id", "_id"],
+  "enum_classes": ["WeaponType"],
+  "search_depth": 5,
   "search_max_objects": 3000,
   "enum_aliases": {
     "WHIP": "whip", "VAMPIRICA": "bloody_tear",
