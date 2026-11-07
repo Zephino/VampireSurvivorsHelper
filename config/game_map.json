@@ -1,0 +1,60 @@
+{
+  "_comment": "Names (not addresses) the helper uses to find your inventory in Vampire Survivors' memory. Each list holds candidate names tried in order. If the configured path fails, the helper searches the game objects automatically for weapon/passive lists. Run 'python -m vshelper diagnose' to check what was found.",
+  "process_name": "VampireSurvivors.exe",
+  "roots": [
+    {"class": "GM", "static_field": ["Core", "_core", "<Core>k__BackingField"]},
+    {"class": "GameManager", "static_field": ["Instance", "_instance", "<Instance>k__BackingField", "Core"]}
+  ],
+  "inventories": {
+    "weapons": {
+      "path": [
+        ["Player", "_player", "PlayerOne", "_playerOne", "MainPlayer"],
+        ["WeaponsManager", "_weaponsManager"],
+        ["ActiveEquipment", "_activeEquipment", "ActiveWeapons", "_activeWeapons", "Weapons", "_weapons"]
+      ]
+    },
+    "passives": {
+      "path": [
+        ["Player", "_player", "PlayerOne", "_playerOne", "MainPlayer"],
+        ["AccessoriesManager", "_accessoriesManager"],
+        ["ActiveEquipment", "_activeEquipment", "ActiveAccessories", "_activeAccessories", "Accessories", "_accessories"]
+      ]
+    }
+  },
+  "type_field": ["Type", "_type", "<Type>k__BackingField", "WeaponType", "_weaponType", "ItemType", "_itemType", "Id", "_id"],
+  "enum_classes": ["WeaponType", "ItemType"],
+  "search_depth": 4,
+  "search_max_objects": 3000,
+  "enum_aliases": {
+    "WHIP": "whip", "VAMPIRICA": "bloody_tear",
+    "MAGIC_MISSILE": "magic_wand", "HOLY_MISSILE": "holy_wand",
+    "KNIFE": "knife", "THOUSAND": "thousand_edge",
+    "AXE": "axe", "SCYTHE": "death_spiral",
+    "CROSS": "cross", "HEAVENSWORD": "heaven_sword",
+    "HOLYBOOK": "king_bible", "VESPERS": "unholy_vespers",
+    "FIREBALL": "fire_wand", "HELLFIRE": "hellfire",
+    "GARLIC": "garlic", "VORTEX": "soul_eater",
+    "HOLYWATER": "santa_water", "BORA": "la_borra",
+    "DIAMOND": "runetracer", "ROCHER": "no_future",
+    "LIGHTNING": "lightning_ring", "LOOP": "thunder_loop",
+    "PENTAGRAM": "pentagram", "SIRE": "gorgeous_moon",
+    "SILF": "peachone", "SILF2": "ebony_wings", "SILF3": "vandalier",
+    "GUNS": "phiera_der_tuphello", "GUNS2": "eight_the_sparrow", "GUNS3": "phieraggi",
+    "GATTI": "gatti_amari", "STIGRANGATTI": "vicious_hunger",
+    "SONG": "song_of_mana", "MANNAGGIA": "mannajja",
+    "TRAPANO": "shadow_pinion", "TRAPANO2": "valkyrie_turner",
+    "LANCET": "clock_lancet", "CORRIDOR": "infinite_corridor",
+    "LAUREL": "laurel", "SHROUD": "crimson_shroud",
+    "VENTO": "vento_sacro", "VENTO2": "fuwalafuwaloo",
+    "TRIASSO1": "bracelet", "TRIASSO2": "bi_bracelet", "TRIASSO3": "tri_bracelet",
+    "VICTORY": "victory_sword",
+    "BONE": "bone", "CHERRY": "cherry_bomb", "CART2": "carrello", "FLOWER": "celestial_dusting", "LAROBBA": "la_robba",
+    "POWER": "spinach", "ARMOR": "armor", "MAXHEALTH": "hollow_heart", "REGEN": "pummarola",
+    "COOLDOWN": "empty_tome", "AREA": "candelabrador", "SPEED": "bracer", "DURATION": "spellbinder",
+    "AMOUNT": "duplicator", "MOVESPEED": "wings", "MAGNET": "attractorb", "LUCK": "clover",
+    "GROWTH": "crown", "GREED": "stone_mask", "REVIVAL": "tiragisu", "CURSE": "skull_omaniac",
+    "SILVER": "silver_ring", "GOLD": "gold_ring", "LEFT": "metaglio_left", "RIGHT": "metaglio_right",
+    "TORRONAS": "torronas_box", "TORRONA": "torronas_box"
+  },
+  "id_map": {}
+}
