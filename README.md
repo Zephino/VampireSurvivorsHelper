@@ -56,7 +56,11 @@ The status bar at the bottom says what the helper is doing ("Waiting for a run t
 "Reading game: 4 item(s) detected", etc.).
 
 **Manual mode:** untick *Auto-detect from game* to tick items yourself (useful if detection ever
-breaks after a game update). The *Filter* box searches the item lists.
+breaks after a game update). The *Filter* box searches the item list.
+
+**Settings tab:** next to the *Items* tab. Under *Expansions*, untick any DLC you don't own to
+hide its items and evolutions (all are on by default). Settings are saved to `settings.json` in
+the project folder.
 
 If Windows blocks access ("error 5"), run the helper from an administrator command prompt.
 
@@ -84,9 +88,22 @@ Names used for detection live in `config/game_map.json`:
 
 ## Evolution data
 
-All recipes are in `vshelper/data/evolutions.json` and can be edited. Entries marked
-`"verified": false` (mostly DLC) should be double-checked in game; the app labels them
-"unverified".
+Recipes and item names come from the [Vampire Survivors wiki](https://vampire.survivors.wiki/Evolution)
+(CC BY-SA), covering the base game and all expansions:
+
+- A copy ships in `vshelper/data/evolutions.json`, so the helper works offline.
+- About once a week the helper downloads the latest wiki data in the background to
+  `cache/wiki_evolutions.json`; it's used from the next start. To update right away:
+  `python -m vshelper update-data`
+- The wiki is then **checked against your game files**: while extracting pictures, the helper also
+  reads the game's own evolution data. Each recipe shows "✓ matches game files" or
+  "⚠ game files say: ...". The diagnose report lists every mismatch.
+
+A few wiki recipes have conditions that aren't items (e.g. Candybox needs max-level passives and
+evolutions) and are left out; `update-data` prints them. Emerald Diorama evolutions that need a
+Glimmer show "Also needs: <Glimmer>".
+
+Developers: `python -m vshelper update-data --bundled` refreshes the bundled copy.
 
 ## Development
 
@@ -103,6 +120,9 @@ Project layout:
 - `vshelper/memory/winapi.py`: read-only Windows process memory access
 - `vshelper/memory/il2cpp.py`: finds Unity IL2CPP classes, fields and objects by name
 - `vshelper/memory/game.py`: reads the inventory using `config/game_map.json`
-- `vshelper/icons.py`: finds the game install and extracts item pictures
+- `vshelper/icons.py`: finds the game install and extracts item pictures (and the game's evolution data)
+- `vshelper/wiki.py`: downloads and parses the wiki's Evolution page and item lists
+- `vshelper/gamedata.py`: reads the game's evolution data and compares it with the wiki
+- `vshelper/settings.py`: saved user settings
 - `vshelper/diagnose.py`: detection report
 - `vshelper/ui.py`: the window

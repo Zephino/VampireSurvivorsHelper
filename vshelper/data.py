@@ -7,6 +7,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 DEFAULT_DB_PATH = Path(__file__).parent / "data" / "evolutions.json"
+CACHE_ROOT = Path(__file__).resolve().parents[1] / "cache"
+# A newer copy downloaded from the wiki at runtime (see vshelper/wiki.py) is preferred when valid.
+CACHED_DB_PATH = CACHE_ROOT / "wiki_evolutions.json"
 
 
 class DatabaseError(Exception):
@@ -29,12 +32,16 @@ class Evolution:
     max_level: tuple[str, ...] = ()
     verified: bool = True
     notes: str = ""
+    kind: str = "evolution"  # evolution | union | gift
+    dlc: str = "Base game"
 
 
 @dataclass
 class Database:
     items: dict[str, Item] = field(default_factory=dict)
     evolutions: list[Evolution] = field(default_factory=list)
+    source: str = "bundled"
+    generated: str = ""
 
     def weapons(self) -> list[Item]:
         return [i for i in self.items.values() if i.kind == "weapon"]
@@ -42,9 +49,32 @@ class Database:
     def passives(self) -> list[Item]:
         return [i for i in self.items.values() if i.kind == "passive"]
 
+    def expansions(self) -> list[str]:
+        """DLC names in the order they first appear in the data (base game excluded)."""
+        seen: dict[str, None] = {}
+        for evo in self.evolutions:
+            seen.setdefault(evo.dlc, None)
+        for item in self.items.values():
+            if item.dlc:
+                seen.setdefault(item.dlc, None)
+        return [d for d in seen if d != "Base game"]
+
     def name(self, item_id: str) -> str:
         item = self.items.get(item_id)
         return item.name if item else item_id
+
+
+def load_best_database() -> tuple[Database, str | None]:
+    """The wiki copy in cache/ if it is valid, else the bundled database.
+
+    Returns (database, warning) where warning explains why the cached copy was not used.
+    """
+    if CACHED_DB_PATH.exists():
+        try:
+            return load_database(CACHED_DB_PATH), None
+        except DatabaseError as exc:
+            return load_database(), f"Ignoring downloaded wiki data: {exc}"
+    return load_database(), None
 
 
 def load_database(path: Path | str = DEFAULT_DB_PATH) -> Database:
@@ -59,7 +89,7 @@ def load_database(path: Path | str = DEFAULT_DB_PATH) -> Database:
 
 
 def parse_database(raw: dict, source: str = "<data>") -> Database:
-    db = Database()
+    db = Database(source=raw.get("source", "bundled"), generated=raw.get("generated", ""))
     errors: list[str] = []
 
     for kind, key in (("weapon", "weapons"), ("passive", "passives")):
@@ -87,6 +117,8 @@ def parse_database(raw: dict, source: str = "<data>") -> Database:
                 max_level=tuple(entry.get("max_level", ())),
                 verified=bool(entry.get("verified", True)),
                 notes=entry.get("notes", ""),
+                kind=entry.get("kind", "evolution"),
+                dlc=entry.get("dlc", "Base game"),
             )
         except KeyError as exc:
             errors.append(f"evolution entry {entry!r} is missing {exc}")

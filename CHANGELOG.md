@@ -1,5 +1,22 @@
 # Changelog
 
+## Version 00.03.00
+Date: 11/07/2026
+Time: 2:34 PM
+
+### Changes
+- Evolution data now comes from the Vampire Survivors wiki (vampire.survivors.wiki): 165 recipes covering the base game and every expansion (evolutions, unions and gifts), plus weapon and passive item names. It replaces the hand-written list in `vshelper/data/evolutions.json`.
+- Added `python -m vshelper update-data`. The helper also refreshes the wiki data in the background about once a week into `cache/wiki_evolutions.json`, used from the next start.
+- The wiki data is checked against the game files: the one-time picture extraction also reads the game's own evolution data (`cache/game_data.json`). Each recipe shows "matches game files" or what the game files say instead, and the diagnose report lists mismatches.
+- Internal item names read from the game files are also used to recognise items during memory reading.
+- Added a Settings tab with Expansions toggles (all on by default) that hide an expansion's items and evolutions; saved to `settings.json` (gitignored).
+- The item list only shows items that take part in a recipe.
+- Emerald Diorama evolutions that need a Glimmer show "Also needs: <Glimmer>". Three wiki recipes with non-item conditions (Candybox, Alucard Swords, Spirit Rings) are left out.
+- Fixed the internal alias for Tirajisú (wiki spelling) and added tests for the wiki parser, game data comparison, settings and expansion filtering. Updated the README.
+
+### Reason
+User asked to pull all data from the wiki and compare it with the game files, to include all expansions with per-expansion toggles on by default, and to add a Settings tab for these and future settings.
+
 ## Version 00.02.00
 Date: 11/07/2026
 Time: 2:27 PM

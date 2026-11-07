@@ -13,10 +13,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Iterable
 
-from .data import Database
+from . import gamedata
+from .data import CACHE_ROOT, Database
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-CACHE_DIR = PROJECT_ROOT / "cache" / "icons"
+CACHE_DIR = CACHE_ROOT / "icons"
 MANIFEST = "manifest.json"
 ICON_SIZE = 32
 STEAM_APP_ID = "1794680"
@@ -204,6 +204,7 @@ def extract_icons(game_dir: Path, db: Database, aliases: dict[str, str], out_dir
             text_assets.append(obj)
 
     frames: dict[str, str] = {}
+    game_data = gamedata.GameData()
     for obj in text_assets:
         try:
             asset = obj.read()
@@ -214,6 +215,10 @@ def extract_icons(game_dir: Path, db: Database, aliases: dict[str, str], out_dir
         if '"frameName"' in text or '"frame"' in text:
             for item_id, frame in frame_names_from_json(text, lookup).items():
                 frames.setdefault(item_id, frame)
+        if '"evoInto"' in text:
+            game_data.merge(gamedata.parse_game_json(text))
+    # The game's evolution data is saved next to the icons folder to double-check the wiki data.
+    gamedata.save(game_data, out_dir.parent)
     frame_lookup = {canon(Path(f).stem): item_id for item_id, f in frames.items()}
 
     report = ExtractReport(sprite_count=len(sprites))
@@ -264,7 +269,7 @@ def read_manifest(out_dir: Path | None = None) -> dict | None:
 
 def needs_extraction(game_dir: Path | None, out_dir: Path | None = None) -> bool:
     manifest = read_manifest(out_dir)
-    if manifest is None:
+    if manifest is None or not ((out_dir or CACHE_DIR).parent / gamedata.GAME_DATA_FILE).exists():
         return True
     return game_dir is not None and manifest.get("build") != _build_marker(game_dir)
 

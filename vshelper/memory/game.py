@@ -76,6 +76,12 @@ class ItemMatcher:
             self._canon.setdefault(_canon(item.id), item.id)
             self._canon.setdefault(_canon(item.name), item.id)
 
+    def add_aliases(self, aliases: dict[str, str]) -> None:
+        """Add internal-name -> item id pairs (e.g. read from the game files)."""
+        for k, v in aliases.items():
+            if v in self.db.items:
+                self.aliases.setdefault(k.upper(), v)
+
     def match(self, raw: str) -> str | None:
         if raw in self.id_map:
             return self.id_map[raw] if self.id_map[raw] in self.db.items else None
@@ -115,7 +121,7 @@ class GameReader:
                  clock: Callable[[], float] = time.monotonic):
         self.db = db
         self.map = game_map
-        self.matcher = ItemMatcher(db, game_map.enum_aliases, game_map.id_map)
+        self.matcher = ItemMatcher(db, dict(game_map.enum_aliases), game_map.id_map)
         self._open = open_memory or ProcessMemory.open_by_name
         self._clock = clock
         self._session: _Session | None = None

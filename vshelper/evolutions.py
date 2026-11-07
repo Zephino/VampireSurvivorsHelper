@@ -21,14 +21,14 @@ class Suggestions:
     further: list[Suggestion] = field(default_factory=list)    # missing two or more
 
 
-def suggest(db: Database, owned: set[str]) -> Suggestions:
+def suggest(db: Database, owned: set[str], hidden_dlc: set[str] | frozenset[str] = frozenset()) -> Suggestions:
     """Return evolutions that involve at least one owned item, grouped by how close they are.
 
-    Evolutions whose result is already owned are skipped.
+    Evolutions whose result is already owned, or that belong to a hidden expansion, are skipped.
     """
     out = Suggestions()
     for evo in db.evolutions:
-        if evo.result in owned:
+        if evo.result in owned or evo.dlc in hidden_dlc:
             continue
         have = tuple(r for r in evo.requires if r in owned)
         if not have:

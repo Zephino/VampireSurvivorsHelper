@@ -8,8 +8,12 @@ import tkinter as tk
 from pathlib import Path
 from tkinter import ttk
 
-from . import icons
-from .data import Database, Item
+import json
+import time
+
+from . import gamedata, icons
+from . import settings as user_settings
+from .data import CACHE_ROOT, CACHED_DB_PATH, Database, DatabaseError, Item, parse_database
 from .evolutions import Suggestion, suggest
 from .memory.game import GameMap, GameReader, ReadResult
 from .memory.winapi import process_exe_path
@@ -77,8 +81,43 @@ class ReaderThread(threading.Thread):
         self.reader.close()
 
 
+WIKI_REFRESH_DAYS = 7
+
+
+class WikiThread(threading.Thread):
+    """Downloads fresh evolution data from the wiki about once a week (used from the next start)."""
+
+    def __init__(self, db: Database, messages: "queue.Queue[tuple[str, str]]"):
+        super().__init__(daemon=True)
+        self.db = db
+        self.messages = messages
+
+    def run(self) -> None:
+        try:
+            age_days = (time.time() - CACHED_DB_PATH.stat().st_mtime) / 86400
+        except OSError:
+            age_days = None
+        if age_days is not None and age_days < WIKI_REFRESH_DAYS:
+            return
+        from .wiki import WikiError, download_database
+        try:
+            raw, _skipped = download_database()
+            fresh = parse_database(raw, source="wiki download")
+        except (WikiError, DatabaseError) as exc:
+            self.messages.put(("wiki", f"Wiki update skipped: {exc}"))
+            return
+        CACHED_DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+        CACHED_DB_PATH.write_text(json.dumps(raw, indent=1, ensure_ascii=False), encoding="utf-8")
+        old = {(e.result, e.requires) for e in self.db.evolutions}
+        new = {(e.result, e.requires) for e in fresh.evolutions}
+        if old != new:
+            self.messages.put(("wiki", f"New wiki data downloaded ({len(new - old)} changed recipes). "
+                                       "Restart the helper to use it."))
+
+
 class App:
-    def __init__(self, root: tk.Tk, db: Database, game_map: GameMap | None, map_error: str | None = None):
+    def __init__(self, root: tk.Tk, db: Database, game_map: GameMap | None, map_error: str | None = None,
+                 notice: str | None = None):
         self.root = root
         self.db = db
         self.vars: dict[str, tk.BooleanVar] = {}
@@ -87,6 +126,9 @@ class App:
         self.icon_messages: "queue.Queue[tuple[str, str]]" = queue.Queue()
         self.icons: dict[str, tk.PhotoImage] = {}
         self.small_icons: dict[str, tk.PhotoImage] = {}
+        self.settings, settings_warning = user_settings.load()
+        self.expansion_vars: dict[str, tk.BooleanVar] = {}
+        notice = notice or settings_warning
 
         root.title("Vampire Survivors Helper")
         root.geometry("1000x620")
@@ -105,12 +147,17 @@ class App:
 
         body = ttk.PanedWindow(root, orient="horizontal")
         body.pack(fill="both", expand=True, padx=6)
-        item_list = self._item_list(body, [
-            ("Weapons", [i for i in db.weapons() if not i.evolved]),
-            ("Passive Items", db.passives()),
-            ("Evolved Weapons", [i for i in db.weapons() if i.evolved]),
+        # Only items that take part in a recipe are listed; the rest can't evolve anything.
+        in_recipes = {i for e in db.evolutions for i in (e.result, *e.requires)}
+        left = ttk.Notebook(body)
+        body.add(left, weight=1)
+        item_list = self._item_list(left, [
+            ("Weapons", [i for i in db.weapons() if not i.evolved and i.id in in_recipes]),
+            ("Passive Items", [i for i in db.passives() if i.id in in_recipes]),
+            ("Evolved Weapons", [i for i in db.weapons() if i.evolved and i.id in in_recipes]),
         ])
-        body.add(item_list, weight=1)
+        left.add(item_list, text="Items")
+        left.add(self._settings_tab(left), text="Settings")
 
         self.output = tk.Text(body, wrap="word", state="disabled", font=("Segoe UI", 10), spacing1=2, spacing3=2)
         self.output.tag_configure("header", font=("Segoe UI", 11, "bold"), spacing1=10)
@@ -124,22 +171,29 @@ class App:
         bar.pack(fill="x", side="bottom")
         self.status = tk.StringVar(value="")
         ttk.Label(bar, textvariable=self.status, anchor="w", padding=4).pack(side="left", fill="x", expand=True)
-        self.icon_status = tk.StringVar(value="")
+        self.icon_status = tk.StringVar(value=notice or "")
         ttk.Label(bar, textvariable=self.icon_status, anchor="e", padding=4).pack(side="right")
 
+        self.checks: dict[str, gamedata.Check] = {}
+        self.game_reader: GameReader | None = None
         self._load_icons()
+        self._load_game_data()
         self.icon_thread = IconThread(db, game_map, self.icon_messages)
         self.icon_thread.start()
+        WikiThread(db, self.icon_messages).start()
 
         self.reader_thread: ReaderThread | None = None
         if game_map is not None:
-            self.reader_thread = ReaderThread(GameReader(db, game_map), self.results)
+            self.game_reader = GameReader(db, game_map)
+            self.reader_thread = ReaderThread(self.game_reader, self.results)
+            self._load_game_data()  # teach the reader the game's own item names, if known
             self.reader_thread.start()
         else:
             self.auto_var.set(False)
             auto.state(["disabled"])
             self.status.set(f"Auto-detect unavailable: {map_error}")
         self._toggle_auto()
+        self._apply_filter()
         self._refresh()
         root.after(200, self._drain_results)
         root.protocol("WM_DELETE_WINDOW", self._close)
@@ -164,7 +218,7 @@ class App:
             row += 1
             for item in sorted(items, key=lambda i: i.name.lower()):
                 var = tk.BooleanVar()
-                label = item.name if item.dlc == "Base game" else f"{item.name}  ({item.dlc})"
+                label = item.name if item.dlc in ("Base game", "") else f"{item.name}  ({item.dlc})"
                 cb = ttk.Checkbutton(inner, text=label, variable=var, command=self._refresh)
                 cb.grid(row=row, column=0, sticky="w", padx=14, pady=1)
                 row += 1
@@ -172,10 +226,44 @@ class App:
                 self.checkbuttons[item.id] = cb
         return outer
 
+    def _settings_tab(self, parent: tk.Widget) -> ttk.Frame:
+        frame = ttk.Frame(parent, padding=8)
+        group = ttk.LabelFrame(frame, text="Expansions", padding=8)
+        group.pack(fill="x", anchor="n")
+        ttk.Label(group, text="Untick an expansion to hide its items and evolutions.",
+                  wraplength=280).pack(anchor="w", pady=(0, 6))
+        for name in self.db.expansions():
+            var = tk.BooleanVar(value=name not in self.settings.hidden_expansions)
+            ttk.Checkbutton(group, text=name, variable=var, command=self._expansions_changed).pack(anchor="w")
+            self.expansion_vars[name] = var
+        buttons = ttk.Frame(group)
+        buttons.pack(anchor="w", pady=(6, 0))
+        ttk.Button(buttons, text="All on", command=lambda: self._set_all_expansions(True)).pack(side="left")
+        ttk.Button(buttons, text="All off", command=lambda: self._set_all_expansions(False)).pack(side="left", padx=6)
+        return frame
+
+    def hidden_expansions(self) -> set[str]:
+        return set(self.settings.hidden_expansions)
+
+    def _set_all_expansions(self, on: bool) -> None:
+        for var in self.expansion_vars.values():
+            var.set(on)
+        self._expansions_changed()
+
+    def _expansions_changed(self) -> None:
+        self.settings.hidden_expansions = [n for n, v in self.expansion_vars.items() if not v.get()]
+        error = user_settings.save(self.settings)
+        if error:
+            self.icon_status.set(error)
+        self._apply_filter()
+        self._refresh()
+
     def _apply_filter(self) -> None:
         text = self.filter_var.get().lower()
+        hidden = self.hidden_expansions()
         for item_id, cb in self.checkbuttons.items():
-            visible = text in self.db.items[item_id].name.lower()
+            item = self.db.items[item_id]
+            visible = text in item.name.lower() and item.dlc not in hidden
             if visible:
                 cb.grid()  # grid() restores the original row, so the order is kept
             else:
@@ -196,6 +284,15 @@ class App:
         for item_id, cb in self.checkbuttons.items():
             if item_id in self.small_icons:
                 cb.configure(image=self.small_icons[item_id], compound="left")
+
+    def _load_game_data(self) -> None:
+        """Use evolution data read from the game files: check recipes and learn internal item names."""
+        data = gamedata.load(CACHE_ROOT)
+        if data is None:
+            return
+        self.checks = gamedata.compare(self.db, data)
+        if self.game_reader is not None:
+            self.game_reader.matcher.add_aliases(gamedata.internal_to_item(self.db, data))
 
     def _insert_item(self, item_id: str, tag: str) -> None:
         img = self.icons.get(item_id)
@@ -223,11 +320,16 @@ class App:
             details.append(evo.notes)
         if not evo.verified:
             details.append("unverified data - double-check in game")
+        check = self.checks.get(evo.result)
+        if check and check.status == "match":
+            details.append("\u2713 matches game files")
+        elif check:
+            details.append("\u26a0 game files say: " + " + ".join(self.db.name(r) for r in check.game_requires))
         if details:
             out.insert("end", "  |  ".join(details) + "\n", "detail")
 
     def _refresh(self) -> None:
-        suggestions = suggest(self.db, self.owned())
+        suggestions = suggest(self.db, self.owned(), self.hidden_expansions())
         out = self.output
         out.configure(state="normal")
         out.delete("1.0", "end")
@@ -272,6 +374,7 @@ class App:
             self.icon_status.set(message)
             if kind == "done":
                 self._load_icons()
+                self._load_game_data()
                 self._refresh()
         latest = None
         while True:
@@ -299,7 +402,7 @@ class App:
         self.root.destroy()
 
 
-def run(db: Database, game_map: GameMap | None, map_error: str | None = None) -> None:
+def run(db: Database, game_map: GameMap | None, map_error: str | None = None, notice: str | None = None) -> None:
     root = tk.Tk()
-    App(root, db, game_map, map_error)
+    App(root, db, game_map, map_error, notice)
     root.mainloop()

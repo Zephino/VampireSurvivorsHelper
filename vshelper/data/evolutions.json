@@ -1,139 +1,4467 @@
 {
-  "_comment": "Evolution database. Edit freely. 'verified': false marks entries that should be double-checked in game. 'max_level' lists requirements that must be at max level (base weapons almost always). Evolutions happen when you open a treasure chest after 10:00 with all requirements.",
-  "weapons": [
-    {"id": "whip", "name": "Whip"},
-    {"id": "magic_wand", "name": "Magic Wand"},
-    {"id": "knife", "name": "Knife"},
-    {"id": "axe", "name": "Axe"},
-    {"id": "cross", "name": "Cross"},
-    {"id": "king_bible", "name": "King Bible"},
-    {"id": "fire_wand", "name": "Fire Wand"},
-    {"id": "garlic", "name": "Garlic"},
-    {"id": "santa_water", "name": "Santa Water"},
-    {"id": "runetracer", "name": "Runetracer"},
-    {"id": "lightning_ring", "name": "Lightning Ring"},
-    {"id": "pentagram", "name": "Pentagram"},
-    {"id": "peachone", "name": "Peachone"},
-    {"id": "ebony_wings", "name": "Ebony Wings"},
-    {"id": "phiera_der_tuphello", "name": "Phiera Der Tuphello"},
-    {"id": "eight_the_sparrow", "name": "Eight The Sparrow"},
-    {"id": "gatti_amari", "name": "Gatti Amari"},
-    {"id": "song_of_mana", "name": "Song of Mana"},
-    {"id": "shadow_pinion", "name": "Shadow Pinion"},
-    {"id": "clock_lancet", "name": "Clock Lancet"},
-    {"id": "laurel", "name": "Laurel"},
-    {"id": "vento_sacro", "name": "Vento Sacro"},
-    {"id": "bracelet", "name": "Bracelet"},
-    {"id": "victory_sword", "name": "Victory Sword"},
-    {"id": "bone", "name": "Bone"},
-    {"id": "cherry_bomb", "name": "Cherry Bomb"},
-    {"id": "carrello", "name": "Carréllo"},
-    {"id": "celestial_dusting", "name": "Celestial Dusting"},
-    {"id": "la_robba", "name": "La Robba"},
-
-    {"id": "silver_wind", "name": "Silver Wind", "dlc": "Legacy of the Moonspell"},
-    {"id": "summon_night", "name": "Summon Night", "dlc": "Legacy of the Moonspell"},
-    {"id": "mirage_robe", "name": "Mirage Robe", "dlc": "Legacy of the Moonspell"},
-    {"id": "night_sword", "name": "Night Sword", "dlc": "Legacy of the Moonspell"},
-    {"id": "mille_bolle_blu", "name": "Mille Bolle Blu", "dlc": "Legacy of the Moonspell"},
-
-    {"id": "flash_arrow", "name": "Flash Arrow", "dlc": "Tides of the Foscari"},
-    {"id": "prismatic_missile", "name": "Prismatic Missile", "dlc": "Tides of the Foscari"},
-    {"id": "spellstring", "name": "SpellString", "dlc": "Tides of the Foscari"},
-    {"id": "spellstream", "name": "SpellStream", "dlc": "Tides of the Foscari"},
-    {"id": "spellstrike", "name": "SpellStrike", "dlc": "Tides of the Foscari"},
-    {"id": "shadow_servant", "name": "Shadow Servant", "dlc": "Tides of the Foscari"},
-
-    {"id": "bloody_tear", "name": "Bloody Tear", "evolved": true},
-    {"id": "holy_wand", "name": "Holy Wand", "evolved": true},
-    {"id": "thousand_edge", "name": "Thousand Edge", "evolved": true},
-    {"id": "death_spiral", "name": "Death Spiral", "evolved": true},
-    {"id": "heaven_sword", "name": "Heaven Sword", "evolved": true},
-    {"id": "unholy_vespers", "name": "Unholy Vespers", "evolved": true},
-    {"id": "hellfire", "name": "Hellfire", "evolved": true},
-    {"id": "soul_eater", "name": "Soul Eater", "evolved": true},
-    {"id": "la_borra", "name": "La Borra", "evolved": true},
-    {"id": "no_future", "name": "NO FUTURE", "evolved": true},
-    {"id": "thunder_loop", "name": "Thunder Loop", "evolved": true},
-    {"id": "gorgeous_moon", "name": "Gorgeous Moon", "evolved": true},
-    {"id": "vandalier", "name": "Vandalier", "evolved": true},
-    {"id": "phieraggi", "name": "Phieraggi", "evolved": true},
-    {"id": "vicious_hunger", "name": "Vicious Hunger", "evolved": true},
-    {"id": "mannajja", "name": "Mannajja", "evolved": true},
-    {"id": "valkyrie_turner", "name": "Valkyrie Turner", "evolved": true},
-    {"id": "infinite_corridor", "name": "Infinite Corridor", "evolved": true},
-    {"id": "crimson_shroud", "name": "Crimson Shroud", "evolved": true},
-    {"id": "fuwalafuwaloo", "name": "Fuwalafuwaloo", "evolved": true},
-    {"id": "bi_bracelet", "name": "Bi-Bracelet", "evolved": true},
-    {"id": "tri_bracelet", "name": "Tri-Bracelet", "evolved": true},
-    {"id": "sole_solution", "name": "Sole Solution", "evolved": true},
-    {"id": "festive_winds", "name": "Festive Winds", "evolved": true, "dlc": "Legacy of the Moonspell"},
-    {"id": "echo_night", "name": "Echo Night", "evolved": true, "dlc": "Legacy of the Moonspell"},
-    {"id": "j_odore", "name": "J'Odore", "evolved": true, "dlc": "Legacy of the Moonspell"},
-    {"id": "muramasa", "name": "Muramasa", "evolved": true, "dlc": "Legacy of the Moonspell"},
-    {"id": "boo_roo_boolle", "name": "Boo Roo Boolle", "evolved": true, "dlc": "Legacy of the Moonspell"},
-    {"id": "millionaire", "name": "Millionaire", "evolved": true, "dlc": "Tides of the Foscari"},
-    {"id": "luminaire", "name": "Luminaire", "evolved": true, "dlc": "Tides of the Foscari"},
-    {"id": "spellstrom", "name": "SpellStrom", "evolved": true, "dlc": "Tides of the Foscari"},
-    {"id": "ophion", "name": "Ophion", "evolved": true, "dlc": "Tides of the Foscari"}
-  ],
-  "passives": [
-    {"id": "spinach", "name": "Spinach"},
-    {"id": "armor", "name": "Armor"},
-    {"id": "hollow_heart", "name": "Hollow Heart"},
-    {"id": "pummarola", "name": "Pummarola"},
-    {"id": "empty_tome", "name": "Empty Tome"},
-    {"id": "candelabrador", "name": "Candelabrador"},
-    {"id": "bracer", "name": "Bracer"},
-    {"id": "spellbinder", "name": "Spellbinder"},
-    {"id": "duplicator", "name": "Duplicator"},
-    {"id": "wings", "name": "Wings"},
-    {"id": "attractorb", "name": "Attractorb"},
-    {"id": "clover", "name": "Clover"},
-    {"id": "crown", "name": "Crown"},
-    {"id": "stone_mask", "name": "Stone Mask"},
-    {"id": "tiragisu", "name": "Tiragisú"},
-    {"id": "skull_omaniac", "name": "Skull O'Maniac"},
-    {"id": "torronas_box", "name": "Torrona's Box"},
-    {"id": "silver_ring", "name": "Silver Ring"},
-    {"id": "gold_ring", "name": "Gold Ring"},
-    {"id": "metaglio_left", "name": "Metaglio Left"},
-    {"id": "metaglio_right", "name": "Metaglio Right"}
-  ],
-  "evolutions": [
-    {"result": "bloody_tear", "requires": ["whip", "hollow_heart"], "max_level": ["whip"]},
-    {"result": "holy_wand", "requires": ["magic_wand", "empty_tome"], "max_level": ["magic_wand"]},
-    {"result": "thousand_edge", "requires": ["knife", "bracer"], "max_level": ["knife"]},
-    {"result": "death_spiral", "requires": ["axe", "candelabrador"], "max_level": ["axe"]},
-    {"result": "heaven_sword", "requires": ["cross", "clover"], "max_level": ["cross"]},
-    {"result": "unholy_vespers", "requires": ["king_bible", "spellbinder"], "max_level": ["king_bible"]},
-    {"result": "hellfire", "requires": ["fire_wand", "spinach"], "max_level": ["fire_wand"]},
-    {"result": "soul_eater", "requires": ["garlic", "pummarola"], "max_level": ["garlic"]},
-    {"result": "la_borra", "requires": ["santa_water", "attractorb"], "max_level": ["santa_water"]},
-    {"result": "no_future", "requires": ["runetracer", "armor"], "max_level": ["runetracer"]},
-    {"result": "thunder_loop", "requires": ["lightning_ring", "duplicator"], "max_level": ["lightning_ring"]},
-    {"result": "gorgeous_moon", "requires": ["pentagram", "crown"], "max_level": ["pentagram"]},
-    {"result": "vandalier", "requires": ["peachone", "ebony_wings"], "max_level": ["peachone", "ebony_wings"], "notes": "Union: both weapons merge into one slot."},
-    {"result": "phieraggi", "requires": ["phiera_der_tuphello", "eight_the_sparrow", "tiragisu"], "max_level": ["phiera_der_tuphello", "eight_the_sparrow"], "notes": "Union: both weapons merge into one slot."},
-    {"result": "vicious_hunger", "requires": ["gatti_amari", "stone_mask"], "max_level": ["gatti_amari"]},
-    {"result": "mannajja", "requires": ["song_of_mana", "skull_omaniac"], "max_level": ["song_of_mana"]},
-    {"result": "valkyrie_turner", "requires": ["shadow_pinion", "wings"], "max_level": ["shadow_pinion"]},
-    {"result": "infinite_corridor", "requires": ["clock_lancet", "silver_ring", "gold_ring"], "max_level": ["clock_lancet"]},
-    {"result": "crimson_shroud", "requires": ["laurel", "metaglio_left", "metaglio_right"], "max_level": ["laurel"]},
-    {"result": "fuwalafuwaloo", "requires": ["vento_sacro", "bloody_tear"], "max_level": ["vento_sacro"]},
-    {"result": "bi_bracelet", "requires": ["bracelet"], "max_level": ["bracelet"]},
-    {"result": "tri_bracelet", "requires": ["bi_bracelet"], "max_level": ["bi_bracelet"]},
-    {"result": "sole_solution", "requires": ["victory_sword", "torronas_box"], "max_level": ["victory_sword", "torronas_box"], "verified": false},
-
-    {"result": "festive_winds", "requires": ["silver_wind", "pummarola"], "max_level": ["silver_wind"], "verified": false},
-    {"result": "echo_night", "requires": ["summon_night", "duplicator"], "max_level": ["summon_night"], "verified": false},
-    {"result": "j_odore", "requires": ["mirage_robe", "attractorb"], "max_level": ["mirage_robe"], "verified": false},
-    {"result": "muramasa", "requires": ["night_sword", "stone_mask"], "max_level": ["night_sword"], "verified": false},
-    {"result": "boo_roo_boolle", "requires": ["mille_bolle_blu", "spellbinder"], "max_level": ["mille_bolle_blu"], "verified": false},
-
-    {"result": "millionaire", "requires": ["flash_arrow", "bracer"], "max_level": ["flash_arrow"], "verified": false},
-    {"result": "luminaire", "requires": ["prismatic_missile", "crown"], "max_level": ["prismatic_missile"], "verified": false},
-    {"result": "spellstrom", "requires": ["spellstring", "spellstream", "spellstrike"], "max_level": ["spellstring", "spellstream", "spellstrike"], "verified": false, "notes": "Union of the three Spell weapons."},
-    {"result": "ophion", "requires": ["shadow_servant", "skull_omaniac"], "max_level": ["shadow_servant"], "verified": false}
-  ]
+ "_comment": "Generated from https://vampire.survivors.wiki (CC BY-SA) on 2026-11-07 by 'python -m vshelper update-data'. Edit by re-running that command.",
+ "source": "vampire.survivors.wiki",
+ "generated": "2026-11-07",
+ "weapons": [
+  {
+   "id": "108_bocce",
+   "name": "108 Bocce",
+   "dlc": "Legacy of the Bloodmoon"
+  },
+  {
+   "id": "108_responsive_prayers",
+   "name": "108 Responsive Prayers",
+   "dlc": "Legacy of the Bloodmoon"
+  },
+  {
+   "id": "acerbatus",
+   "name": "Acerbatus",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "acquazzone",
+   "name": "Acquazzone"
+  },
+  {
+   "id": "alchemy_whip",
+   "name": "Alchemy Whip",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "alucard_shield",
+   "name": "Alucard Shield"
+  },
+  {
+   "id": "alucard_spear",
+   "name": "Alucard Spear",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "alucard_swords",
+   "name": "Alucard Swords",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "alucart_sworb",
+   "name": "Alucart Sworb",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "ammo_appalate",
+   "name": "Ammo Appalate",
+   "dlc": "Base game"
+  },
+  {
+   "id": "anima_of_mortaccio",
+   "name": "Anima of Mortaccio"
+  },
+  {
+   "id": "anura",
+   "name": "Anura",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "aqua_spheres",
+   "name": "Aqua Spheres"
+  },
+  {
+   "id": "arch_angle",
+   "name": "Arch Angle",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "argent_flow",
+   "name": "Argent Flow",
+   "dlc": "Legacy of the Moonspell",
+   "evolved": true
+  },
+  {
+   "id": "arma_dio",
+   "name": "Arma Dio"
+  },
+  {
+   "id": "arrow_of_goth",
+   "name": "Arrow of Goth",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "ashella",
+   "name": "Ashella",
+   "dlc": "Legacy of the Bloodmoon"
+  },
+  {
+   "id": "ashes_of_muspell",
+   "name": "Ashes of Muspell",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "atmo_torpedo",
+   "name": "Atmo-Torpedo",
+   "dlc": "Operation Guns",
+   "evolved": true
+  },
+  {
+   "id": "aura_blast",
+   "name": "Aura Blast",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "aurablaster_tip",
+   "name": "Aurablaster Tip",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "axe",
+   "name": "Axe",
+   "dlc": "Base game"
+  },
+  {
+   "id": "belnades_spellbook",
+   "name": "Belnades' Spellbook"
+  },
+  {
+   "id": "bfc2000_ad",
+   "name": "BFC2000-AD",
+   "dlc": "Operation Guns",
+   "evolved": true
+  },
+  {
+   "id": "bi_bracelet",
+   "name": "Bi-Bracelet",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "big_fuzzy_fist",
+   "name": "Big Fuzzy Fist",
+   "dlc": "Operation Guns",
+   "evolved": true
+  },
+  {
+   "id": "blacken_firmament",
+   "name": "Blacken Firmament",
+   "dlc": "Legacy of the Bloodmoon"
+  },
+  {
+   "id": "blade_crossbow",
+   "name": "Blade Crossbow",
+   "dlc": "Operation Guns"
+  },
+  {
+   "id": "blood_astronomia_xxi",
+   "name": "Blood Astronomia (XXI)"
+  },
+  {
+   "id": "blood_chalice",
+   "name": "Blood Chalice",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "blood_hex",
+   "name": "Blood Hex"
+  },
+  {
+   "id": "bloodlust",
+   "name": "Bloodlust",
+   "dlc": "Legacy of the Bloodmoon",
+   "evolved": true
+  },
+  {
+   "id": "bloody_tear",
+   "name": "Bloody Tear",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "bone",
+   "name": "Bone"
+  },
+  {
+   "id": "boo_roo_boolle",
+   "name": "Boo Roo Boolle",
+   "dlc": "Legacy of the Moonspell",
+   "evolved": true
+  },
+  {
+   "id": "bracelet",
+   "name": "Bracelet",
+   "dlc": "Base game"
+  },
+  {
+   "id": "bullova",
+   "name": "Bullova",
+   "dlc": "Emerald Diorama"
+  },
+  {
+   "id": "burning_alcarde",
+   "name": "Burning Alcarde"
+  },
+  {
+   "id": "bwaka_knife",
+   "name": "Bwaka Knife",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "c_u_laser",
+   "name": "C-U-Laser",
+   "dlc": "Operation Guns"
+  },
+  {
+   "id": "candybox",
+   "name": "Candybox"
+  },
+  {
+   "id": "cardinal_rain",
+   "name": "Cardinal Rain",
+   "dlc": "Legacy of the Bloodmoon",
+   "evolved": true
+  },
+  {
+   "id": "carnage_heart",
+   "name": "Carnage Heart",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "carrozza",
+   "name": "Carrozza!"
+  },
+  {
+   "id": "carrello",
+   "name": "Carréllo"
+  },
+  {
+   "id": "cavendish",
+   "name": "Cavendish",
+   "dlc": "Ante Chamber",
+   "evolved": true
+  },
+  {
+   "id": "celestial_booster",
+   "name": "Celestial Booster",
+   "dlc": "Ante Chamber"
+  },
+  {
+   "id": "celestial_dusting",
+   "name": "Celestial Dusting"
+  },
+  {
+   "id": "celestial_voulge",
+   "name": "Celestial Voulge",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "centralis_custos",
+   "name": "Centralis Custos",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "chaos_disaster",
+   "name": "Chaos Disaster"
+  },
+  {
+   "id": "chaos_rune",
+   "name": "Chaos Rune",
+   "dlc": "Base game"
+  },
+  {
+   "id": "cherry_bomb",
+   "name": "Cherry Bomb"
+  },
+  {
+   "id": "claimh_solais",
+   "name": "Claimh Solais",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "clear_asteroids",
+   "name": "Clear Asteroids",
+   "dlc": "Emergency Meeting",
+   "evolved": true
+  },
+  {
+   "id": "clear_debris",
+   "name": "Clear Debris",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "id": "clock_lancet",
+   "name": "Clock Lancet",
+   "dlc": "Base game"
+  },
+  {
+   "id": "clock_tower",
+   "name": "Clock Tower",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "coat_of_arms",
+   "name": "Coat of Arms"
+  },
+  {
+   "id": "cocytus",
+   "name": "Cocytus",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "confodere",
+   "name": "Confodere",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "crimson_shroud",
+   "name": "Crimson Shroud",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "crissaegrim_tip",
+   "name": "Crissaegrim Tip",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "cross",
+   "name": "Cross",
+   "dlc": "Base game"
+  },
+  {
+   "id": "cross_crasher_tip",
+   "name": "Cross Crasher Tip",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "crossed_wires",
+   "name": "Crossed Wires",
+   "dlc": "Emergency Meeting",
+   "evolved": true
+  },
+  {
+   "id": "curved_knife",
+   "name": "Curved Knife",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "dairy_cart",
+   "name": "Dairy Cart"
+  },
+  {
+   "id": "damnation",
+   "name": "Damnation",
+   "dlc": "Legacy of the Bloodmoon",
+   "evolved": true
+  },
+  {
+   "id": "dark_frogamorphosis",
+   "name": "Dark Frogamorphosis",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "dark_iron_shield",
+   "name": "Dark Iron Shield",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "dark_rift",
+   "name": "Dark Rift",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "darkness_illusion",
+   "name": "Darkness Illusion",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "dayblade",
+   "name": "Dayblade",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "daybreaker_tip",
+   "name": "Daybreaker Tip",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "death_hand",
+   "name": "Death Hand"
+  },
+  {
+   "id": "death_spiral",
+   "name": "Death Spiral",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "descent_into_misery",
+   "name": "Descent Into Misery",
+   "dlc": "Legacy of the Bloodmoon"
+  },
+  {
+   "id": "dextro_custos",
+   "name": "Dextro Custos",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "dies_irae",
+   "name": "Dies Irae",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "discus",
+   "name": "Discus",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "diver_mines",
+   "name": "Diver Mines",
+   "dlc": "Operation Guns"
+  },
+  {
+   "id": "divergence",
+   "name": "Divergence",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "divine_bloodline_ix",
+   "name": "Divine Bloodline (IX)"
+  },
+  {
+   "id": "dominus_agony",
+   "name": "Dominus Agony",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "dominus_anger",
+   "name": "Dominus Anger",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "dominus_hatred",
+   "name": "Dominus Hatred",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "dragon_water_whip",
+   "name": "Dragon Water Whip",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "dress_sword",
+   "name": "Dress Sword",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "dust_to_dust",
+   "name": "Dust to Dust",
+   "dlc": "Legacy of the Bloodmoon",
+   "evolved": true
+  },
+  {
+   "id": "eagle_gun",
+   "name": "Eagle Gun",
+   "dlc": "Emerald Diorama"
+  },
+  {
+   "id": "ebony_diabologue",
+   "name": "Ebony Diabologue"
+  },
+  {
+   "id": "ebony_wings",
+   "name": "Ebony Wings",
+   "dlc": "Base game"
+  },
+  {
+   "id": "echo_night",
+   "name": "Echo Night",
+   "dlc": "Legacy of the Moonspell",
+   "evolved": true
+  },
+  {
+   "id": "eight_the_sparrow",
+   "name": "Eight The Sparrow",
+   "dlc": "Base game"
+  },
+  {
+   "id": "embrace_of_gaea",
+   "name": "Embrace of Gaea",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "emerald_rapture",
+   "name": "Emerald Rapture",
+   "dlc": "Emerald Diorama"
+  },
+  {
+   "id": "emerald_wave",
+   "name": "Emerald Wave",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "emergency_meeting",
+   "name": "Emergency Meeting",
+   "dlc": "Emergency Meeting",
+   "evolved": true
+  },
+  {
+   "id": "endo_gears",
+   "name": "Endo Gears",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "epi_head",
+   "name": "Epi Head",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "eskizzibur",
+   "name": "Eskizzibur",
+   "dlc": "Tides of the Foscari"
+  },
+  {
+   "id": "espada_ropera",
+   "name": "Espada Ropera",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "evolution",
+   "name": "Evolution"
+  },
+  {
+   "id": "falconwind",
+   "name": "Falconwind",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "familiar_forge",
+   "name": "Familiar Forge"
+  },
+  {
+   "id": "fear_nova",
+   "name": "Fear Nova"
+  },
+  {
+   "id": "feather_spear",
+   "name": "Feather Spear",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "festive_winds",
+   "name": "Festive Winds",
+   "dlc": "Legacy of the Moonspell",
+   "evolved": true
+  },
+  {
+   "id": "fibonacci_spritz",
+   "name": "Fibonacci Spritz",
+   "dlc": "Ante Chamber"
+  },
+  {
+   "id": "fire_nova",
+   "name": "Fire Nova"
+  },
+  {
+   "id": "fire_wand",
+   "name": "Fire Wand",
+   "dlc": "Base game"
+  },
+  {
+   "id": "fire_l3gs",
+   "name": "Fire-L3GS",
+   "dlc": "Operation Guns",
+   "evolved": true
+  },
+  {
+   "id": "firearm",
+   "name": "Firearm",
+   "dlc": "Operation Guns"
+  },
+  {
+   "id": "fireball",
+   "name": "FireBall",
+   "dlc": "Legacy of the Bloodmoon"
+  },
+  {
+   "id": "firefall",
+   "name": "FireFall",
+   "dlc": "Legacy of the Bloodmoon"
+  },
+  {
+   "id": "firestall",
+   "name": "FireStall",
+   "dlc": "Legacy of the Bloodmoon",
+   "evolved": true
+  },
+  {
+   "id": "firewall",
+   "name": "FireWall",
+   "dlc": "Legacy of the Bloodmoon"
+  },
+  {
+   "id": "flamberge",
+   "name": "Flamberge",
+   "dlc": "Emerald Diorama"
+  },
+  {
+   "id": "flames_of_misspell",
+   "name": "Flames of Misspell",
+   "dlc": "Base game"
+  },
+  {
+   "id": "flash_arrow",
+   "name": "Flash Arrow",
+   "dlc": "Tides of the Foscari"
+  },
+  {
+   "id": "fleuret",
+   "name": "Fleuret",
+   "dlc": "Emerald Diorama"
+  },
+  {
+   "id": "forbidden_siren",
+   "name": "Forbidden Siren",
+   "dlc": "Legacy of the Bloodmoon",
+   "evolved": true
+  },
+  {
+   "id": "four_seasons",
+   "name": "Four Seasons",
+   "dlc": "Legacy of the Moonspell"
+  },
+  {
+   "id": "fulgur",
+   "name": "Fulgur",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "fuwalafuwaloo",
+   "name": "Fuwalafuwaloo",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "galatyn",
+   "name": "Galatyn",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "gale_force",
+   "name": "Gale Force",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "game_killer_0",
+   "name": "Game Killer (0)"
+  },
+  {
+   "id": "garlic",
+   "name": "Garlic",
+   "dlc": "Base game"
+  },
+  {
+   "id": "gatti_amari",
+   "name": "Gatti Amari",
+   "dlc": "Base game"
+  },
+  {
+   "id": "gaze_of_gaea",
+   "name": "Gaze of Gaea",
+   "dlc": "Base game"
+  },
+  {
+   "id": "gekkabijin",
+   "name": "Gekkabijin",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "gemini_i",
+   "name": "Gemini (I)"
+  },
+  {
+   "id": "gemma_torpor",
+   "name": "Gemma Torpor",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "gifts",
+   "name": "Gifts"
+  },
+  {
+   "id": "gilded_hand",
+   "name": "Gilded Hand",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "glaive",
+   "name": "Glaive",
+   "dlc": "Emerald Diorama"
+  },
+  {
+   "id": "glass_fandango",
+   "name": "Glass Fandango",
+   "dlc": "Base game"
+  },
+  {
+   "id": "globus",
+   "name": "Globus",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "godai_shuffle",
+   "name": "Godai Shuffle",
+   "dlc": "Legacy of the Moonspell",
+   "evolved": true
+  },
+  {
+   "id": "gorgeous_moon",
+   "name": "Gorgeous Moon",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "grand_cross",
+   "name": "Grand Cross",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "greatest_jubilee",
+   "name": "Greatest Jubilee"
+  },
+  {
+   "id": "gros_michel",
+   "name": "Gros Michel",
+   "dlc": "Ante Chamber"
+  },
+  {
+   "id": "guardians_targe",
+   "name": "Guardian's Targe",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "gunastrophe",
+   "name": "Gunastrophe",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "gungnir_souris",
+   "name": "Gungnir-Souris",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "hammer_dah",
+   "name": "Hammer-Dah"
+  },
+  {
+   "id": "hand_grenade",
+   "name": "Hand Grenade",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "hand_of_vlad",
+   "name": "Hand of Vlad"
+  },
+  {
+   "id": "hats",
+   "name": "Hats"
+  },
+  {
+   "id": "heart_of_fire_xix",
+   "name": "Heart of Fire (XIX)"
+  },
+  {
+   "id": "heaven_sword",
+   "name": "Heaven Sword",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "heavens_thunder",
+   "name": "Heaven's Thunder"
+  },
+  {
+   "id": "hecaton_machine_gun",
+   "name": "Hecaton Machine Gun",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "hellfire",
+   "name": "Hellfire",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "hex",
+   "name": "Hex",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "holy_wand",
+   "name": "Holy Wand",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "homing_miss",
+   "name": "Homing Miss",
+   "dlc": "Operation Guns"
+  },
+  {
+   "id": "hydra_cannon",
+   "name": "Hydra Cannon",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "hydro_pump_climax",
+   "name": "Hydro Pump Climax",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "hydro_storm",
+   "name": "Hydro Storm",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "hydrostormer_tip",
+   "name": "Hydrostormer Tip",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "hypergravity",
+   "name": "Hypergravity"
+  },
+  {
+   "id": "hyperion_bazooka",
+   "name": "Hyperion Bazooka",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "ice_fang",
+   "name": "Ice Fang",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "ice_nova",
+   "name": "Ice Nova"
+  },
+  {
+   "id": "icebrand",
+   "name": "Icebrand",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "impostongue",
+   "name": "Impostongue",
+   "dlc": "Emergency Meeting",
+   "evolved": true
+  },
+  {
+   "id": "incineration",
+   "name": "Incineration",
+   "dlc": "Legacy of the Bloodmoon"
+  },
+  {
+   "id": "infernolatro",
+   "name": "Infernolatro",
+   "dlc": "Ante Chamber"
+  },
+  {
+   "id": "infinite_corridor",
+   "name": "Infinite Corridor",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "insatiable",
+   "name": "Insatiable"
+  },
+  {
+   "id": "intuition",
+   "name": "Intuition"
+  },
+  {
+   "id": "iron_ball",
+   "name": "Iron Ball",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "iron_shield",
+   "name": "Iron Shield",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "jodore",
+   "name": "J'Odore",
+   "dlc": "Legacy of the Moonspell",
+   "evolved": true
+  },
+  {
+   "id": "javelin",
+   "name": "Javelin",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "jet_black_whip",
+   "name": "Jet Black Whip",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "jetstream",
+   "name": "Jetstream",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "jewel_gun",
+   "name": "Jewel Gun",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "just_vent",
+   "name": "Just Vent",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "id": "kaiser_knuckle",
+   "name": "Kaiser Knuckle",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "kardia_phlegeton",
+   "name": "Kardía Phlegeton",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "keremet_bubbles",
+   "name": "Keremet Bubbles",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "keremet_morbus",
+   "name": "Keremet Morbus",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "khukuri",
+   "name": "Khukuri",
+   "dlc": "Emerald Diorama"
+  },
+  {
+   "id": "kick",
+   "name": "Kick",
+   "dlc": "Emerald Diorama"
+  },
+  {
+   "id": "king_bible",
+   "name": "King Bible",
+   "dlc": "Base game"
+  },
+  {
+   "id": "knife",
+   "name": "Knife",
+   "dlc": "Base game"
+  },
+  {
+   "id": "kyra_stones",
+   "name": "Kyra-Stones",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "la_borra",
+   "name": "La Borra",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "la_robba",
+   "name": "La Robba"
+  },
+  {
+   "id": "lapiste_tepisto",
+   "name": "Lapiste Tepisto",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "laurel",
+   "name": "Laurel",
+   "dlc": "Base game"
+  },
+  {
+   "id": "legacy_of_death_soul_river",
+   "name": "Legacy of Death: Soul River",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "legionnaire",
+   "name": "Legionnaire",
+   "dlc": "Tides of the Foscari",
+   "evolved": true
+  },
+  {
+   "id": "lifesign_scan",
+   "name": "Lifesign Scan",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "id": "lightning_ring",
+   "name": "Lightning Ring",
+   "dlc": "Base game"
+  },
+  {
+   "id": "lohengrin",
+   "name": "Lohengrin",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "long_gun",
+   "name": "Long Gun",
+   "dlc": "Operation Guns"
+  },
+  {
+   "id": "long_inus",
+   "name": "Long Inus",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "lordstar",
+   "name": "Lordstar",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "lucky_swipe",
+   "name": "Lucky Swipe",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "id": "luminaire",
+   "name": "Luminaire",
+   "dlc": "Tides of the Foscari",
+   "evolved": true
+  },
+  {
+   "id": "luminatio",
+   "name": "Luminatio",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "lunarbight",
+   "name": "LunarBight",
+   "dlc": "Legacy of the Moonspell"
+  },
+  {
+   "id": "lunarflight",
+   "name": "LunarFlight",
+   "dlc": "Legacy of the Moonspell",
+   "evolved": true
+  },
+  {
+   "id": "lunarmight",
+   "name": "LunarMight",
+   "dlc": "Legacy of the Moonspell"
+  },
+  {
+   "id": "lunarsight",
+   "name": "LunarSight",
+   "dlc": "Legacy of the Moonspell"
+  },
+  {
+   "id": "mace",
+   "name": "Mace",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "magi_stone",
+   "name": "Magi-Stone",
+   "dlc": "Base game"
+  },
+  {
+   "id": "magic_wand",
+   "name": "Magic Wand",
+   "dlc": "Base game"
+  },
+  {
+   "id": "mannajja",
+   "name": "Mannajja",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "mart_hello",
+   "name": "Mart-Hello"
+  },
+  {
+   "id": "mazo_familiar",
+   "name": "Mazo Familiar",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "meal_ticket",
+   "name": "Meal Ticket",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "melio_confodere",
+   "name": "Melio Confodere",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "metal_claw",
+   "name": "Metal Claw",
+   "dlc": "Operation Guns"
+  },
+  {
+   "id": "mille_bolle_blu",
+   "name": "Mille Bolle Blu",
+   "dlc": "Legacy of the Moonspell"
+  },
+  {
+   "id": "million_cut",
+   "name": "Million Cut",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "millionaire",
+   "name": "Millionaire",
+   "dlc": "Tides of the Foscari",
+   "evolved": true
+  },
+  {
+   "id": "miracle_of_multiplication",
+   "name": "Miracle of Multiplication",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "mirage_robe",
+   "name": "Mirage Robe",
+   "dlc": "Legacy of the Moonspell"
+  },
+  {
+   "id": "moon_rod",
+   "name": "Moon Rod",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "mormegil_tip",
+   "name": "Mormegil Tip",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "morning_star",
+   "name": "Morning Star"
+  },
+  {
+   "id": "multistage_missiles",
+   "name": "Multistage Missiles",
+   "dlc": "Operation Guns",
+   "evolved": true
+  },
+  {
+   "id": "muramasa",
+   "name": "Muramasa",
+   "dlc": "Legacy of the Moonspell",
+   "evolved": true
+  },
+  {
+   "id": "myo_lift",
+   "name": "Myo Lift",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "naneinferno",
+   "name": "NaneInferno",
+   "dlc": "Ante Chamber",
+   "evolved": true
+  },
+  {
+   "id": "nduja_fritta_tanto",
+   "name": "Nduja Fritta Tanto"
+  },
+  {
+   "id": "negative_space",
+   "name": "Negative Space",
+   "dlc": "Ante Chamber",
+   "evolved": true
+  },
+  {
+   "id": "night_sword",
+   "name": "Night Sword",
+   "dlc": "Legacy of the Moonspell"
+  },
+  {
+   "id": "nightmare",
+   "name": "Nightmare",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "ninth_circle",
+   "name": "Ninth Circle",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "nitesco",
+   "name": "Nitesco",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "no_future",
+   "name": "NO FUTURE",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "ophion",
+   "name": "Ophion",
+   "dlc": "Tides of the Foscari",
+   "evolved": true
+  },
+  {
+   "id": "optical_shot",
+   "name": "Optical Shot",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "out_of_bounds_xii",
+   "name": "Out of Bounds (XII)"
+  },
+  {
+   "id": "pako_battiliar",
+   "name": "Pako Battiliar",
+   "dlc": "Base game"
+  },
+  {
+   "id": "paranormal_scan",
+   "name": "Paranormal Scan",
+   "dlc": "Emergency Meeting",
+   "evolved": true
+  },
+  {
+   "id": "party_popper",
+   "name": "Party Popper"
+  },
+  {
+   "id": "peachone",
+   "name": "Peachone",
+   "dlc": "Base game"
+  },
+  {
+   "id": "pendragon",
+   "name": "Pendragon",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "penshin_fatcha",
+   "name": "Penshin Fatcha",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "pentagram",
+   "name": "Pentagram",
+   "dlc": "Base game"
+  },
+  {
+   "id": "peri_pendulum",
+   "name": "Peri Pendulum",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "phas3r",
+   "name": "Phas3r",
+   "dlc": "Base game"
+  },
+  {
+   "id": "phiera_der_tuphello",
+   "name": "Phiera Der Tuphello",
+   "dlc": "Base game"
+  },
+  {
+   "id": "phieraggi",
+   "name": "Phieraggi",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "photonstorm",
+   "name": "Photonstorm",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "platinum_whip",
+   "name": "Platinum Whip",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "pneuma_tempestas",
+   "name": "Pneuma Tempestas",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "pocket_knife",
+   "name": "Pocket Knife",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "power_of_lire",
+   "name": "Power of Lire",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "power_of_sire",
+   "name": "Power of Sire",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "pressure_point",
+   "name": "Pressure Point",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "prism_lass",
+   "name": "Prism Lass",
+   "dlc": "Operation Guns"
+  },
+  {
+   "id": "prismatic_missile",
+   "name": "Prismatic Missile",
+   "dlc": "Tides of the Foscari"
+  },
+  {
+   "id": "profusione_damore",
+   "name": "Profusione D'Amore"
+  },
+  {
+   "id": "pronto_beam",
+   "name": "Pronto Beam",
+   "dlc": "Operation Guns",
+   "evolved": true
+  },
+  {
+   "id": "prototype_a",
+   "name": "Prototype A",
+   "dlc": "Operation Guns",
+   "evolved": true
+  },
+  {
+   "id": "prototype_b",
+   "name": "Prototype B",
+   "dlc": "Operation Guns",
+   "evolved": true
+  },
+  {
+   "id": "prototype_c",
+   "name": "Prototype C",
+   "dlc": "Operation Guns",
+   "evolved": true
+  },
+  {
+   "id": "punch",
+   "name": "Punch",
+   "dlc": "Emerald Diorama"
+  },
+  {
+   "id": "pursuant_blades",
+   "name": "Pursuant Blades",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "raging_fire",
+   "name": "Raging Fire",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "rapidus_fio",
+   "name": "Rapidus Fio",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "refectio",
+   "name": "Refectio",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "report",
+   "name": "Report!",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "id": "rings_of_calamity",
+   "name": "Rings of Calamity"
+  },
+  {
+   "id": "road_to_heaven",
+   "name": "Road to Heaven",
+   "dlc": "Legacy of the Bloodmoon",
+   "evolved": true
+  },
+  {
+   "id": "rock_riot",
+   "name": "Rock Riot",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "rocket_science",
+   "name": "Rocket Science",
+   "dlc": "Emergency Meeting",
+   "evolved": true
+  },
+  {
+   "id": "royal_flush",
+   "name": "Royal Flush",
+   "dlc": "Ante Chamber",
+   "evolved": true
+  },
+  {
+   "id": "ruler_sword_body",
+   "name": "Ruler Sword Body"
+  },
+  {
+   "id": "rumba",
+   "name": "Rumba"
+  },
+  {
+   "id": "rune_sword",
+   "name": "Rune Sword",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "runetracer",
+   "name": "Runetracer",
+   "dlc": "Base game"
+  },
+  {
+   "id": "saber_machine_gun",
+   "name": "Saber Machine Gun",
+   "dlc": "Emerald Diorama"
+  },
+  {
+   "id": "sacred_beasts_tower_shield",
+   "name": "Sacred Beasts Tower Shield",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "salamender",
+   "name": "Salamender",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "sanctuary",
+   "name": "Sanctuary",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "sanguine_star",
+   "name": "Sanguine Star",
+   "dlc": "Emerald Diorama"
+  },
+  {
+   "id": "santa_javelin",
+   "name": "Santa Javelin",
+   "dlc": "Base game"
+  },
+  {
+   "id": "santa_water",
+   "name": "Santa Water",
+   "dlc": "Base game"
+  },
+  {
+   "id": "sarabande_of_healing_vi",
+   "name": "Sarabande of Healing (VI)"
+  },
+  {
+   "id": "scarlet_needle",
+   "name": "Scarlet Needle",
+   "dlc": "Legacy of the Bloodmoon"
+  },
+  {
+   "id": "science_rocks",
+   "name": "Science Rocks",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "id": "screams_from_the_void",
+   "name": "Screams from the Void",
+   "dlc": "Legacy of the Bloodmoon"
+  },
+  {
+   "id": "seraphic_cry",
+   "name": "Seraphic Cry",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "shadow_pinion",
+   "name": "Shadow Pinion",
+   "dlc": "Base game"
+  },
+  {
+   "id": "shadow_servant",
+   "name": "Shadow Servant",
+   "dlc": "Tides of the Foscari"
+  },
+  {
+   "id": "shaft_orb",
+   "name": "Shaft Orb"
+  },
+  {
+   "id": "sharp_tongue",
+   "name": "Sharp Tongue",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "id": "shimmering_sands",
+   "name": "Shimmering Sands",
+   "dlc": "Legacy of the Bloodmoon",
+   "evolved": true
+  },
+  {
+   "id": "short_gun",
+   "name": "Short Gun",
+   "dlc": "Operation Guns"
+  },
+  {
+   "id": "shuriken",
+   "name": "Shuriken",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "silver_revolver",
+   "name": "Silver Revolver",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "silver_wind",
+   "name": "Silver Wind",
+   "dlc": "Legacy of the Moonspell"
+  },
+  {
+   "id": "sinestro_custos",
+   "name": "Sinestro Custos",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "sole_solution",
+   "name": "Sole Solution",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "song_of_mana",
+   "name": "Song of Mana",
+   "dlc": "Base game"
+  },
+  {
+   "id": "sonic_bloom",
+   "name": "Sonic Bloom",
+   "dlc": "Operation Guns"
+  },
+  {
+   "id": "sonic_dash",
+   "name": "Sonic Dash",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "sonic_whip",
+   "name": "Sonic Whip",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "sorbetto",
+   "name": "Sorbetto"
+  },
+  {
+   "id": "sossoldi",
+   "name": "Sossoldi"
+  },
+  {
+   "id": "soul_eater",
+   "name": "Soul Eater",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "soul_steal",
+   "name": "Soul Steal",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "spectral_sword",
+   "name": "Spectral Sword"
+  },
+  {
+   "id": "spellstream",
+   "name": "SpellStream",
+   "dlc": "Tides of the Foscari"
+  },
+  {
+   "id": "spellstrike",
+   "name": "SpellStrike",
+   "dlc": "Tides of the Foscari"
+  },
+  {
+   "id": "spellstring",
+   "name": "SpellString",
+   "dlc": "Tides of the Foscari"
+  },
+  {
+   "id": "spellstrom",
+   "name": "SpellStrom",
+   "dlc": "Tides of the Foscari",
+   "evolved": true
+  },
+  {
+   "id": "spirit_disturbance",
+   "name": "Spirit Disturbance",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "spirit_of_light",
+   "name": "Spirit of Light",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "spirit_rings",
+   "name": "Spirit Rings"
+  },
+  {
+   "id": "spirit_tornado_tip",
+   "name": "Spirit Tornado Tip",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "splashers",
+   "name": "Splashers",
+   "dlc": "Emerald Diorama"
+  },
+  {
+   "id": "spread_shot",
+   "name": "Spread Shot",
+   "dlc": "Operation Guns"
+  },
+  {
+   "id": "stained_glass",
+   "name": "Stained Glass"
+  },
+  {
+   "id": "stamazza",
+   "name": "Stamazza",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "star_flail",
+   "name": "Star Flail",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "stellar_blade",
+   "name": "Stellar Blade",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "summon_night",
+   "name": "Summon Night",
+   "dlc": "Legacy of the Moonspell"
+  },
+  {
+   "id": "summon_spirit",
+   "name": "Summon Spirit",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "summon_spirit_tornado",
+   "name": "Summon Spirit Tornado",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "sunlight",
+   "name": "Sunlight"
+  },
+  {
+   "id": "super_candybox_ii_turbo",
+   "name": "Super Candybox II Turbo"
+  },
+  {
+   "id": "super_missile",
+   "name": "Super Missile",
+   "dlc": "Emerald Diorama"
+  },
+  {
+   "id": "svarog_statue",
+   "name": "Svarog Statue",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "sword_brothers",
+   "name": "Sword Brothers",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "take_us_away",
+   "name": "Take Us Away"
+  },
+  {
+   "id": "tenebris_tonitrus",
+   "name": "Tenebris Tonitrus",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "the_rpg",
+   "name": "The RPG",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "thousand_edge",
+   "name": "Thousand Edge",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "thunder_loop",
+   "name": "Thunder Loop",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "thunderbolt_spear",
+   "name": "Thunderbolt Spear",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "time_warp",
+   "name": "Time Warp",
+   "dlc": "Operation Guns",
+   "evolved": true
+  },
+  {
+   "id": "tonnoddeeo",
+   "name": "Tonn'oddeeo",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "tonnomoto",
+   "name": "Tonn'omoto",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "tonnado",
+   "name": "Tonnado",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "tonne",
+   "name": "Tonne",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "tonno_subito",
+   "name": "Tonno Subito",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "town_sword",
+   "name": "Town Sword",
+   "dlc": "Emerald Diorama"
+  },
+  {
+   "id": "tri_bracelet",
+   "name": "Tri-Bracelet",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "triangle_kick",
+   "name": "Triangle Kick",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  },
+  {
+   "id": "trident",
+   "name": "Trident",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "trinum_custodem",
+   "name": "Trinum Custodem",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "troll_bomb",
+   "name": "Troll Bomb",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "twin_dragon",
+   "name": "Twin Dragon",
+   "dlc": "Emerald Diorama"
+  },
+  {
+   "id": "tyrfing",
+   "name": "Tyrfing",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "umbra",
+   "name": "Umbra",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "unearthly_bolt",
+   "name": "Unearthly Bolt",
+   "dlc": "Base game"
+  },
+  {
+   "id": "unholy_vespers",
+   "name": "Unholy Vespers",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "universitas",
+   "name": "Universitas",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "unjust_ejection",
+   "name": "Unjust Ejection",
+   "dlc": "Emergency Meeting",
+   "evolved": true
+  },
+  {
+   "id": "unsurpassed",
+   "name": "Unsurpassed",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "valkyrie_turner",
+   "name": "Valkyrie Turner",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "valmanway",
+   "name": "Valmanway",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "vampire_killer",
+   "name": "Vampire Killer",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "vandalier",
+   "name": "Vandalier",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "vanitas_whip",
+   "name": "Vanitas Whip",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "vento_sacro",
+   "name": "Vento Sacro",
+   "dlc": "Base game"
+  },
+  {
+   "id": "venus_crescent",
+   "name": "Venus Crescent",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "vermilion_sands",
+   "name": "Vermilion Sands"
+  },
+  {
+   "id": "vibhuti_whip",
+   "name": "Vibhuti Whip",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "vicious_hunger",
+   "name": "Vicious Hunger",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "victory_sword",
+   "name": "Victory Sword",
+   "dlc": "Base game"
+  },
+  {
+   "id": "vjaya_sisters",
+   "name": "Vjaya Sisters",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "vol_confodere",
+   "name": "Vol Confodere",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "vol_luminatio",
+   "name": "Vol Luminatio",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "vol_umbra",
+   "name": "Vol Umbra",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "wandering_the_jet_black_xxi",
+   "name": "Wandering the Jet Black (XXI)"
+  },
+  {
+   "id": "water_veil",
+   "name": "Water Veil"
+  },
+  {
+   "id": "wave_beam",
+   "name": "Wave Beam",
+   "dlc": "Operation Guns",
+   "evolved": true
+  },
+  {
+   "id": "whip",
+   "name": "Whip",
+   "dlc": "Base game"
+  },
+  {
+   "id": "wicked_ruler",
+   "name": "Wicked Ruler",
+   "dlc": "Base game",
+   "evolved": true
+  },
+  {
+   "id": "wind_whip",
+   "name": "Wind Whip",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "wine_glass",
+   "name": "Wine Glass",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "id": "wrecking_ball",
+   "name": "Wrecking Ball",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "yagyu_shuriken",
+   "name": "Yagyu Shuriken",
+   "dlc": "Ode to Castlevania",
+   "evolved": true
+  },
+  {
+   "id": "yatta_daikarin",
+   "name": "Yatta Daikarin"
+  },
+  {
+   "id": "zweihander",
+   "name": "Zweihander",
+   "dlc": "Emerald Diorama",
+   "evolved": true
+  }
+ ],
+ "passives": [
+  {
+   "id": "academy_badge",
+   "name": "Academy Badge"
+  },
+  {
+   "id": "amimic",
+   "name": "Amimic"
+  },
+  {
+   "id": "amimic_apollo",
+   "name": "Amimic Apollo"
+  },
+  {
+   "id": "amimic_hephaestus",
+   "name": "Amimic Hephaestus"
+  },
+  {
+   "id": "amimic_valkyrie",
+   "name": "Amimic Valkyrie"
+  },
+  {
+   "id": "armor",
+   "name": "Armor",
+   "dlc": "Base game"
+  },
+  {
+   "id": "attractorb",
+   "name": "Attractorb",
+   "dlc": "Base game"
+  },
+  {
+   "id": "bracer",
+   "name": "Bracer",
+   "dlc": "Base game"
+  },
+  {
+   "id": "candelabrador",
+   "name": "Candelabrador",
+   "dlc": "Base game"
+  },
+  {
+   "id": "clover",
+   "name": "Clover",
+   "dlc": "Base game"
+  },
+  {
+   "id": "crown",
+   "name": "Crown",
+   "dlc": "Base game"
+  },
+  {
+   "id": "duplicator",
+   "name": "Duplicator",
+   "dlc": "Base game"
+  },
+  {
+   "id": "empty_tome",
+   "name": "Empty Tome",
+   "dlc": "Base game"
+  },
+  {
+   "id": "gold_ring",
+   "name": "Gold Ring",
+   "dlc": "Base game"
+  },
+  {
+   "id": "hollow_heart",
+   "name": "Hollow Heart",
+   "dlc": "Base game"
+  },
+  {
+   "id": "karomas_mana",
+   "name": "Karoma's Mana",
+   "dlc": "Base game"
+  },
+  {
+   "id": "metaglio_left",
+   "name": "Metaglio Left",
+   "dlc": "Base game"
+  },
+  {
+   "id": "metaglio_right",
+   "name": "Metaglio Right",
+   "dlc": "Base game"
+  },
+  {
+   "id": "mini_crewmate",
+   "name": "Mini Crewmate",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "id": "mini_engineer",
+   "name": "Mini Engineer",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "id": "mini_ghost",
+   "name": "Mini Ghost",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "id": "mini_guardian",
+   "name": "Mini Guardian",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "id": "mini_horse",
+   "name": "Mini Horse"
+  },
+  {
+   "id": "mini_impostor",
+   "name": "Mini Impostor",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "id": "mini_scientist",
+   "name": "Mini Scientist",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "id": "mini_shapeshifter",
+   "name": "Mini Shapeshifter",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "id": "outer_saboteur",
+   "name": "Outer Saboteur",
+   "dlc": "Ante Chamber"
+  },
+  {
+   "id": "parm_aegis",
+   "name": "Parm Aegis",
+   "dlc": "Base game"
+  },
+  {
+   "id": "pearl_magatama",
+   "name": "Pearl magatama"
+  },
+  {
+   "id": "pummarola",
+   "name": "Pummarola",
+   "dlc": "Base game"
+  },
+  {
+   "id": "silver_ring",
+   "name": "Silver Ring",
+   "dlc": "Base game"
+  },
+  {
+   "id": "skull_omaniac",
+   "name": "Skull O'Maniac",
+   "dlc": "Base game"
+  },
+  {
+   "id": "spellbinder",
+   "name": "Spellbinder",
+   "dlc": "Base game"
+  },
+  {
+   "id": "spinach",
+   "name": "Spinach",
+   "dlc": "Base game"
+  },
+  {
+   "id": "stone_mask",
+   "name": "Stone Mask",
+   "dlc": "Base game"
+  },
+  {
+   "id": "tetraforce",
+   "name": "Tetraforce"
+  },
+  {
+   "id": "tirajisu",
+   "name": "Tirajisú",
+   "dlc": "Base game"
+  },
+  {
+   "id": "torronas_box",
+   "name": "Torrona's Box",
+   "dlc": "Base game"
+  },
+  {
+   "id": "velvet_dodecahedron",
+   "name": "Velvet Dodecahedron"
+  },
+  {
+   "id": "weapon_power_up",
+   "name": "Weapon Power-Up",
+   "dlc": "Operation Guns"
+  },
+  {
+   "id": "wings",
+   "name": "Wings",
+   "dlc": "Base game"
+  }
+ ],
+ "evolutions": [
+  {
+   "result": "bloody_tear",
+   "requires": [
+    "whip",
+    "hollow_heart"
+   ],
+   "max_level": [
+    "whip"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "holy_wand",
+   "requires": [
+    "magic_wand",
+    "empty_tome"
+   ],
+   "max_level": [
+    "magic_wand"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "thousand_edge",
+   "requires": [
+    "knife",
+    "bracer"
+   ],
+   "max_level": [
+    "knife"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "death_spiral",
+   "requires": [
+    "axe",
+    "candelabrador"
+   ],
+   "max_level": [
+    "axe"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "heaven_sword",
+   "requires": [
+    "cross",
+    "clover"
+   ],
+   "max_level": [
+    "cross"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "unholy_vespers",
+   "requires": [
+    "king_bible",
+    "spellbinder"
+   ],
+   "max_level": [
+    "king_bible"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "hellfire",
+   "requires": [
+    "fire_wand",
+    "spinach"
+   ],
+   "max_level": [
+    "fire_wand"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "soul_eater",
+   "requires": [
+    "garlic",
+    "pummarola"
+   ],
+   "max_level": [
+    "garlic"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "la_borra",
+   "requires": [
+    "santa_water",
+    "attractorb"
+   ],
+   "max_level": [
+    "santa_water"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "no_future",
+   "requires": [
+    "runetracer",
+    "armor"
+   ],
+   "max_level": [
+    "runetracer"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "thunder_loop",
+   "requires": [
+    "lightning_ring",
+    "duplicator"
+   ],
+   "max_level": [
+    "lightning_ring"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "gorgeous_moon",
+   "requires": [
+    "pentagram",
+    "crown"
+   ],
+   "max_level": [
+    "pentagram"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "vicious_hunger",
+   "requires": [
+    "gatti_amari",
+    "stone_mask"
+   ],
+   "max_level": [
+    "gatti_amari"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "mannajja",
+   "requires": [
+    "song_of_mana",
+    "skull_omaniac"
+   ],
+   "max_level": [
+    "song_of_mana"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "valkyrie_turner",
+   "requires": [
+    "shadow_pinion",
+    "wings"
+   ],
+   "max_level": [
+    "shadow_pinion"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "infinite_corridor",
+   "requires": [
+    "clock_lancet",
+    "silver_ring",
+    "gold_ring"
+   ],
+   "max_level": [
+    "clock_lancet",
+    "silver_ring",
+    "gold_ring"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "crimson_shroud",
+   "requires": [
+    "laurel",
+    "metaglio_left",
+    "metaglio_right"
+   ],
+   "max_level": [
+    "laurel",
+    "metaglio_left",
+    "metaglio_right"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "bi_bracelet",
+   "requires": [
+    "bracelet"
+   ],
+   "max_level": [
+    "bracelet"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "tri_bracelet",
+   "requires": [
+    "bi_bracelet"
+   ],
+   "max_level": [
+    "bi_bracelet"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "mazo_familiar",
+   "requires": [
+    "pako_battiliar",
+    "hollow_heart"
+   ],
+   "max_level": [
+    "pako_battiliar",
+    "hollow_heart"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "gunastrophe",
+   "requires": [
+    "ammo_appalate",
+    "bracer"
+   ],
+   "max_level": [
+    "ammo_appalate",
+    "bracer"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "spirit_disturbance",
+   "requires": [
+    "unearthly_bolt",
+    "tirajisu"
+   ],
+   "max_level": [
+    "unearthly_bolt",
+    "tirajisu"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "ashes_of_muspell",
+   "requires": [
+    "flames_of_misspell",
+    "torronas_box"
+   ],
+   "max_level": [
+    "flames_of_misspell",
+    "torronas_box"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "celestial_voulge",
+   "requires": [
+    "glass_fandango",
+    "wings"
+   ],
+   "max_level": [
+    "glass_fandango",
+    "wings"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "penshin_fatcha",
+   "requires": [
+    "penshin_fatcha",
+    "tonno_subito",
+    "tonnado",
+    "tonnomoto",
+    "tonnoddeeo",
+    "tonne",
+    "unsurpassed"
+   ],
+   "max_level": [
+    "penshin_fatcha",
+    "tonno_subito",
+    "tonnado",
+    "tonnomoto",
+    "tonnoddeeo",
+    "tonne",
+    "unsurpassed"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "tonno_subito",
+   "requires": [
+    "penshin_fatcha",
+    "tonno_subito",
+    "tonnado",
+    "tonnomoto",
+    "tonnoddeeo",
+    "tonne",
+    "unsurpassed"
+   ],
+   "max_level": [
+    "penshin_fatcha",
+    "tonno_subito",
+    "tonnado",
+    "tonnomoto",
+    "tonnoddeeo",
+    "tonne",
+    "unsurpassed"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "tonnado",
+   "requires": [
+    "penshin_fatcha",
+    "tonno_subito",
+    "tonnado",
+    "tonnomoto",
+    "tonnoddeeo",
+    "tonne",
+    "unsurpassed"
+   ],
+   "max_level": [
+    "penshin_fatcha",
+    "tonno_subito",
+    "tonnado",
+    "tonnomoto",
+    "tonnoddeeo",
+    "tonne",
+    "unsurpassed"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "tonnomoto",
+   "requires": [
+    "penshin_fatcha",
+    "tonno_subito",
+    "tonnado",
+    "tonnomoto",
+    "tonnoddeeo",
+    "tonne",
+    "unsurpassed"
+   ],
+   "max_level": [
+    "penshin_fatcha",
+    "tonno_subito",
+    "tonnado",
+    "tonnomoto",
+    "tonnoddeeo",
+    "tonne",
+    "unsurpassed"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "tonnoddeeo",
+   "requires": [
+    "penshin_fatcha",
+    "tonno_subito",
+    "tonnado",
+    "tonnomoto",
+    "tonnoddeeo",
+    "tonne",
+    "unsurpassed"
+   ],
+   "max_level": [
+    "penshin_fatcha",
+    "tonno_subito",
+    "tonnado",
+    "tonnomoto",
+    "tonnoddeeo",
+    "tonne",
+    "unsurpassed"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "tonne",
+   "requires": [
+    "penshin_fatcha",
+    "tonno_subito",
+    "tonnado",
+    "tonnomoto",
+    "tonnoddeeo",
+    "tonne",
+    "unsurpassed"
+   ],
+   "max_level": [
+    "penshin_fatcha",
+    "tonno_subito",
+    "tonnado",
+    "tonnomoto",
+    "tonnoddeeo",
+    "tonne",
+    "unsurpassed"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "unsurpassed",
+   "requires": [
+    "penshin_fatcha",
+    "tonno_subito",
+    "tonnado",
+    "tonnomoto",
+    "tonnoddeeo",
+    "tonne",
+    "unsurpassed"
+   ],
+   "max_level": [
+    "penshin_fatcha",
+    "tonno_subito",
+    "tonnado",
+    "tonnomoto",
+    "tonnoddeeo",
+    "tonne",
+    "unsurpassed"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "miracle_of_multiplication",
+   "requires": [
+    "penshin_fatcha",
+    "tonno_subito",
+    "tonnado",
+    "tonnomoto",
+    "tonnoddeeo",
+    "tonne",
+    "unsurpassed"
+   ],
+   "max_level": [
+    "penshin_fatcha",
+    "tonno_subito",
+    "tonnado",
+    "tonnomoto",
+    "tonnoddeeo",
+    "tonne",
+    "unsurpassed"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "seraphic_cry",
+   "requires": [
+    "santa_javelin",
+    "clover"
+   ],
+   "max_level": [
+    "santa_javelin",
+    "clover"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "embrace_of_gaea",
+   "requires": [
+    "gaze_of_gaea",
+    "parm_aegis"
+   ],
+   "max_level": [
+    "gaze_of_gaea"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "kyra_stones",
+   "requires": [
+    "magi_stone",
+    "karomas_mana"
+   ],
+   "max_level": [
+    "magi_stone"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "photonstorm",
+   "requires": [
+    "phas3r",
+    "empty_tome"
+   ],
+   "max_level": [
+    "phas3r",
+    "empty_tome"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "wicked_ruler",
+   "requires": [
+    "chaos_rune",
+    "spellbinder"
+   ],
+   "max_level": [
+    "chaos_rune",
+    "spellbinder"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game"
+  },
+  {
+   "result": "vandalier",
+   "requires": [
+    "peachone",
+    "ebony_wings"
+   ],
+   "max_level": [
+    "peachone",
+    "ebony_wings"
+   ],
+   "kind": "union",
+   "dlc": "Base game",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "phieraggi",
+   "requires": [
+    "phiera_der_tuphello",
+    "eight_the_sparrow",
+    "tirajisu"
+   ],
+   "max_level": [
+    "phiera_der_tuphello",
+    "eight_the_sparrow"
+   ],
+   "kind": "union",
+   "dlc": "Base game",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "fuwalafuwaloo",
+   "requires": [
+    "vento_sacro",
+    "bloody_tear"
+   ],
+   "max_level": [
+    "vento_sacro",
+    "bloody_tear"
+   ],
+   "kind": "union",
+   "dlc": "Base game",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "sole_solution",
+   "requires": [
+    "victory_sword",
+    "torronas_box"
+   ],
+   "max_level": [
+    "victory_sword",
+    "torronas_box"
+   ],
+   "kind": "gift",
+   "dlc": "Base game",
+   "notes": "Gift: you keep the base weapon and get this as an extra."
+  },
+  {
+   "result": "festive_winds",
+   "requires": [
+    "silver_wind",
+    "pummarola"
+   ],
+   "max_level": [
+    "silver_wind",
+    "pummarola"
+   ],
+   "kind": "evolution",
+   "dlc": "Legacy of the Moonspell"
+  },
+  {
+   "result": "argent_flow",
+   "requires": [
+    "festive_winds",
+    "torronas_box"
+   ],
+   "max_level": [
+    "festive_winds",
+    "torronas_box"
+   ],
+   "kind": "evolution",
+   "dlc": "Legacy of the Moonspell"
+  },
+  {
+   "result": "godai_shuffle",
+   "requires": [
+    "four_seasons",
+    "candelabrador"
+   ],
+   "max_level": [
+    "four_seasons",
+    "candelabrador"
+   ],
+   "kind": "evolution",
+   "dlc": "Legacy of the Moonspell"
+  },
+  {
+   "result": "echo_night",
+   "requires": [
+    "summon_night",
+    "duplicator"
+   ],
+   "max_level": [
+    "summon_night",
+    "duplicator"
+   ],
+   "kind": "evolution",
+   "dlc": "Legacy of the Moonspell"
+  },
+  {
+   "result": "jodore",
+   "requires": [
+    "mirage_robe",
+    "attractorb"
+   ],
+   "max_level": [
+    "mirage_robe",
+    "attractorb"
+   ],
+   "kind": "evolution",
+   "dlc": "Legacy of the Moonspell"
+  },
+  {
+   "result": "muramasa",
+   "requires": [
+    "night_sword",
+    "stone_mask"
+   ],
+   "max_level": [
+    "night_sword",
+    "stone_mask"
+   ],
+   "kind": "evolution",
+   "dlc": "Legacy of the Moonspell"
+  },
+  {
+   "result": "boo_roo_boolle",
+   "requires": [
+    "mille_bolle_blu",
+    "spellbinder"
+   ],
+   "max_level": [
+    "mille_bolle_blu",
+    "spellbinder"
+   ],
+   "kind": "evolution",
+   "dlc": "Legacy of the Moonspell"
+  },
+  {
+   "result": "lunarflight",
+   "requires": [
+    "lunarmight",
+    "lunarsight",
+    "lunarbight"
+   ],
+   "max_level": [
+    "lunarmight",
+    "lunarsight",
+    "lunarbight"
+   ],
+   "kind": "union",
+   "dlc": "Legacy of the Moonspell",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "cardinal_rain",
+   "requires": [
+    "scarlet_needle",
+    "pummarola"
+   ],
+   "max_level": [
+    "scarlet_needle",
+    "pummarola"
+   ],
+   "kind": "evolution",
+   "dlc": "Legacy of the Bloodmoon"
+  },
+  {
+   "result": "dust_to_dust",
+   "requires": [
+    "incineration",
+    "candelabrador"
+   ],
+   "max_level": [
+    "incineration",
+    "candelabrador"
+   ],
+   "kind": "evolution",
+   "dlc": "Legacy of the Bloodmoon"
+  },
+  {
+   "result": "bloodlust",
+   "requires": [
+    "ashella",
+    "duplicator"
+   ],
+   "max_level": [
+    "ashella",
+    "duplicator"
+   ],
+   "kind": "evolution",
+   "dlc": "Legacy of the Bloodmoon"
+  },
+  {
+   "result": "forbidden_siren",
+   "requires": [
+    "screams_from_the_void",
+    "attractorb"
+   ],
+   "max_level": [
+    "screams_from_the_void",
+    "attractorb"
+   ],
+   "kind": "evolution",
+   "dlc": "Legacy of the Bloodmoon"
+  },
+  {
+   "result": "damnation",
+   "requires": [
+    "blacken_firmament",
+    "torronas_box"
+   ],
+   "max_level": [
+    "blacken_firmament",
+    "torronas_box"
+   ],
+   "kind": "evolution",
+   "dlc": "Legacy of the Bloodmoon"
+  },
+  {
+   "result": "firestall",
+   "requires": [
+    "firefall",
+    "fireball",
+    "firewall"
+   ],
+   "max_level": [
+    "firefall",
+    "fireball",
+    "firewall"
+   ],
+   "kind": "union",
+   "dlc": "Legacy of the Bloodmoon",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "shimmering_sands",
+   "requires": [
+    "descent_into_misery",
+    "kyra_stones"
+   ],
+   "max_level": [
+    "descent_into_misery",
+    "kyra_stones"
+   ],
+   "kind": "union",
+   "dlc": "Legacy of the Bloodmoon",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "road_to_heaven",
+   "requires": [
+    "108_bocce",
+    "108_responsive_prayers"
+   ],
+   "max_level": [
+    "108_bocce",
+    "108_responsive_prayers"
+   ],
+   "kind": "union",
+   "dlc": "Legacy of the Bloodmoon",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "legionnaire",
+   "requires": [
+    "eskizzibur",
+    "armor"
+   ],
+   "max_level": [
+    "eskizzibur",
+    "armor"
+   ],
+   "kind": "evolution",
+   "dlc": "Tides of the Foscari"
+  },
+  {
+   "result": "millionaire",
+   "requires": [
+    "flash_arrow",
+    "bracer"
+   ],
+   "max_level": [
+    "flash_arrow",
+    "bracer"
+   ],
+   "kind": "evolution",
+   "dlc": "Tides of the Foscari"
+  },
+  {
+   "result": "luminaire",
+   "requires": [
+    "prismatic_missile",
+    "crown"
+   ],
+   "max_level": [
+    "prismatic_missile",
+    "crown"
+   ],
+   "kind": "evolution",
+   "dlc": "Tides of the Foscari"
+  },
+  {
+   "result": "ophion",
+   "requires": [
+    "shadow_servant",
+    "skull_omaniac"
+   ],
+   "max_level": [
+    "shadow_servant",
+    "skull_omaniac"
+   ],
+   "kind": "evolution",
+   "dlc": "Tides of the Foscari"
+  },
+  {
+   "result": "spellstrom",
+   "requires": [
+    "spellstring",
+    "spellstream",
+    "spellstrike"
+   ],
+   "max_level": [
+    "spellstring",
+    "spellstream",
+    "spellstrike"
+   ],
+   "kind": "union",
+   "dlc": "Tides of the Foscari",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "emergency_meeting",
+   "requires": [
+    "report",
+    "mini_crewmate"
+   ],
+   "max_level": [
+    "report",
+    "mini_crewmate"
+   ],
+   "kind": "evolution",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "result": "crossed_wires",
+   "requires": [
+    "lucky_swipe",
+    "mini_engineer"
+   ],
+   "max_level": [
+    "lucky_swipe",
+    "mini_engineer"
+   ],
+   "kind": "evolution",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "result": "paranormal_scan",
+   "requires": [
+    "lifesign_scan",
+    "mini_ghost"
+   ],
+   "max_level": [
+    "lifesign_scan",
+    "mini_ghost"
+   ],
+   "kind": "evolution",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "result": "unjust_ejection",
+   "requires": [
+    "just_vent",
+    "mini_shapeshifter"
+   ],
+   "max_level": [
+    "just_vent",
+    "mini_shapeshifter"
+   ],
+   "kind": "evolution",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "result": "clear_asteroids",
+   "requires": [
+    "clear_debris",
+    "mini_guardian"
+   ],
+   "max_level": [
+    "clear_debris",
+    "mini_guardian"
+   ],
+   "kind": "evolution",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "result": "impostongue",
+   "requires": [
+    "sharp_tongue",
+    "mini_impostor"
+   ],
+   "max_level": [
+    "sharp_tongue",
+    "mini_impostor"
+   ],
+   "kind": "evolution",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "result": "rocket_science",
+   "requires": [
+    "science_rocks",
+    "mini_scientist"
+   ],
+   "max_level": [
+    "science_rocks",
+    "mini_scientist"
+   ],
+   "kind": "evolution",
+   "dlc": "Emergency Meeting"
+  },
+  {
+   "result": "prototype_a",
+   "requires": [
+    "long_gun",
+    "weapon_power_up"
+   ],
+   "max_level": [
+    "long_gun"
+   ],
+   "kind": "evolution",
+   "dlc": "Operation Guns"
+  },
+  {
+   "result": "prototype_b",
+   "requires": [
+    "short_gun",
+    "weapon_power_up",
+    "bracer"
+   ],
+   "max_level": [
+    "short_gun"
+   ],
+   "kind": "evolution",
+   "dlc": "Operation Guns"
+  },
+  {
+   "result": "prototype_c",
+   "requires": [
+    "spread_shot",
+    "weapon_power_up",
+    "empty_tome"
+   ],
+   "max_level": [
+    "spread_shot"
+   ],
+   "kind": "evolution",
+   "dlc": "Operation Guns"
+  },
+  {
+   "result": "pronto_beam",
+   "requires": [
+    "c_u_laser",
+    "weapon_power_up",
+    "tirajisu"
+   ],
+   "max_level": [
+    "c_u_laser"
+   ],
+   "kind": "evolution",
+   "dlc": "Operation Guns"
+  },
+  {
+   "result": "fire_l3gs",
+   "requires": [
+    "firearm",
+    "weapon_power_up",
+    "candelabrador"
+   ],
+   "max_level": [
+    "firearm"
+   ],
+   "kind": "evolution",
+   "dlc": "Operation Guns"
+  },
+  {
+   "result": "wave_beam",
+   "requires": [
+    "sonic_bloom",
+    "weapon_power_up",
+    "armor"
+   ],
+   "max_level": [
+    "sonic_bloom"
+   ],
+   "kind": "evolution",
+   "dlc": "Operation Guns"
+  },
+  {
+   "result": "multistage_missiles",
+   "requires": [
+    "homing_miss",
+    "weapon_power_up",
+    "duplicator"
+   ],
+   "max_level": [
+    "homing_miss"
+   ],
+   "kind": "evolution",
+   "dlc": "Operation Guns"
+  },
+  {
+   "result": "atmo_torpedo",
+   "requires": [
+    "diver_mines",
+    "weapon_power_up",
+    "attractorb"
+   ],
+   "max_level": [
+    "diver_mines"
+   ],
+   "kind": "evolution",
+   "dlc": "Operation Guns"
+  },
+  {
+   "result": "bfc2000_ad",
+   "requires": [
+    "blade_crossbow",
+    "weapon_power_up",
+    "clover"
+   ],
+   "max_level": [
+    "blade_crossbow"
+   ],
+   "kind": "evolution",
+   "dlc": "Operation Guns"
+  },
+  {
+   "result": "time_warp",
+   "requires": [
+    "prism_lass",
+    "weapon_power_up",
+    "wings"
+   ],
+   "max_level": [
+    "prism_lass"
+   ],
+   "kind": "evolution",
+   "dlc": "Operation Guns"
+  },
+  {
+   "result": "big_fuzzy_fist",
+   "requires": [
+    "metal_claw",
+    "weapon_power_up",
+    "hollow_heart"
+   ],
+   "max_level": [
+    "metal_claw"
+   ],
+   "kind": "evolution",
+   "dlc": "Operation Guns"
+  },
+  {
+   "result": "vampire_killer",
+   "requires": [
+    "alchemy_whip",
+    "tirajisu"
+   ],
+   "max_level": [
+    "alchemy_whip"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "spirit_tornado_tip",
+   "requires": [
+    "wind_whip",
+    "crown"
+   ],
+   "max_level": [
+    "wind_whip"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "cross_crasher_tip",
+   "requires": [
+    "platinum_whip",
+    "clover"
+   ],
+   "max_level": [
+    "platinum_whip"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "hydrostormer_tip",
+   "requires": [
+    "dragon_water_whip",
+    "attractorb"
+   ],
+   "max_level": [
+    "dragon_water_whip"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "crissaegrim_tip",
+   "requires": [
+    "sonic_whip",
+    "skull_omaniac"
+   ],
+   "max_level": [
+    "sonic_whip"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "mormegil_tip",
+   "requires": [
+    "jet_black_whip",
+    "stone_mask"
+   ],
+   "max_level": [
+    "jet_black_whip"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "daybreaker_tip",
+   "requires": [
+    "vibhuti_whip",
+    "candelabrador"
+   ],
+   "max_level": [
+    "vibhuti_whip"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "aurablaster_tip",
+   "requires": [
+    "vanitas_whip",
+    "hollow_heart"
+   ],
+   "max_level": [
+    "vanitas_whip"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "yagyu_shuriken",
+   "requires": [
+    "shuriken",
+    "empty_tome"
+   ],
+   "max_level": [
+    "shuriken"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "bwaka_knife",
+   "requires": [
+    "curved_knife",
+    "bracer"
+   ],
+   "max_level": [
+    "curved_knife"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "long_inus",
+   "requires": [
+    "javelin",
+    "spellbinder"
+   ],
+   "max_level": [
+    "javelin"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "stellar_blade",
+   "requires": [
+    "discus",
+    "parm_aegis"
+   ],
+   "max_level": [
+    "discus",
+    "parm_aegis"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "wrecking_ball",
+   "requires": [
+    "iron_ball",
+    "armor"
+   ],
+   "max_level": [
+    "iron_ball"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "jewel_gun",
+   "requires": [
+    "silver_revolver",
+    "karomas_mana"
+   ],
+   "max_level": [
+    "silver_revolver"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "the_rpg",
+   "requires": [
+    "hand_grenade",
+    "candelabrador"
+   ],
+   "max_level": [
+    "hand_grenade",
+    "candelabrador"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "meal_ticket",
+   "requires": [
+    "wine_glass",
+    "tirajisu"
+   ],
+   "max_level": [
+    "wine_glass",
+    "tirajisu"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "salamender",
+   "requires": [
+    "raging_fire",
+    "spinach"
+   ],
+   "max_level": [
+    "raging_fire",
+    "spinach"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "cocytus",
+   "requires": [
+    "ice_fang",
+    "spellbinder"
+   ],
+   "max_level": [
+    "ice_fang",
+    "spellbinder"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "pneuma_tempestas",
+   "requires": [
+    "gale_force",
+    "bracer"
+   ],
+   "max_level": [
+    "gale_force",
+    "bracer"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "gemma_torpor",
+   "requires": [
+    "rock_riot",
+    "stone_mask"
+   ],
+   "max_level": [
+    "rock_riot",
+    "stone_mask"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "tenebris_tonitrus",
+   "requires": [
+    "fulgur",
+    "duplicator"
+   ],
+   "max_level": [
+    "fulgur",
+    "duplicator"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "keremet_morbus",
+   "requires": [
+    "keremet_bubbles",
+    "armor"
+   ],
+   "max_level": [
+    "keremet_bubbles",
+    "armor"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "nightmare",
+   "requires": [
+    "hex",
+    "skull_omaniac"
+   ],
+   "max_level": [
+    "hex",
+    "skull_omaniac"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "sanctuary",
+   "requires": [
+    "refectio",
+    "clover"
+   ],
+   "max_level": [
+    "refectio",
+    "clover"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "stamazza",
+   "requires": [
+    "mace",
+    "hollow_heart"
+   ],
+   "max_level": [
+    "mace",
+    "hollow_heart"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "moon_rod",
+   "requires": [
+    "star_flail",
+    "pummarola"
+   ],
+   "max_level": [
+    "star_flail",
+    "pummarola"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "thunderbolt_spear",
+   "requires": [
+    "alucard_spear",
+    "wings"
+   ],
+   "max_level": [
+    "alucard_spear"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "gungnir_souris",
+   "requires": [
+    "trident",
+    "duplicator"
+   ],
+   "max_level": [
+    "trident",
+    "duplicator"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "dark_iron_shield",
+   "requires": [
+    "iron_shield",
+    "parm_aegis"
+   ],
+   "max_level": [
+    "iron_shield"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "sacred_beasts_tower_shield",
+   "requires": [
+    "guardians_targe",
+    "pummarola"
+   ],
+   "max_level": [
+    "guardians_targe"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "rune_sword",
+   "requires": [
+    "tyrfing",
+    "spinach"
+   ],
+   "max_level": [
+    "tyrfing"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "alucard_swords",
+   "requires": [
+    "alucart_sworb"
+   ],
+   "max_level": [
+    "alucart_sworb"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "vol_confodere",
+   "requires": [
+    "confodere"
+   ],
+   "max_level": [
+    "confodere"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "melio_confodere",
+   "requires": [
+    "vol_confodere"
+   ],
+   "max_level": [
+    "vol_confodere"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "nitesco",
+   "requires": [
+    "globus",
+    "empty_tome"
+   ],
+   "max_level": [
+    "globus",
+    "empty_tome"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "acerbatus",
+   "requires": [
+    "optical_shot",
+    "karomas_mana"
+   ],
+   "max_level": [
+    "optical_shot",
+    "karomas_mana"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "rapidus_fio",
+   "requires": [
+    "sonic_dash",
+    "wings"
+   ],
+   "max_level": [
+    "sonic_dash",
+    "wings"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "vol_luminatio",
+   "requires": [
+    "luminatio",
+    "crown"
+   ],
+   "max_level": [
+    "luminatio",
+    "crown"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "vol_umbra",
+   "requires": [
+    "umbra",
+    "attractorb"
+   ],
+   "max_level": [
+    "umbra",
+    "attractorb"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "claimh_solais",
+   "requires": [
+    "pocket_knife",
+    "torronas_box"
+   ],
+   "max_level": [
+    "pocket_knife",
+    "torronas_box"
+   ],
+   "kind": "evolution",
+   "dlc": "Ode to Castlevania"
+  },
+  {
+   "result": "trinum_custodem",
+   "requires": [
+    "centralis_custos",
+    "dextro_custos",
+    "sinestro_custos"
+   ],
+   "max_level": [
+    "centralis_custos",
+    "dextro_custos",
+    "sinestro_custos"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "power_of_sire",
+   "requires": [
+    "dominus_agony",
+    "dominus_anger",
+    "dominus_hatred"
+   ],
+   "max_level": [
+    "dominus_agony",
+    "dominus_anger",
+    "dominus_hatred"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "million_cut",
+   "requires": [
+    "valmanway",
+    "thousand_edge"
+   ],
+   "max_level": [
+    "valmanway",
+    "thousand_edge"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "ninth_circle",
+   "requires": [
+    "icebrand",
+    "unholy_vespers"
+   ],
+   "max_level": [
+    "icebrand",
+    "unholy_vespers"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "dies_irae",
+   "requires": [
+    "arrow_of_goth",
+    "mannajja"
+   ],
+   "max_level": [
+    "arrow_of_goth",
+    "mannajja"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "kardia_phlegeton",
+   "requires": [
+    "aura_blast",
+    "hellfire"
+   ],
+   "max_level": [
+    "aura_blast",
+    "hellfire"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "lapiste_tepisto",
+   "requires": [
+    "kaiser_knuckle",
+    "tri_bracelet"
+   ],
+   "max_level": [
+    "kaiser_knuckle",
+    "tri_bracelet"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "darkness_illusion",
+   "requires": [
+    "svarog_statue",
+    "valkyrie_turner"
+   ],
+   "max_level": [
+    "svarog_statue",
+    "valkyrie_turner"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "carnage_heart",
+   "requires": [
+    "troll_bomb",
+    "no_future"
+   ],
+   "max_level": [
+    "troll_bomb",
+    "no_future"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "hydro_pump_climax",
+   "requires": [
+    "hydro_storm",
+    "la_borra"
+   ],
+   "max_level": [
+    "hydro_storm",
+    "la_borra"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "arch_angle",
+   "requires": [
+    "grand_cross",
+    "heaven_sword"
+   ],
+   "max_level": [
+    "grand_cross",
+    "heaven_sword"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "spirit_of_light",
+   "requires": [
+    "summon_spirit",
+    "holy_wand"
+   ],
+   "max_level": [
+    "summon_spirit",
+    "holy_wand"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "power_of_lire",
+   "requires": [
+    "soul_steal",
+    "vicious_hunger"
+   ],
+   "max_level": [
+    "soul_steal",
+    "vicious_hunger"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "legacy_of_death_soul_river",
+   "requires": [
+    "dark_rift",
+    "death_spiral"
+   ],
+   "max_level": [
+    "dark_rift",
+    "death_spiral"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "vjaya_sisters",
+   "requires": [
+    "sword_brothers",
+    "thunder_loop"
+   ],
+   "max_level": [
+    "sword_brothers",
+    "thunder_loop"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "venus_crescent",
+   "requires": [
+    "summon_spirit_tornado",
+    "gorgeous_moon"
+   ],
+   "max_level": [
+    "summon_spirit_tornado",
+    "gorgeous_moon"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "dark_frogamorphosis",
+   "requires": [
+    "anura",
+    "soul_eater"
+   ],
+   "max_level": [
+    "anura",
+    "soul_eater"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "clock_tower",
+   "requires": [
+    "endo_gears",
+    "peri_pendulum",
+    "myo_lift",
+    "epi_head"
+   ],
+   "max_level": [
+    "endo_gears",
+    "peri_pendulum",
+    "myo_lift",
+    "epi_head"
+   ],
+   "kind": "union",
+   "dlc": "Ode to Castlevania",
+   "notes": "Union: the weapons merge into one slot."
+  },
+  {
+   "result": "universitas",
+   "requires": [
+    "vol_luminatio",
+    "vol_umbra"
+   ],
+   "max_level": [
+    "vol_luminatio",
+    "vol_umbra"
+   ],
+   "kind": "gift",
+   "dlc": "Ode to Castlevania",
+   "notes": "Gift: you keep the base weapon and get this as an extra."
+  },
+  {
+   "result": "dress_sword",
+   "requires": [
+    "fleuret"
+   ],
+   "max_level": [
+    "fleuret"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Crystalline Carve"
+  },
+  {
+   "result": "espada_ropera",
+   "requires": [
+    "dress_sword"
+   ],
+   "max_level": [
+    "dress_sword"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Shocking Rush"
+  },
+  {
+   "result": "pursuant_blades",
+   "requires": [
+    "splashers",
+    "spellbinder"
+   ],
+   "max_level": [
+    "splashers"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Dual Whirlwind"
+  },
+  {
+   "result": "hydra_cannon",
+   "requires": [
+    "super_missile"
+   ],
+   "max_level": [
+    "super_missile"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Ballistic Missiles"
+  },
+  {
+   "result": "hyperion_bazooka",
+   "requires": [
+    "hydra_cannon"
+   ],
+   "max_level": [
+    "hydra_cannon"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Artificial Hailstorm"
+  },
+  {
+   "result": "gekkabijin",
+   "requires": [
+    "twin_dragon",
+    "karomas_mana"
+   ],
+   "max_level": [
+    "twin_dragon"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Gravedigger"
+  },
+  {
+   "result": "pressure_point",
+   "requires": [
+    "punch"
+   ],
+   "max_level": [
+    "punch"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Raksha"
+  },
+  {
+   "result": "gilded_hand",
+   "requires": [
+    "pressure_point"
+   ],
+   "max_level": [
+    "pressure_point"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Shenlong Firefist"
+  },
+  {
+   "result": "triangle_kick",
+   "requires": [
+    "kick",
+    "pummarola"
+   ],
+   "max_level": [
+    "kick"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Thunder Kick"
+  },
+  {
+   "result": "hecaton_machine_gun",
+   "requires": [
+    "saber_machine_gun"
+   ],
+   "max_level": [
+    "saber_machine_gun"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Shockwave"
+  },
+  {
+   "result": "divergence",
+   "requires": [
+    "hecaton_machine_gun"
+   ],
+   "max_level": [
+    "hecaton_machine_gun"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Bombarding Fire"
+  },
+  {
+   "result": "pendragon",
+   "requires": [
+    "eagle_gun",
+    "spinach"
+   ],
+   "max_level": [
+    "eagle_gun"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Falconfire"
+  },
+  {
+   "result": "lordstar",
+   "requires": [
+    "town_sword"
+   ],
+   "max_level": [
+    "town_sword"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Swallow Slice"
+  },
+  {
+   "result": "dayblade",
+   "requires": [
+    "lordstar"
+   ],
+   "max_level": [
+    "lordstar"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Airwave"
+  },
+  {
+   "result": "blood_chalice",
+   "requires": [
+    "sanguine_star",
+    "stone_mask"
+   ],
+   "max_level": [
+    "sanguine_star"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Blood Rage"
+  },
+  {
+   "result": "jetstream",
+   "requires": [
+    "khukuri",
+    "parm_aegis"
+   ],
+   "max_level": [
+    "khukuri"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Moonfall Slash"
+  },
+  {
+   "result": "falconwind",
+   "requires": [
+    "bullova",
+    "skull_omaniac"
+   ],
+   "max_level": [
+    "bullova"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Hell's Fury"
+  },
+  {
+   "result": "feather_spear",
+   "requires": [
+    "glaive"
+   ],
+   "max_level": [
+    "glaive"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Divine Lancer"
+  },
+  {
+   "result": "lohengrin",
+   "requires": [
+    "feather_spear"
+   ],
+   "max_level": [
+    "feather_spear"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Stardust"
+  },
+  {
+   "result": "zweihander",
+   "requires": [
+    "flamberge"
+   ],
+   "max_level": [
+    "flamberge"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Bull Crush"
+  },
+  {
+   "result": "galatyn",
+   "requires": [
+    "zweihander"
+   ],
+   "max_level": [
+    "zweihander"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama",
+   "notes": "Also needs: Absetzen"
+  },
+  {
+   "result": "emerald_wave",
+   "requires": [
+    "emerald_rapture",
+    "crown"
+   ],
+   "max_level": [
+    "emerald_rapture"
+   ],
+   "kind": "evolution",
+   "dlc": "Emerald Diorama"
+  },
+  {
+   "result": "naneinferno",
+   "requires": [
+    "infernolatro",
+    "outer_saboteur"
+   ],
+   "max_level": [
+    "infernolatro",
+    "outer_saboteur"
+   ],
+   "kind": "evolution",
+   "dlc": "Ante Chamber"
+  },
+  {
+   "result": "cavendish",
+   "requires": [
+    "gros_michel",
+    "outer_saboteur"
+   ],
+   "max_level": [
+    "gros_michel",
+    "outer_saboteur"
+   ],
+   "kind": "evolution",
+   "dlc": "Ante Chamber"
+  },
+  {
+   "result": "royal_flush",
+   "requires": [
+    "fibonacci_spritz",
+    "outer_saboteur"
+   ],
+   "max_level": [
+    "fibonacci_spritz",
+    "outer_saboteur"
+   ],
+   "kind": "evolution",
+   "dlc": "Ante Chamber"
+  },
+  {
+   "result": "negative_space",
+   "requires": [
+    "celestial_booster",
+    "outer_saboteur"
+   ],
+   "max_level": [
+    "celestial_booster",
+    "outer_saboteur"
+   ],
+   "kind": "evolution",
+   "dlc": "Ante Chamber"
+  }
+ ]
 }

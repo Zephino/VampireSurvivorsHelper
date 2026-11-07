@@ -10,8 +10,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from . import icons
-from .data import load_database
+from . import gamedata, icons
+from .data import CACHE_ROOT, load_best_database
 from .evolutions import format_suggestions, suggest
 from .memory.game import POINTER_TYPES, GameReader, load_game_map
 from .memory.il2cpp import TYPE_STRING, Il2Cpp
@@ -51,7 +51,7 @@ def _dump_object(il2: Il2Cpp, obj: int, out: list[str], indent: str = "  ") -> N
 
 
 def run(output: Path = Path("vshelper-diagnose.txt")) -> int:
-    db = load_database()
+    db, _warning = load_best_database()
     gmap = load_game_map()
     out: list[str] = ["Vampire Survivors Helper - diagnostic report", ""]
 
@@ -140,6 +140,22 @@ def run(output: Path = Path("vshelper-diagnose.txt")) -> int:
         out.append(f"  game folder: {manifest.get('game_dir')}")
         out.append(f"  sprites in game files: {manifest.get('sprite_count')}")
         out.append(f"  found: {len(manifest.get('found', {}))}, missing: {', '.join(manifest.get('missing', [])) or 'none'}")
+
+    out.append("")
+    out.append("== Wiki data vs game files ==")
+    out.append(f"  evolution data: {db.source} {db.generated}".rstrip())
+    game = gamedata.load(CACHE_ROOT)
+    if game is None:
+        out.append("  game files not read yet (happens with the picture extraction)")
+    else:
+        checks = gamedata.compare(db, game)
+        matches = sum(1 for c in checks.values() if c.status == "match")
+        out.append(f"  game recipes found: {len(game.recipes)}; compared: {len(checks)}; match: {matches}")
+        for result, c in sorted(checks.items()):
+            if c.status == "mismatch":
+                wiki = next(e for e in db.evolutions if e.result == result)
+                out.append(f"  MISMATCH {db.name(result)}: wiki {' + '.join(db.name(r) for r in wiki.requires)}"
+                           f" / game {' + '.join(db.name(r) for r in c.game_requires)}")
 
     output.write_text("\n".join(out) + "\n", encoding="utf-8")
     print(f"Detection: {result.state} - {result.message}")
