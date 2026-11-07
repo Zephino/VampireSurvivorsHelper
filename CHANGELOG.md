@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 00.20.02
+Date: 11/07/2026
+Time: 5:13 PM
+
+### Changes
+- Changelog rule (`.cursor/rules/changelog.mdc`): every change now raises the version by exactly 00.00.01, rolling over at 99; versions are never lowered or renumbered because the updater only offers higher versions. Existing version numbers are kept as they are.
+
+### Reason
+User expected the version to count up by 00.00.01 per change; earlier changes had raised the middle number for larger features because the rule didn't say which part to raise.
+
 ## Version 00.20.01
 Date: 11/07/2026
 Time: 5:06 PM

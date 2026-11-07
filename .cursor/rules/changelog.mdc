@@ -37,3 +37,5 @@ Time: H:MM AM/PM
 - Place new entries **above** older ones (newest first).
 - Never remove, overwrite, or alter previous entries unless the user specifically requests it.
 - Changelog version must always match the current project version in `VERSION`.
+- Each new entry raises the version by exactly 00.00.01 (00.20.01 -> 00.20.02 -> 00.20.03 ...), whatever the size of the change. When the last part passes 99 it rolls over (00.20.99 -> 00.21.00).
+- Never lower the version or renumber old entries: the in-app updater only offers versions that are higher than the installed one.
