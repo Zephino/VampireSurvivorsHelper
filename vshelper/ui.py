@@ -15,7 +15,7 @@ import subprocess
 import sys
 import webbrowser
 
-from . import gamedata, icons, updater
+from . import gamedata, icons, lookups, updater
 from . import settings as user_settings
 from .data import CACHE_ROOT, CACHED_DB_PATH, Database, DatabaseError, Item, parse_database
 from .evolutions import ItemPlan, Suggestion, held_in_order, plans_for_held, suggest
@@ -66,6 +66,24 @@ class IconThread(threading.Thread):
                 announced = True
             self.wake.wait(GAME_SEARCH_SECONDS)
             self.wake.clear()
+
+
+class LookupThread(threading.Thread):
+    """Looks items up on the wiki one at a time, off the UI thread."""
+
+    def __init__(self, messages: "queue.Queue[tuple[str, object]]"):
+        super().__init__(daemon=True)
+        self.messages = messages
+        self.todo: "queue.Queue[str]" = queue.Queue()
+
+    def run(self) -> None:
+        from .wiki import WikiError, lookup_item
+        while True:
+            name = self.todo.get()
+            try:
+                self.messages.put(("wiki-lookup", (name, lookup_item(name), None)))
+            except WikiError as exc:
+                self.messages.put(("wiki-lookup", (name, None, str(exc))))
 
 
 class ReaderThread(threading.Thread):
@@ -193,8 +211,9 @@ class App:
         list_bar = FlowFrame(self.items_frame, padding=(4, 4))
         list_bar.pack(fill="x")
         list_bar.add(ttk.Button(list_bar, text="Clear", command=self._clear))
-        list_bar.add(ttk.Label(list_bar, text="Filter:"), 8)
+        list_bar.add(ttk.Label(list_bar, text="Search:"), 8)
         list_bar.add(ttk.Entry(list_bar, textvariable=self.filter_var, width=24))
+        list_bar.add(ttk.Label(list_bar, text="item or expansion name", style="Hint.TLabel"))
         item_list = self._item_list(self.items_frame, [
             ("Weapons", [i for i in db.weapons() if not i.evolved and i.id in in_recipes]),
             ("Passive Items", [i for i in db.passives() if i.id in in_recipes]),
@@ -230,6 +249,14 @@ class App:
         self.icon_thread = IconThread(db, game_map, self.icon_messages)
         self.icon_thread.start()
         WikiThread(db, self.icon_messages).start()
+        # Items without a known recipe are looked up on their wiki page (answers are cached).
+        self.lookups = lookups.LookupCache(CACHE_ROOT)
+        for entry in list(self.lookups.entries.values()):
+            lookups.apply_to_db(db, entry)
+        self._lookup_pending: set[str] = set()
+        self._lookup_failed: set[str] = set()  # couldn't reach the wiki this session
+        self.lookup_thread = LookupThread(self.icon_messages)
+        self.lookup_thread.start()
         if self.settings.check_updates_on_start:
             self._check_updates(quiet=True)
 
@@ -301,6 +328,9 @@ class App:
         self.auto_check = ttk.Checkbutton(detection, text="Auto-detect items from the game", variable=self.auto_var,
                                           command=self._toggle_auto, style="Setting.TCheckbutton")
         self.auto_check.pack(anchor="w")
+        self.wiki_lookup_var = tk.BooleanVar(value=self.settings.wiki_lookup)
+        ttk.Checkbutton(detection, text="Look up items without a known recipe on the wiki", variable=self.wiki_lookup_var,
+                        command=self._wiki_lookup_changed, style="Setting.TCheckbutton").pack(anchor="w")
         self.hide_items_var = tk.BooleanVar(value=self.settings.hide_items_when_auto)
         ttk.Checkbutton(detection, text="Hide the item list while auto-detect is on", variable=self.hide_items_var,
                         command=self._hide_items_changed, style="Setting.TCheckbutton").pack(anchor="w")
@@ -399,6 +429,53 @@ class App:
         style = ttk.Style(self.root)
         style.configure("List.TCheckbutton", wraplength=getattr(self, "_list_wrap", 260))
         style.configure("Setting.TCheckbutton", wraplength=getattr(self, "_settings_wrap", 260))
+
+    # ---- wiki lookups for items without a known recipe ----
+    @staticmethod
+    def _wiki_url(name: str) -> str:
+        from .wiki import PAGE_URL
+        return PAGE_URL + name.replace(" ", "_")
+
+    def _insert_link(self, out: tk.Text, text: str, url: str) -> None:
+        tag = f"link{len(out.tag_names())}"
+        pal = PALETTES["dark" if self.settings.dark_theme else "light"]
+        out.tag_configure(tag, foreground=pal["planned"], underline=True)
+        out.tag_bind(tag, "<Button-1>", lambda e: webbrowser.open(url))
+        out.tag_bind(tag, "<Enter>", lambda e: out.configure(cursor="hand2"))
+        out.tag_bind(tag, "<Leave>", lambda e: out.configure(cursor=""))
+        out.insert("end", text, tag)
+
+    def _queue_lookups(self, owned: set[str], hidden: set[str]) -> None:
+        """Ask the wiki about held/planned items that have no recipe, and unrecognised items."""
+        if not self.settings.wiki_lookup:
+            return
+        names = [self.db.name(p.item) for p in plans_for_held(self.db, owned, hidden) if not p.options]
+        if self.auto_on() and self.detected is not None:
+            names += [n for n in self.detected.unrecognized if not n.startswith("#")]
+        for name in names:
+            if name in self._lookup_pending or name in self._lookup_failed or self.lookups.is_fresh(name):
+                continue
+            self._lookup_pending.add(name)
+            self.lookup_thread.todo.put(name)
+
+    def _lookup_finished(self, name: str, lookup, error: str | None) -> None:
+        self._lookup_pending.discard(name)
+        if error:
+            self._lookup_failed.add(name)
+            self.icon_status.set(f"Couldn't look up {name} on the wiki: {error}")
+        else:
+            entry = self.lookups.put(name, lookup)
+            added = lookups.apply_to_db(self.db, entry)
+            if self.game_reader is not None:
+                self.game_reader.matcher.refresh()  # items new to the helper can now be recognised
+            if added:
+                self.icon_status.set(f"Found {added} recipe(s) for {name} on the wiki.")
+        self._refresh()
+
+    def _wiki_lookup_changed(self) -> None:
+        self.settings.wiki_lookup = self.wiki_lookup_var.get()
+        self._save_settings()
+        self._refresh()
 
     # ---- item list visibility (left side of Overview) ----
     def _hide_items_changed(self) -> None:
@@ -594,7 +671,7 @@ class App:
         hidden = self.hidden_expansions()
         for item_id, cb in self.checkbuttons.items():
             item = self.db.items[item_id]
-            visible = text in item.name.lower() and item.dlc not in hidden
+            visible = (text in item.name.lower() or text in item.dlc.lower()) and item.dlc not in hidden
             if visible:
                 cb.grid()  # grid() restores the original row, so the order is kept
             else:
@@ -728,8 +805,18 @@ class App:
         self._card(out, plan.item, "held")
         out.insert("end", "\n")
         if not plan.options:
-            text = "already evolved" if self.db.items[plan.item].evolved else "no evolution"
-            out.insert("end", text + "\n", "carddetail")
+            name = self.db.name(plan.item)
+            entry = self.lookups.get(name)
+            if name in self._lookup_pending:
+                out.insert("end", "No recipe known - searching the wiki...\n", "carddetail")
+            elif entry is not None:
+                text = "already evolved" if self.db.items[plan.item].evolved else "No evolution found on the wiki"
+                out.insert("end", text + "  ", "carddetail")
+                self._insert_link(out, "Open wiki page", entry.get("url") or self._wiki_url(name))
+                out.insert("end", "\n")
+            else:
+                text = "already evolved" if self.db.items[plan.item].evolved else "no evolution"
+                out.insert("end", text + "\n", "carddetail")
             return
         for s in plan.options:
             out.insert("end", "      \u2192  ", "result")
@@ -855,6 +942,7 @@ class App:
     def _refresh(self) -> None:
         owned = self.owned()
         hidden = self.hidden_expansions()
+        self._queue_lookups(owned, hidden)
         self._render_overview(owned, hidden)
         self._render_howto(owned, hidden)
         self._render_guide()
@@ -926,14 +1014,14 @@ class App:
         hidden = self.hidden_expansions()
         query = self.guide_search.get().strip().lower()
         shown = 0
-        for dlc in ["Base game", *self.db.expansions()]:
+        for dlc in ["Base game", *self.db.expansions(), ""]:  # "" = recipes found by wiki lookups
             if dlc in hidden:
                 continue
             evos = [e for e in self.db.evolutions if e.dlc == dlc and (
                 not query or any(query in self.db.name(i).lower() for i in (e.result, *e.requires)))]
             if not evos:
                 continue
-            out.insert("end", dlc.upper() + "\n", "header")
+            out.insert("end", (dlc or "Found on the wiki").upper() + "\n", "header")
             for kind, title in (("evolution", "Evolutions"), ("union", "Unions"), ("gift", "Gifts")):
                 group = [e for e in evos if e.kind == kind]
                 if not group:
@@ -989,6 +1077,9 @@ class App:
                 continue
             if kind.startswith("report"):
                 self._report_message(kind, message)
+                continue
+            if kind == "wiki-lookup":
+                self._lookup_finished(*message)
                 continue
             self.icon_status.set(message)
             if kind == "done":

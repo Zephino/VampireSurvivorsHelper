@@ -97,7 +97,7 @@ Text and buttons wrap onto the next line when the window is made narrow.
 **Detection (Settings):** *Auto-detect items from the game* is on by default. While it is on, the
 item list on the left of **Overview** is hidden so the results use the full width (switch off
 *Hide the item list while auto-detect is on* to keep it). Turn auto-detect off to tick your items
-yourself in that list (with Clear and Filter on top).
+yourself in that list (with Clear and a Search box on top; it searches item and expansion names).
 
 **Planning ahead:** with auto-detect on and the list shown, tick items you *don't* have yet. They
 appear as **planned** (blue border) on Overview and How to evolve, so you can see what they would
@@ -154,6 +154,12 @@ Recipes and item names come from the [Vampire Survivors wiki](https://vampire.su
   reads the game's own evolution data. Each recipe shows "✓ matches game files" or
   "⚠ game files say: ...". The diagnose report lists every mismatch.
 
+**Items without a known recipe** (or that the helper doesn't recognise) are looked up on their own
+wiki page automatically while you hold or plan them (Settings > Detection > *Look up items without
+a known recipe on the wiki*, on by default). Found recipes are added straight away and listed
+under "Found on the wiki" in All evolutions; answers are kept in `cache/wiki_lookups.json` for a
+week. If the wiki has nothing either, How to evolve says so with an *Open wiki page* link.
+
 A few wiki recipes have conditions that aren't items (e.g. Candybox needs max-level passives and
 evolutions) and are left out; `update-data` prints them. Emerald Diorama evolutions that need a
 Glimmer show "Also needs: <Glimmer>".
@@ -176,7 +182,8 @@ Project layout:
 - `vshelper/memory/il2cpp.py`: finds Unity IL2CPP classes, fields and objects by name
 - `vshelper/memory/game.py`: reads the inventory using `config/game_map.json`
 - `vshelper/icons.py`: finds the game install and extracts item pictures (and the game's evolution data)
-- `vshelper/wiki.py`: downloads and parses the wiki's Evolution page and item lists
+- `vshelper/wiki.py`: downloads and parses the wiki's Evolution page, item lists and single item pages
+- `vshelper/lookups.py`: per-item wiki lookups (cache and adding found recipes)
 - `vshelper/gamedata.py`: reads the game's evolution data and compares it with the wiki
 - `vshelper/settings.py`: saved user settings
 - `vshelper/updater.py`: checks for and installs updates (git from source, version check for the exe)

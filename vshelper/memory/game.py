@@ -86,9 +86,15 @@ class ItemMatcher:
         self.aliases = aliases
         self.id_map = id_map
         self._canon: dict[str, str] = {}
-        for item in db.items.values():
-            self._canon.setdefault(_canon(item.id), item.id)
-            self._canon.setdefault(_canon(item.name), item.id)
+        self.refresh()
+
+    def refresh(self) -> None:
+        """Re-read the item names (e.g. after items were added from a wiki lookup)."""
+        canon: dict[str, str] = {}
+        for item in list(self.db.items.values()):
+            canon.setdefault(_canon(item.id), item.id)
+            canon.setdefault(_canon(item.name), item.id)
+        self._canon = canon  # swapped in one step: the reader thread may be using it
 
     def add_aliases(self, aliases: dict[str, str]) -> None:
         """Add internal-name -> item id pairs (e.g. read from the game files)."""

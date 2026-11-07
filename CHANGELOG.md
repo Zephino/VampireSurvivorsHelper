@@ -1,5 +1,19 @@
 # Changelog
 
+## Version 00.18.00
+Date: 11/07/2026
+Time: 3:51 PM
+
+### Changes
+- Items you hold or plan that have no known recipe, and items the helper doesn't recognise, are now looked up on their own wiki page in the background. The page's infobox (evolution / evolution-item / union / requires) is read and the recipe added immediately (e.g. Bone + Chaos Malachite = Anima of Mortaccio). While searching, How to evolve says so; if the wiki has nothing either, it says "No evolution found on the wiki" with an "Open wiki page" link.
+- Answers are cached in `cache/wiki_lookups.json` for a week; redirects to non-item pages (e.g. arcana cards) are ignored. New items found this way can be recognised by auto-detect, and their recipes are listed under "Found on the wiki" in All evolutions.
+- New setting: Settings > Detection > "Look up items without a known recipe on the wiki" (on by default).
+- The item list's "Filter" box is now labelled "Search" and also matches expansion names.
+- New `vshelper/lookups.py`; tests for item-page parsing, the lookup cache and adding recipes.
+
+### Reason
+User asked for the helper to search the internet when it doesn't have a recipe, and for a search box on the Overview item list.
+
 ## Version 00.17.00
 Date: 11/07/2026
 Time: 3:46 PM

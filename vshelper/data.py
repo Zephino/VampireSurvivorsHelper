@@ -59,7 +59,7 @@ class Database:
         for item in self.items.values():
             if item.dlc:
                 seen.setdefault(item.dlc, None)
-        return [d for d in seen if d != "Base game"]
+        return [d for d in seen if d and d != "Base game"]  # "" = found by a wiki lookup
 
     def name(self, item_id: str) -> str:
         item = self.items.get(item_id)

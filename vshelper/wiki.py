@@ -271,3 +271,72 @@ def download_database() -> tuple[dict, list[str]]:
         raise WikiError(f"Only {len(recipes)} recipes found on the wiki's Evolution page; "
                         "the page layout may have changed.")
     return build_database(recipes, fetch_category("Weapons"), fetch_category("Passive items")), skipped
+
+
+# ---- looking up a single item ---------------------------------------------
+PAGE_URL = "https://vampire.survivors.wiki/w/"
+INFOBOX = re.compile(r"\{\{\s*Infobox ([^\n|]+)(.*?)\n\}\}", re.S | re.IGNORECASE)
+
+
+@dataclass
+class ItemLookup:
+    name: str                       # the page title (canonical item name)
+    kind: str                       # "weapon" or "passive" (from the infobox type)
+    recipes: list[dict]             # {"result", "requires", "kind"} in database-entry style, by name
+    url: str
+
+
+def _infobox_fields(text: str) -> dict[str, str]:
+    fields: dict[str, str] = {}
+    for line in text.split("\n|"):
+        if "=" in line:
+            key, value = line.split("=", 1)
+            fields[key.strip().lstrip("|").lower()] = value.strip()
+    return fields
+
+
+def _plain(value: str) -> str:
+    """'[[Armor (item)|Armor]]' / 'Armor (item)' / '{{slink|Armor}}' -> 'Armor'."""
+    value = re.sub(r"\{\{\s*slink\s*\|([^|}]+)[^}]*\}\}", r"\1", value, flags=re.I)
+    value = re.sub(r"\[\[(?:[^|\]]*\|)?([^\]]*)\]\]", r"\1", value)
+    value = re.sub(r"\{\{[^}]*\}\}|<[^>]+>", "", value)
+    return _item_title(value.strip())
+
+
+def parse_item_page(title: str, wikitext: str) -> ItemLookup | None:
+    """Read an item page's infobox: its evolution / union and what they need."""
+    m = INFOBOX.search(wikitext)
+    if not m:
+        return None
+    box_type = m.group(1).strip().lower()
+    if not ("weapon" in box_type or "passive" in box_type):
+        return None  # e.g. a redirect to an arcana or character page: not an item
+    fields = _infobox_fields(m.group(2))
+    name = _item_title(fields.get("name") or title)
+    kind = "passive" if "passive" in box_type else "weapon"
+    recipes = []
+    for result_key, item_prefix, recipe_kind in (("evolution", "evolution-item", "evolution"),
+                                                 ("union", "union-item", "union")):
+        result = _plain(fields.get(result_key, ""))
+        if not result:
+            continue
+        needs = [_plain(fields[k]) for k in sorted(fields) if k == item_prefix or
+                 re.fullmatch(re.escape(item_prefix) + r"\d+", k)]
+        recipes.append({"result": result, "requires": [name, *[n for n in needs if n]], "kind": recipe_kind})
+    if fields.get("type", "").strip().lower() == "union":  # the union's own page lists its parts
+        parts = [_plain(fields[k]) for k in sorted(fields) if re.fullmatch(r"requires\d+", k)]
+        if parts:
+            recipes.append({"result": name, "requires": [p for p in parts if p], "kind": "union"})
+    return ItemLookup(name, kind, recipes, PAGE_URL + urllib.parse.quote(title.replace(" ", "_")))
+
+
+def lookup_item(name: str) -> ItemLookup | None:
+    """Fetch and read the wiki page for one item. None if there is no such page."""
+    try:
+        data = _api({"action": "parse", "page": name, "prop": "wikitext", "redirects": "1"})
+    except WikiError as exc:
+        if "doesn't exist" in str(exc) or "missingtitle" in str(exc):
+            return None
+        raise
+    parse = data.get("parse", {})
+    return parse_item_page(parse.get("title", name), parse.get("wikitext", ""))
