@@ -104,6 +104,33 @@ class ExtractTests(unittest.TestCase):
         finally:
             del sys.modules["UnityPy"]
 
+    def test_missing_pictures_come_from_the_wiki(self):
+        import io
+        png = io.BytesIO()
+        Image.new("RGBA", (128, 128), (0, 200, 0, 255)).save(png, "PNG")
+        asked = []
+
+        def urls(names):
+            asked.extend(names)
+            return {n: ("http://wiki/" + n if n != "Sinestro Custos" else None) for n in names}
+
+        db = load_database()
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d)
+            Image.new("RGBA", (32, 32)).save(out / "whip.png")  # already has a picture
+            todo = icons.items_to_fetch_from_wiki(db, out, now=1000.0)
+            self.assertNotIn("whip", todo)
+            self.assertIn("keremet_bubbles", todo)
+            saved = icons.download_wiki_icons(db, ["keremet_bubbles", "sinestro_custos"], out,
+                                              sprite_urls=urls, download=lambda u: png.getvalue(), now=1000.0)
+            self.assertEqual(saved, 1)
+            with Image.open(out / "keremet_bubbles.png") as img:
+                self.assertEqual(img.size, (icons.ICON_SIZE, icons.ICON_SIZE))
+            # asked recently: not again (picture or not); after a week the missing one is retried
+            self.assertNotIn("sinestro_custos", icons.items_to_fetch_from_wiki(db, out, now=2000.0))
+            self.assertIn("sinestro_custos", icons.items_to_fetch_from_wiki(db, out, now=1000.0 + 8 * 86400))
+            self.assertNotIn("keremet_bubbles", icons.items_to_fetch_from_wiki(db, out, now=1000.0 + 8 * 86400))
+
     def test_missing_unity_data_folder(self):
         sys.modules["UnityPy"] = types.ModuleType("UnityPy")
         try:

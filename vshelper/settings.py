@@ -20,6 +20,7 @@ class Settings:
     auto_detect: bool = True            # read items from the game (Settings > Detection)
     hide_items_when_auto: bool = True   # hide the item list on Overview while auto-detect is on
     wiki_lookup: bool = True            # look up items without a known recipe on the wiki
+    wiki_pictures: bool = True          # download pictures the game files didn't provide from the wiki
     # What the main screen shows (Settings > Main screen)
     show_holding: bool = True
     show_ready: bool = True

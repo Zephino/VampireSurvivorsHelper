@@ -35,10 +35,12 @@ class IconThread(threading.Thread):
     (it names the picture of every item, DLC included), pictures are extracted again.
     """
 
-    def __init__(self, db: Database, game_map: GameMap | None, messages: "queue.Queue[tuple[str, str]]"):
+    def __init__(self, db: Database, game_map: GameMap | None, messages: "queue.Queue[tuple[str, str]]",
+                 wiki_pictures=lambda: True):
         super().__init__(daemon=True)
         self.db = db
         self.map = game_map
+        self.wiki_pictures = wiki_pictures  # read the setting each time (it can change while running)
         self.messages = messages
         self.stopped = threading.Event()
         self.wake = threading.Event()  # set when the catalogue was saved, to check right away
@@ -65,11 +67,29 @@ class IconThread(threading.Thread):
                     self.messages.put(("status", f"No item pictures: unexpected error {exc!r}"))
                     return
                 self.messages.put(("done", f"Item pictures: {len(report.found)} of {len(self.db.items)} found."))
-            elif game_dir is None and not icons.read_manifest() and not announced:
+            if self.wiki_pictures() and (game_dir is None or not icons.needs_extraction(game_dir)):
+                self._fetch_from_wiki()
+            if game_dir is None and not icons.read_manifest() and not icons.icon_paths(self.db.items) \
+                    and not announced:
                 self.messages.put(("status", "Item pictures: start the game once so the helper can find it."))
                 announced = True
             self.wake.wait(GAME_SEARCH_SECONDS)
             self.wake.clear()
+
+    def _fetch_from_wiki(self) -> None:
+        """Download pictures the game files didn't give us (only asks about each item once a week)."""
+        from .wiki import WikiError
+        todo = icons.items_to_fetch_from_wiki(self.db)
+        if not todo:
+            return
+        try:
+            saved = icons.download_wiki_icons(self.db, todo, progress=lambda m: self.messages.put(("status", m)))
+        except (WikiError, icons.IconError) as exc:
+            self.messages.put(("status", f"Couldn't get pictures from the wiki: {exc}"))
+            self.wiki_pictures = lambda: False  # don't retry every few seconds this session
+            return
+        have = len(icons.icon_paths(self.db.items))
+        self.messages.put(("done", f"Item pictures: {have} of {len(self.db.items)} ({saved} new from the wiki)."))
 
 
 class LookupThread(threading.Thread):
@@ -250,7 +270,8 @@ class App:
         self.game_reader: GameReader | None = None
         self._load_icons()
         self._load_game_data()
-        self.icon_thread = IconThread(db, game_map, self.icon_messages)
+        self.icon_thread = IconThread(db, game_map, self.icon_messages,
+                                      wiki_pictures=lambda: self.settings.wiki_pictures)
         self.icon_thread.start()
         WikiThread(db, self.icon_messages).start()
         # Items without a known recipe are looked up on their wiki page (answers are cached).
@@ -335,6 +356,9 @@ class App:
         self.wiki_lookup_var = tk.BooleanVar(value=self.settings.wiki_lookup)
         ttk.Checkbutton(detection, text="Look up items without a known recipe on the wiki", variable=self.wiki_lookup_var,
                         command=self._wiki_lookup_changed, style="Setting.TCheckbutton").pack(anchor="w")
+        self.wiki_pictures_var = tk.BooleanVar(value=self.settings.wiki_pictures)
+        ttk.Checkbutton(detection, text="Download missing item pictures from the wiki", variable=self.wiki_pictures_var,
+                        command=self._wiki_pictures_changed, style="Setting.TCheckbutton").pack(anchor="w")
         self.hide_items_var = tk.BooleanVar(value=self.settings.hide_items_when_auto)
         ttk.Checkbutton(detection, text="Hide the item list while auto-detect is on", variable=self.hide_items_var,
                         command=self._hide_items_changed, style="Setting.TCheckbutton").pack(anchor="w")
@@ -474,7 +498,14 @@ class App:
                 self.game_reader.matcher.refresh()  # items new to the helper can now be recognised
             if added:
                 self.icon_status.set(f"Found {added} recipe(s) for {name} on the wiki.")
+                self.icon_thread.wake.set()  # new items may need pictures
         self._refresh()
+
+    def _wiki_pictures_changed(self) -> None:
+        self.settings.wiki_pictures = self.wiki_pictures_var.get()
+        self._save_settings()
+        if self.settings.wiki_pictures:
+            self.icon_thread.wake.set()
 
     def _wiki_lookup_changed(self) -> None:
         self.settings.wiki_lookup = self.wiki_lookup_var.get()
@@ -986,11 +1017,11 @@ class App:
                 out.insert("end", "WITH YOUR PLANNED ITEMS\n", "header")
                 for s in planned:
                     self._card_recipe(out, s)
-            if opts.show_evolve_into:
-                self._render_evolve_into(out, owned, hidden)
             if not all_ready and opts.show_ready:
                 out.insert("end", "READY TO EVOLVE\n", "header")
                 out.insert("end", "Nothing yet - see the How to evolve tab for what to pick up.\n", "detail")
+            if opts.show_evolve_into:
+                self._render_evolve_into(out, owned, hidden)
             if not (opts.show_holding or opts.show_ready or opts.show_evolve_into):
                 out.insert("end", "Overview is switched off in Settings > Main screen.")
         out.configure(state="disabled")
@@ -998,8 +1029,15 @@ class App:
     def _render_evolve_into(self, out: tk.Text, owned: set[str], hidden: set[str]) -> None:
         """One compact line per evolution of each held weapon that still needs parts
         (recipes with every part are already under Ready to evolve)."""
-        rows = [(plan.item, s) for plan in plans_for_held(self.db, owned, hidden)
-                if self.db.items[plan.item].kind == "weapon" for s in plan.options if s.missing]
+        rows, shown = [], set()
+        for plan in plans_for_held(self.db, owned, hidden):
+            if self.db.items[plan.item].kind != "weapon":
+                continue
+            for s in plan.options:
+                key = (s.evolution.result, s.evolution.requires)
+                if s.missing and key not in shown:  # a union of two held weapons is listed once
+                    shown.add(key)
+                    rows.append((plan.item, s))
         if not rows:
             return
         out.insert("end", "WHAT YOUR ITEMS EVOLVE INTO\n", "header")

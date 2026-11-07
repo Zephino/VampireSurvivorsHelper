@@ -87,6 +87,11 @@ During a run the helper also reads the game's own item catalogue from memory (th
 picture of every item, DLC included) into `cache/game_catalog.json`, and then extracts the
 pictures it was missing once more in the background.
 
+Any item still without a picture is then downloaded from the wiki (`Sprite-<name>.png`, about a
+minute for all of them; Settings > Detection > *Download missing item pictures from the wiki*,
+on by default). This also works when the game isn't installed or found. Each item is only asked
+about once a week; the record is kept in `cache/icons/wiki_icons.json`.
+
 Items without a matching picture just show their name. The diagnose report lists which pictures
 were found.
 

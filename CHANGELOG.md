@@ -1,5 +1,19 @@
 # Changelog
 
+## Version 00.19.00
+Date: 11/07/2026
+Time: 4:44 PM
+
+### Changes
+- Item pictures the game files didn't provide are now downloaded from the wiki (`Sprite-<name>.png`) in the background and resized like the others. In a test with an empty cache, 425 of 430 items got a picture in about a minute, including Keremet Bubbles/Morbus and all Custos weapons. Works without the game installed; each item is asked about at most once a week (`cache/icons/wiki_icons.json`), and items added by wiki recipe lookups get pictures too.
+- New setting: Settings > Detection > "Download missing item pictures from the wiki" (on by default).
+- Overview: "What your items evolve into" now comes after "Ready to evolve", and a union of two held weapons is listed once instead of once per weapon.
+- The "start the game once so the helper can find it" picture message no longer appears when pictures are already available.
+- Tests for the wiki picture download.
+
+### Reason
+User suggested pulling all pictures from the wiki, since some items (e.g. Keremet and the Custos weapons) still had none.
+
 ## Version 00.18.03
 Date: 11/07/2026
 Time: 4:30 PM

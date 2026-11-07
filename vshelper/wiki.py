@@ -340,3 +340,40 @@ def lookup_item(name: str) -> ItemLookup | None:
         raise
     parse = data.get("parse", {})
     return parse_item_page(parse.get("title", name), parse.get("wikitext", ""))
+
+
+# ---- item pictures ---------------------------------------------------------
+MAX_IMAGE_BYTES = 2 * 1024 * 1024
+
+
+def sprite_urls(names: list[str]) -> dict[str, str | None]:
+    """{item name: URL of its 'Sprite-<name>.png' on the wiki, or None if there is none}."""
+    result: dict[str, str | None] = {}
+    for start in range(0, len(names), 50):  # the API takes up to 50 titles per request
+        batch = names[start:start + 50]
+        titles = {f"File:Sprite-{n}.png": n for n in batch}
+        data = _api({"action": "query", "titles": "|".join(titles), "prop": "imageinfo", "iiprop": "url"})
+        query = data.get("query", {})
+        renamed = {r["to"]: r["from"] for r in query.get("normalized", [])}
+        for page in query.get("pages", []):
+            title = renamed.get(page.get("title"), page.get("title"))
+            name = titles.get(title)
+            if name is None:
+                continue
+            info = page.get("imageinfo") or [{}]
+            result[name] = None if page.get("missing") else info[0].get("url")
+        for n in batch:
+            result.setdefault(n, None)
+    return result
+
+
+def download(url: str) -> bytes:
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    try:
+        with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+            data = resp.read(MAX_IMAGE_BYTES + 1)
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        raise WikiError(f"Could not download {url} ({exc}).") from exc
+    if len(data) > MAX_IMAGE_BYTES:
+        raise WikiError(f"{url} is unexpectedly large.")
+    return data

@@ -296,3 +296,71 @@ def needs_extraction(game_dir: Path | None, out_dir: Path | None = None) -> bool
 def icon_paths(ids: Iterable[str], out_dir: Path | None = None) -> dict[str, Path]:
     out_dir = out_dir or CACHE_DIR
     return {i: out_dir / f"{i}.png" for i in ids if (out_dir / f"{i}.png").exists()}
+
+
+# ---- pictures from the wiki (for items the game files didn't give us) ----
+WIKI_ICONS = "wiki_icons.json"
+WIKI_RETRY_DAYS = 7
+
+
+def _wiki_state(out_dir: Path) -> dict:
+    try:
+        raw = json.loads((out_dir / WIKI_ICONS).read_text(encoding="utf-8"))
+        return raw if isinstance(raw, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def items_to_fetch_from_wiki(db: Database, out_dir: Path | None = None, now: float | None = None) -> list[str]:
+    """Items without a picture that the wiki hasn't been asked about recently."""
+    import time
+    out_dir = out_dir or CACHE_DIR
+    now = time.time() if now is None else now
+    state = _wiki_state(out_dir)
+    todo = []
+    for item_id in db.items:
+        if (out_dir / f"{item_id}.png").exists():
+            continue
+        asked = state.get(item_id)
+        if asked and now - asked.get("checked", 0) < WIKI_RETRY_DAYS * 86400:
+            continue
+        todo.append(item_id)
+    return todo
+
+
+def download_wiki_icons(db: Database, item_ids: list[str], out_dir: Path | None = None,
+                        progress: Callable[[str], None] = lambda _m: None,
+                        sprite_urls=None, download=None, now: float | None = None) -> int:
+    """Download 'Sprite-<name>.png' from the wiki for these items. Returns how many were saved."""
+    import io
+    import time
+    from . import wiki
+    try:
+        from PIL import Image
+    except ImportError as exc:
+        raise IconError("Pillow is needed to resize pictures (it is installed together with UnityPy).") from exc
+    sprite_urls = sprite_urls or wiki.sprite_urls
+    download = download or wiki.download
+    out_dir = out_dir or CACHE_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
+    now = time.time() if now is None else now
+    names = {db.items[i].name: i for i in item_ids if i in db.items}
+    progress(f"Downloading {len(names)} missing item pictures from the wiki...")
+    urls = sprite_urls(list(names))
+    state = _wiki_state(out_dir)
+    saved = 0
+    for name, item_id in names.items():
+        url = urls.get(name)
+        result = "missing"
+        if url:
+            try:
+                with Image.open(io.BytesIO(download(url))) as img:
+                    _fit(img).save(out_dir / f"{item_id}.png")
+                result = "ok"
+                saved += 1
+            except Exception:  # one bad download or image shouldn't stop the rest
+                result = "failed"
+        state[item_id] = {"checked": now, "result": result}
+    (out_dir / WIKI_ICONS).write_text(json.dumps(state, indent=1), encoding="utf-8")
+    return saved
+
