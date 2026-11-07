@@ -1,3 +1,4 @@
+import struct
 import json
 import tempfile
 import unittest
@@ -9,7 +10,7 @@ from vshelper.memory.game import GameReader, ItemMatcher, load_game_map
 from vshelper.memory.il2cpp import Il2Cpp, normalize_name
 from vshelper.memory.winapi import ProcessNotFound
 
-from tests.fake_il2cpp import FakeGame
+from tests.fake_il2cpp import HEAP, FakeGame
 
 
 class DatabaseTests(unittest.TestCase):
@@ -68,6 +69,13 @@ class MatcherTests(unittest.TestCase):
         self.assertEqual(m.match("king_bible"), "king_bible")
         self.assertEqual(m.match("#7"), "garlic")
         self.assertIsNone(m.match("NOT_A_THING"))
+
+    def test_near_identical_spelling_only_when_asked(self):
+        m = ItemMatcher(load_database(), {}, {})
+        self.assertIsNone(m.match("Sinistro Custos"))
+        self.assertEqual(m.match("Sinistro Custos", fuzzy=True), "sinestro_custos")
+        self.assertIsNone(m.match("Completely Different", fuzzy=True))
+        self.assertIsNone(m.match("#1467", fuzzy=True))
 
     def test_normalize_name(self):
         self.assertEqual(normalize_name("<Player>k__BackingField"), "player")
@@ -161,6 +169,18 @@ class GameReaderTests(unittest.TestCase):
         g = FakeGame()
         g.set_objects(g.players, [])  # no player yet
         self.assertEqual(_reader(g).poll().state, "waiting")
+
+    def test_unreadable_item_is_mentioned(self):
+        g = FakeGame()
+        g.set_named(g.weapon_list, [("Whip", 1, 8)])
+        e = g.obj(g.equip_cls, 0x28)  # an equipment object with no name and no type
+        g.m.w32(e + 0x10, -5)
+        arr = struct.unpack_from("<Q", g.m.heap, g.weapon_list + 0x10 - HEAP)[0]
+        g.m.w64(arr + 0x20 + 8, e)
+        g.m.w32(g.weapon_list + 0x18, 2)
+        result = _reader(g, type_field=["nothing_here"]).poll()
+        self.assertEqual(result.owned, {"whip"})
+        self.assertIn("1 item(s) couldn't be identified", result.message)
 
     def test_unrecognized_item_reported(self):
         g = FakeGame(enum_names=("VOID", "WHIP", "MYSTERY"))

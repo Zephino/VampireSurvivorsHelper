@@ -1,5 +1,17 @@
 # Changelog
 
+## Version 00.18.02
+Date: 11/07/2026
+Time: 4:19 PM
+
+### Changes
+- Held items whose game name is spelled almost the same as the wiki's (e.g. one letter different) are now still recognised (close-match, only for items read from your inventory).
+- Items the helper finds in your inventory but can't identify at all are no longer skipped silently: the status bar says how many couldn't be identified and asks for a diagnose report.
+- Tests for both.
+
+### Reason
+User holds two of the three Custos weapons but the helper listed only Dextro Custos, so it said both Sinestro and Centralis Custos were still needed.
+
 ## Version 00.18.01
 Date: 11/07/2026
 Time: 4:04 PM

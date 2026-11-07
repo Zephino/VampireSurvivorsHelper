@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import difflib
 import json
 import re
 import time
@@ -102,13 +103,21 @@ class ItemMatcher:
             if v in self.db.items:
                 self.aliases.setdefault(k.upper(), v)
 
-    def match(self, raw: str) -> str | None:
+    FUZZY_CUTOFF = 0.9  # "Sinistro Custos" still finds "Sinestro Custos"; unrelated names don't
+
+    def match(self, raw: str, fuzzy: bool = False) -> str | None:
+        """fuzzy: also accept a near-identical spelling (only used for names of held items)."""
         if raw in self.id_map:
             return self.id_map[raw] if self.id_map[raw] in self.db.items else None
         alias = self.aliases.get(raw.upper())
         if alias in self.db.items:
             return alias
-        return self._canon.get(_canon(raw))
+        key = _canon(raw)
+        found = self._canon.get(key)
+        if found or not fuzzy or raw.startswith("#") or len(key) < 6:
+            return found
+        close = difflib.get_close_matches(key, list(self._canon), n=1, cutoff=self.FUZZY_CUTOFF)
+        return self._canon[close[0]] if close else None
 
 
 @dataclass(frozen=True)
@@ -251,6 +260,7 @@ class GameReader:
         owned: set[str] = set()
         levels: dict[str, tuple[int, int]] = {}
         unknown: list[str] = []
+        unreadable = 0
         found_any = False
         for kind, chain in list(s.chains.items()):
             obj = roots.get(chain.root_index)
@@ -268,8 +278,9 @@ class GameReader:
                 for el in elements:
                     raw = self.identify(s, el)
                     if raw is None:
+                        unreadable += 1  # no name or type found on this item: say so, don't hide it
                         continue
-                    item = self.matcher.match(raw)
+                    item = self.matcher.match(raw, fuzzy=True)
                     if item:
                         owned.add(item)
                         lv = self.read_levels(s.il2, el)
@@ -294,6 +305,8 @@ class GameReader:
         msg = f"Reading game: {len(owned)} item(s) detected."
         if unknown:
             msg += f" Unrecognized: {', '.join(unknown)}"
+        if unreadable:
+            msg += f" {unreadable} item(s) couldn't be identified - please send a diagnose report."
         return ReadResult("ok", msg, frozenset(owned), tuple(unknown),
                           tuple((i, lv, mx) for i, (lv, mx) in sorted(levels.items())))
 
