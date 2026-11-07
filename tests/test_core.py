@@ -135,6 +135,26 @@ class GameReaderTests(unittest.TestCase):
         self.assertEqual(result.level_of("wine_glass"), (5, 8))
         self.assertEqual(result.level_of("whip"), (8, 8))
 
+    def test_coop_players_are_read(self):
+        g = FakeGame()
+        g.set_named(g.weapon_list, [("Whip", 8, 8)])
+        weapons, passives = g.add_player("TP_Rinaldo_Character")
+        g.set_named(weapons, [("Knife", 3, 8), ("Prototype A", 1, 8)])
+        g.set_named(passives, [("Bracer", 2, 5)])
+        result = _reader(g).poll()
+        self.assertEqual(result.owned, {"whip"})  # player 1 as before
+        self.assertEqual([p.index for p in result.players], [0, 1])
+        friend = result.players[1]
+        self.assertEqual(friend.owned, {"knife", "prototype_a", "bracer"})
+        self.assertEqual(friend.level_of("knife"), (3, 8))
+        self.assertEqual(friend.label, "Player 2 (Rinaldo)")
+        self.assertIn("2 players", result.message)
+
+    def test_solo_game_has_one_player(self):
+        g = FakeGame()
+        g.set_named(g.weapon_list, [("Whip", 8, 8)])
+        self.assertEqual(len(_reader(g).poll().players), 1)
+
     def test_game_spelling_differs_from_the_wiki(self):
         g = FakeGame()
         g.set_named(g.weapon_list, [("Dextro Custos", 6, 6), ("Sinistro Custos", 6, 6)], enum_value=1438)

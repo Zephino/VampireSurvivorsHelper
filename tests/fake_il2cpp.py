@@ -128,12 +128,13 @@ class FakeGame:
         self.m.finish()
         for addr, off in self._pending_names:
             self.m.w64(addr, self.m.meta_addr(off))
+        self._finished = True
 
     def make_class(self, name: str, fields: list[tuple[str, int, int, int]], parent: int = 0,
                    namespace: str = "Game") -> int:
         klass = self.m.alloc(0x120)
-        self._pending_names.append((klass + 0x10, self.m.string(name)))
-        self._pending_names.append((klass + 0x18, self.m.string(namespace)))
+        self._set_name(klass + 0x10, name)
+        self._set_name(klass + 0x18, namespace)
         for off in (0x40, 0x48, 0x78):
             self.m.w64(klass + off, klass)
         self.m.w64(klass + 0x58, parent)
@@ -143,12 +144,22 @@ class FakeGame:
                 entry = arr + i * 0x20
                 typ = self.m.alloc(0x10)
                 self.m.w32(typ + 8, attrs | (tcode << 16))
-                self._pending_names.append((entry, self.m.string(fname)))
+                self._set_name(entry, fname)
                 self.m.w64(entry + 8, typ)
                 self.m.w64(entry + 0x10, klass)
                 self.m.w32(entry + 0x18, offset)
             self.m.w64(klass + 0x80, arr)
         return klass
+
+    def _set_name(self, addr: int, text: str) -> None:
+        """Point addr at a C string: in the metadata while building, on the heap afterwards."""
+        if getattr(self, "_finished", False):
+            raw = text.encode() + b"\0"
+            where = self.m.alloc(len(raw))
+            self.m.heap[where - HEAP:where - HEAP + len(raw)] = raw
+            self.m.w64(addr, where)
+        else:
+            self._pending_names.append((addr, self.m.string(text)))
 
     def obj(self, klass: int, size: int) -> int:
         o = self.m.alloc(size)
@@ -229,4 +240,25 @@ class FakeGame:
         dm = self.obj(self.datamanager_cls, 0x18)
         self.m.w64(dm + 0x10, d)
         self.m.w64(self.gm + 0x18, dm)
+
+    def add_player(self, class_name: str = "CharacterController") -> tuple[int, int]:
+        """Add another co-op player; returns (weapon list, passive list) to fill."""
+        cls = self.player_cls if class_name == "CharacterController" else self.make_class(
+            class_name, [], parent=self.player_cls)
+        weapons, passives = self.make_list([]), self.make_list([])
+        wm = self.obj(self.wm_cls, 0x18)
+        self.m.w64(wm + 0x10, weapons)
+        am = self.obj(self.am_cls, 0x18)
+        self.m.w64(am + 0x10, passives)
+        player = self.obj(cls, 0x20)
+        self.m.w64(player + 0x10, wm)
+        self.m.w64(player + 0x18, am)
+        arr = struct.unpack_from("<Q", self.heap_bytes(), self.players + 0x10 - HEAP)[0]
+        count = struct.unpack_from("<i", self.heap_bytes(), self.players + 0x18 - HEAP)[0]
+        self.m.w64(arr + 0x20 + 8 * count, player)
+        self.m.w32(self.players + 0x18, count + 1)
+        return weapons, passives
+
+    def heap_bytes(self) -> bytearray:
+        return self.m.heap
 

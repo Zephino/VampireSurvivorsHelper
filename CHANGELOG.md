@@ -1,5 +1,17 @@
 # Changelog
 
+## Version 00.20.00
+Date: 11/07/2026
+Time: 5:00 PM
+
+### Changes
+- Co-op: the helper now reads every player in the game (up to 4) from the game's player list, with their items, levels and character name (e.g. "Player 2 (Bill)").
+- When more than one player is in the game, a "Show items of: Player 1 - you | Player 2 | ..." bar appears above the tabs. Choosing a friend switches Overview and How to evolve to their items, so you can tell them what they can evolve and what they still need. Hidden when playing alone or with auto-detect off; planning (ticking items) applies to player 1.
+- The status bar mentions how many players are in the game. README updated; tests for reading co-op players.
+
+### Reason
+User wants to see what their friends hold so they can tell them what they need to evolve.
+
 ## Version 00.19.00
 Date: 11/07/2026
 Time: 4:44 PM

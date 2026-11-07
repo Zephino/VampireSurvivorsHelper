@@ -121,12 +121,32 @@ class ItemMatcher:
 
 
 @dataclass(frozen=True)
+class PlayerInventory:
+    """What one player holds (co-op games have several)."""
+    index: int                                   # 0 = player 1
+    character: str                               # e.g. "Rinaldo" (from the character's class name)
+    owned: frozenset[str] = frozenset()
+    levels: tuple[tuple[str, int, int], ...] = ()
+
+    @property
+    def label(self) -> str:
+        return f"Player {self.index + 1}" + (f" ({self.character})" if self.character else "")
+
+    def level_of(self, item_id: str) -> tuple[int, int] | None:
+        for i, lvl, mx in self.levels:
+            if i == item_id:
+                return lvl, mx
+        return None
+
+
+@dataclass(frozen=True)
 class ReadResult:
     state: str  # not_running | waiting | ok | error
     message: str
     owned: frozenset[str] = frozenset()
     unrecognized: tuple[str, ...] = ()
     levels: tuple[tuple[str, int, int], ...] = ()  # (item id, level, max level) when the game exposes them
+    players: tuple[PlayerInventory, ...] = ()      # every player in the game, player 1 first
 
     def level_of(self, item_id: str) -> tuple[int, int] | None:
         for i, lvl, mx in self.levels:
@@ -316,8 +336,72 @@ class GameReader:
             msg += f" Unrecognized: {', '.join(unknown)}"
         if unreadable:
             msg += f" {unreadable} item(s) couldn't be identified - please send a diagnose report."
-        return ReadResult("ok", msg, frozenset(owned), tuple(unknown),
-                          tuple((i, lv, mx) for i, (lv, mx) in sorted(levels.items())))
+        level_list = tuple((i, lv, mx) for i, (lv, mx) in sorted(levels.items()))
+        players = [PlayerInventory(0, self._character_name(s, roots, 0), frozenset(owned), level_list)]
+        for index in range(1, MAX_PLAYERS):
+            other = self._read_player(s, roots, index)
+            if other is None:
+                break
+            players.append(other)
+        if len(players) > 1:
+            msg += f" {len(players)} players in the game."
+        return ReadResult("ok", msg, frozenset(owned), tuple(unknown), level_list, tuple(players))
+
+    # ---- other players (co-op) --------------------------------------------
+    def _player_fields(self, chain: Chain, index: int) -> tuple[str, ...] | None:
+        """The chain with player 1's index swapped for another player's ('_mainCharacters[0]' ->
+        '_mainCharacters[1]'). None if the chain doesn't go through a list of players."""
+        if not chain.fields:
+            return None
+        base, i = self._split_index(chain.fields[0])
+        if i is None:
+            return None
+        return (f"{base}[{index}]", *chain.fields[1:])
+
+    def _character_name(self, s: _Session, roots: dict[int, int], index: int) -> str:
+        chain = next(iter(s.chains.values()), None)
+        fields = self._player_fields(chain, index) if chain else None
+        obj = roots.get(chain.root_index) if chain else None
+        if not fields or not obj:
+            return ""
+        try:
+            player = self._follow(s.il2, obj, fields[:1])
+            name = s.il2.class_name(s.il2.object_class(player)) if player else ""
+        except MemoryAccessError:
+            return ""
+        # "TP_Rinaldo_Character" -> "Rinaldo"; the generic controller class says nothing useful
+        name = re.sub(r"^(?:[A-Z]{1,4}\d*_)+", "", name)
+        name = re.sub(r"_?Character(Controller)?$", "", name).replace("_", " ").strip()
+        return "" if name in ("", "CharacterController") else name
+
+    def _read_player(self, s: _Session, roots: dict[int, int], index: int) -> PlayerInventory | None:
+        owned: set[str] = set()
+        levels: dict[str, tuple[int, int]] = {}
+        found = False
+        for chain in s.chains.values():
+            fields = self._player_fields(chain, index)
+            obj = roots.get(chain.root_index)
+            if not fields or not obj:
+                continue
+            try:
+                coll = self._follow(s.il2, obj, fields)
+                if not coll:
+                    continue
+                found = True
+                for el in s.il2.collection_elements(coll)[:64]:
+                    raw = self.identify(s, el)
+                    item = self.matcher.match(raw, fuzzy=True) if raw else None
+                    if item:
+                        owned.add(item)
+                        lv = self.read_levels(s.il2, el)
+                        if lv:
+                            levels[item] = lv
+            except MemoryAccessError:
+                continue
+        if not found:
+            return None
+        return PlayerInventory(index, self._character_name(s, roots, index), frozenset(owned),
+                               tuple((i, lv, mx) for i, (lv, mx) in sorted(levels.items())))
 
     # ---- item catalogue ----------------------------------------------------
     def catalog_sources(self, s: _Session, roots: dict[int, int]) -> list[tuple[str, int]]:
@@ -647,6 +731,7 @@ class GameReader:
 # The automatic search ignores bigger lists (item pools, pickups). Paths from the game map are
 # trusted at any size: some characters and modes hold many more passives.
 MAX_SLOTS = 12
+MAX_PLAYERS = 4  # co-op: up to four players
 GOOD_WORDS = ("player", "character", "equip", "weapon", "accessor", "inventory", "slot", "active", "owned")
 BAD_WORDS = ("pool", "available", "pickup", "drop", "ground", "spawn", "unlock", "banish", "seen",
              "collection", "shop", "store", "reward", "treasure", "chest", "levelup", "choice", "offer",

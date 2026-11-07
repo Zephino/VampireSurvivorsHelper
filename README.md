@@ -106,6 +106,11 @@ item list on the left of **Overview** is hidden so the results use the full widt
 *Hide the item list while auto-detect is on* to keep it). Turn auto-detect off to tick your items
 yourself in that list (with Clear and a Search box on top; it searches item and expansion names).
 
+**Co-op:** when more than one player is in the game, a bar above the tabs shows
+*Show items of: Player 1 (you) | Player 2 | ...*. Pick a friend to see their items, levels, what
+they can evolve and what they still need on Overview and How to evolve. (Local co-op is read
+from your PC's game; for online co-op it depends on what the game keeps of other players.)
+
 **Planning ahead:** with auto-detect on and the list shown, tick items you *don't* have yet. They
 appear as **planned** (blue border) on Overview and How to evolve, so you can see what they would
 evolve into and what else you'd need; combos that rely on them are listed under "With your planned

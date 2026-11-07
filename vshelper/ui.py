@@ -206,6 +206,10 @@ class App:
         self.filter_var.trace_add("write", lambda *_: self._apply_filter())
 
         # One row of tabs across the whole window.
+        # Co-op: choose whose items Overview and How to evolve show (hidden when playing alone).
+        self.player_var = tk.IntVar(value=0)
+        self.player_bar = FlowFrame(root, padding=(6, 4))
+        self._player_labels: tuple[str, ...] = ()
         self.tabs = ttk.Notebook(root)
         self.tabs.pack(fill="both", expand=True, padx=6, pady=(6, 0))
         self.results_tabs = self.tabs  # Overview / How to evolve / All evolutions live here too
@@ -715,8 +719,18 @@ class App:
     def auto_on(self) -> bool:
         return self.auto_var.get() and self.reader_thread is not None
 
+    def selected_player(self):
+        """The co-op player picked in the player bar (None = player 1 / single player)."""
+        index = self.player_var.get()
+        if index and self.auto_on() and self.detected is not None and index < len(self.detected.players):
+            return self.detected.players[index]
+        return None
+
     def owned(self) -> set[str]:
         """Items to plan with: detected items (if auto-detect is on) plus anything ticked."""
+        friend = self.selected_player()
+        if friend is not None:
+            return set(friend.owned)  # another player's items (planning applies to player 1)
         if self.auto_on():
             detected = set(self.detected.owned) if self.detected is not None else set()
             return detected | self.planned  # detected includes items that aren't in any recipe
@@ -724,7 +738,7 @@ class App:
 
     def is_planned(self, item_id: str) -> bool:
         """Ticked by hand while auto-detect is on, i.e. not actually held."""
-        return self.auto_on() and item_id in self.planned
+        return self.auto_on() and self.selected_player() is None and item_id in self.planned
 
     def _item_clicked(self, item_id: str) -> None:
         if self.auto_on():
@@ -741,9 +755,38 @@ class App:
     def level_of(self, item_id: str) -> tuple[int, int] | None:
         if not self.settings.show_levels:
             return None  # also hides LEVEL UP and "level up first"
+        friend = self.selected_player()
+        if friend is not None:
+            return friend.level_of(item_id)
         if self.auto_var.get() and self.detected is not None:
             return self.detected.level_of(item_id)
         return None
+
+    def _update_player_bar(self) -> None:
+        """Show Player 1 | Player 2 ... when more than one player is in the game."""
+        players = self.detected.players if self.auto_on() and self.detected is not None else ()
+        labels = tuple(p.label + (" - you" if p.index == 0 else "") for p in players)
+        if labels == self._player_labels:
+            return
+        self._player_labels = labels
+        for child in self.player_bar.winfo_children():
+            child.destroy()
+        self.player_bar._items.clear()
+        if len(labels) < 2:
+            self.player_var.set(0)
+            self.player_bar.pack_forget()
+            return
+        if self.player_var.get() >= len(labels):
+            self.player_var.set(0)
+        self.player_bar.add(ttk.Label(self.player_bar, text="Show items of:"))
+        for i, label in enumerate(labels):
+            self.player_bar.add(ttk.Radiobutton(self.player_bar, text=label, value=i, variable=self.player_var,
+                                                style="Toolbutton", command=self._refresh))
+        self.player_bar.pack(fill="x", padx=6, before=self.tabs)
+
+    def holder_title(self) -> str:
+        friend = self.selected_player()
+        return f"{friend.label.upper()} IS HOLDING" if friend else "YOU'RE HOLDING"
 
     def _needs_leveling(self, s: Suggestion) -> list[tuple[str, int, int]]:
         """Parts that must be max level but (according to the game) aren't yet."""
@@ -997,7 +1040,7 @@ class App:
             out.insert("end", self.WAITING)
         else:
             if opts.show_holding:
-                out.insert("end", "YOU'RE HOLDING\n", "header")
+                out.insert("end", self.holder_title() + "\n", "header")
                 held = held_in_order(self.db, owned)
                 for kind, title in (("weapon", "Weapons"), ("passive", "Passive items")):
                     group = [i for i in held if self.db.items[i].kind == kind]
@@ -1040,7 +1083,8 @@ class App:
                     rows.append((plan.item, s))
         if not rows:
             return
-        out.insert("end", "WHAT YOUR ITEMS EVOLVE INTO\n", "header")
+        whose = "THEIR" if self.selected_player() else "YOUR"
+        out.insert("end", f"WHAT {whose} ITEMS EVOLVE INTO\n", "header")
         for item, s in rows:
             out.insert("end", "  ")
             self._insert_item(out, item, "result")
@@ -1065,7 +1109,9 @@ class App:
         if not owned:
             out.insert("end", self.WAITING)
         else:
-            out.insert("end", "HOW TO EVOLVE YOUR ITEMS\n", "header")
+            friend = self.selected_player()
+            title = f"HOW {friend.label.upper()} CAN EVOLVE" if friend else "HOW TO EVOLVE YOUR ITEMS"
+            out.insert("end", title + "\n", "header")
             for plan in plans_for_held(self.db, owned, hidden):
                 if plan.options or self.settings.show_no_evolution:
                     self._insert_plan(out, plan, owned)
@@ -1122,6 +1168,7 @@ class App:
         if save and self.reader_thread is not None:
             self.settings.auto_detect = self.auto_var.get()
             self._save_settings()
+        self._update_player_bar()
         if self.auto_on():  # anything ticked by hand that isn't detected becomes "planned"
             detected = self.detected.owned if self.detected is not None else frozenset()
             self.planned = {i for i, v in self.vars.items() if v.get()} - detected
@@ -1166,9 +1213,10 @@ class App:
         if latest is not None and self.auto_var.get():
             self.status.set(latest.message)
             if latest.state == "ok":
-                changed = self.detected is None or (latest.owned, latest.levels) != (
-                    self.detected.owned, self.detected.levels)
+                changed = self.detected is None or (latest.owned, latest.levels, latest.players) != (
+                    self.detected.owned, self.detected.levels, self.detected.players)
                 self.detected = latest
+                self._update_player_bar()
                 self.planned -= latest.owned  # picked up in the game: now really held
                 for item_id, var in self.vars.items():
                     var.set(item_id in latest.owned or item_id in self.planned)
