@@ -135,7 +135,8 @@ class App:
         self.checkbuttons: dict[str, ttk.Checkbutton] = {}
         self.results: "queue.Queue[ReadResult]" = queue.Queue()
         self.detected: ReadResult | None = None
-        self.canvases: list[tk.Canvas] = []  # scrollable areas, coloured by the theme  # latest auto-detect result (owned items and levels)
+        self.canvases: list[tk.Canvas] = []  # scrollable areas, coloured by the theme
+        self.texts: list[tk.Text] = []  # result panes, coloured by the theme  # latest auto-detect result (owned items and levels)
         self.icon_messages: "queue.Queue[tuple[str, str]]" = queue.Queue()
         self.icons: dict[str, tk.PhotoImage] = {}
         self.small_icons: dict[str, tk.PhotoImage] = {}
@@ -173,21 +174,26 @@ class App:
         left.add(item_list, text="Items")
         left.add(self._settings_tab(left), text="Settings")
 
-        results = ttk.Frame(body)
-        self.output = tk.Text(results, wrap="word", state="disabled", font=("Segoe UI", 10), spacing1=2, spacing3=2)
-        results_scroll = ttk.Scrollbar(results, orient="vertical", command=self.output.yview)
-        self.output.configure(yscrollcommand=results_scroll.set)
-        results_scroll.pack(side="right", fill="y")
-        self.output.pack(side="left", fill="both", expand=True)
-        self.output.tag_configure("header", font=("Segoe UI", 11, "bold"), spacing1=10)
-        self.output.tag_configure("missing", font=("Segoe UI", 10, "bold"))
-        self.output.tag_configure("result", font=("Segoe UI", 10, "bold"))
-        self.output.tag_configure("detail", lmargin1=70, lmargin2=70)
-        self.output.tag_configure("ready", foreground="#ffffff", background="#1b7f2a", font=("Segoe UI", 9, "bold"))
-        self.output.tag_configure("levelup", foreground="#ffffff", background="#d35400", font=("Segoe UI", 9, "bold"))
-        self.output.tag_configure("level", font=("Segoe UI", 9))
-        self.output.tag_configure("maxed", font=("Segoe UI", 9, "bold"))
-        body.add(results, weight=2)
+        # Right side: Overview / How to evolve / All evolutions
+        self.results_tabs = ttk.Notebook(body)
+        body.add(self.results_tabs, weight=2)
+        overview_frame, self.overview_text = self._text_pane(self.results_tabs)
+        howto_frame, self.howto_text = self._text_pane(self.results_tabs)
+        self.howto_frame = howto_frame
+        guide_frame = ttk.Frame(self.results_tabs)
+        search_bar = ttk.Frame(guide_frame, padding=(4, 4))
+        search_bar.pack(fill="x")
+        ttk.Label(search_bar, text="Search:").pack(side="left")
+        self.guide_search = tk.StringVar()
+        self.guide_search.trace_add("write", lambda *_: self._schedule_guide_refresh())
+        ttk.Entry(search_bar, textvariable=self.guide_search, width=30).pack(side="left", padx=4)
+        ttk.Label(search_bar, text="weapon, item or evolution name").pack(side="left")
+        guide_body, self.guide_text = self._text_pane(guide_frame)
+        guide_body.pack(fill="both", expand=True)
+        self._guide_job: str | None = None
+        self.results_tabs.add(overview_frame, text="Overview")
+        self.results_tabs.add(howto_frame, text="How to evolve")
+        self.results_tabs.add(guide_frame, text="All evolutions")
 
         bar = ttk.Frame(root, relief="sunken")
         bar.pack(fill="x", side="bottom")
@@ -339,13 +345,15 @@ class App:
         canvas_bg = pal["bg"] or style.lookup("TFrame", "background") or "SystemButtonFace"
         for canvas in self.canvases:
             canvas.configure(background=canvas_bg)
-        self.output.configure(background=pal["text_bg"], foreground=pal["fg"], insertbackground=pal["fg"],
-                              selectbackground=pal["select"])
-        self.output.tag_configure("have", foreground=pal["have"])
-        self.output.tag_configure("missing", foreground=pal["missing"])
-        self.output.tag_configure("detail", foreground=pal["muted"])
-        self.output.tag_configure("level", foreground=pal["level"])
-        self.output.tag_configure("maxed", foreground=pal["have"])
+        for text in self.texts:
+            text.configure(background=pal["text_bg"], foreground=pal["fg"], insertbackground=pal["fg"],
+                           selectbackground=pal["select"])
+            text.tag_configure("have", foreground=pal["have"])
+            text.tag_configure("missing", foreground=pal["missing"])
+            text.tag_configure("detail", foreground=pal["muted"])
+            text.tag_configure("level", foreground=pal["level"])
+            text.tag_configure("maxed", foreground=pal["have"])
+            text.tag_configure("subheader", foreground=pal["muted"])
 
     def hidden_expansions(self) -> set[str]:
         return set(self.settings.hidden_expansions)
@@ -422,14 +430,14 @@ class App:
         if self.game_reader is not None:
             self.game_reader.matcher.add_aliases(gamedata.internal_to_item(self.db, data))
 
-    def _insert_item(self, item_id: str, tag: str, show_level: bool = False) -> None:
+    def _insert_item(self, out: tk.Text, item_id: str, tag: str, show_level: bool = False) -> None:
         img = self.icons.get(item_id) if self.settings.show_pictures else None
         if img is not None:
-            self.output.image_create("end", image=img, padx=2, align="center")
-        self.output.insert("end", self.db.name(item_id), tag)
+            out.image_create("end", image=img, padx=2, align="center")
+        out.insert("end", self.db.name(item_id), tag)
         lv = self.level_of(item_id) if show_level else None
         if lv:
-            self.output.insert("end", f" Lv {lv[0]}/{lv[1]}", "maxed" if lv[0] >= lv[1] else "level")
+            out.insert("end", f" Lv {lv[0]}/{lv[1]}", "maxed" if lv[0] >= lv[1] else "level")
 
     def _details(self, s: Suggestion, skip_missing: bool = False) -> list[str]:
         evo = s.evolution
@@ -453,27 +461,26 @@ class App:
             details.append("\u26a0 game files say: " + " + ".join(self.db.name(r) for r in check.game_requires))
         return details
 
-    def _insert_suggestion(self, s: Suggestion) -> None:
-        """One recipe line: weapon + item = evolution."""
+    def _insert_suggestion(self, out: tk.Text, s: Suggestion, plain_missing: bool = False) -> None:
+        """One recipe line: weapon + item = evolution. plain_missing: don't colour unowned parts red."""
         evo = s.evolution
-        out = self.output
         out.insert("end", "  ")
         for i, req in enumerate(evo.requires):
             if i:
                 out.insert("end", "   +   ")
-            self._insert_item(req, "missing" if req in s.missing else "have")
+            missing_tag = "plain" if plain_missing else "missing"
+            self._insert_item(out, req, missing_tag if req in s.missing else "have")
         out.insert("end", "   =   ")
-        self._insert_item(evo.result, "result")
+        self._insert_item(out, evo.result, "result")
         out.insert("end", "\n")
-        details = self._details(s)
+        details = self._details(s, skip_missing=plain_missing)
         if details:
             out.insert("end", "  |  ".join(details) + "\n", "detail")
 
-    def _insert_plan(self, plan: ItemPlan, owned: set[str]) -> None:
+    def _insert_plan(self, out: tk.Text, plan: ItemPlan, owned: set[str]) -> None:
         """A held item followed by each evolution it can make and what that still needs."""
-        out = self.output
         out.insert("end", "  ")
-        self._insert_item(plan.item, "result")
+        self._insert_item(out, plan.item, "result")
         out.insert("end", "\n")
         if not plan.options:
             text = "already evolved" if self.db.items[plan.item].evolved else "no evolution"
@@ -481,7 +488,7 @@ class App:
             return
         for s in plan.options:
             out.insert("end", "        \u2192  ")
-            self._insert_item(s.evolution.result, "result")
+            self._insert_item(out, s.evolution.result, "result")
             others = [r for r in s.evolution.requires if r != plan.item]
             if others:
                 out.insert("end", "    needs  ")
@@ -489,7 +496,7 @@ class App:
                     if j:
                         out.insert("end", ",  ")
                     have = r in owned
-                    self._insert_item(r, "have" if have else "missing")
+                    self._insert_item(out, r, "have" if have else "missing")
                     out.insert("end", " \u2713" if have else " \u2717", "have" if have else "missing")
             if not s.missing:
                 if self._needs_leveling(s):
@@ -501,46 +508,123 @@ class App:
             if details:
                 out.insert("end", "  |  ".join(details) + "\n", "detail")
 
+    def _text_pane(self, parent: tk.Widget) -> tuple[ttk.Frame, tk.Text]:
+        """A read-only, scrollable rich-text pane for results."""
+        frame = ttk.Frame(parent)
+        text = tk.Text(frame, wrap="word", state="disabled", font=("Segoe UI", 10), spacing1=2, spacing3=2,
+                       borderwidth=0, highlightthickness=0, padx=4, pady=4)
+        scroll = ttk.Scrollbar(frame, orient="vertical", command=text.yview)
+        text.configure(yscrollcommand=scroll.set)
+        scroll.pack(side="right", fill="y")
+        text.pack(side="left", fill="both", expand=True)
+        text.tag_configure("header", font=("Segoe UI", 11, "bold"), spacing1=10)
+        text.tag_configure("subheader", font=("Segoe UI", 10, "bold"), spacing1=8)
+        text.tag_configure("missing", font=("Segoe UI", 10, "bold"))
+        text.tag_configure("result", font=("Segoe UI", 10, "bold"))
+        text.tag_configure("detail", lmargin1=70, lmargin2=70)
+        text.tag_configure("ready", foreground="#ffffff", background="#1b7f2a", font=("Segoe UI", 9, "bold"))
+        text.tag_configure("levelup", foreground="#ffffff", background="#d35400", font=("Segoe UI", 9, "bold"))
+        text.tag_configure("level", font=("Segoe UI", 9))
+        text.tag_configure("maxed", font=("Segoe UI", 9, "bold"))
+        self.texts.append(text)
+        return frame, text
+
+    @staticmethod
+    def _begin(out: tk.Text) -> tk.Text:
+        out.configure(state="normal")
+        out.delete("1.0", "end")
+        return out
+
     def _refresh(self) -> None:
         owned = self.owned()
         hidden = self.hidden_expansions()
-        out = self.output
-        out.configure(state="normal")
-        out.delete("1.0", "end")
-        if not owned:
-            out.insert("end", "Waiting for your items. Start a run with Auto-detect on, "
-                              "or tick the items you're holding in the Items list.")
-            out.configure(state="disabled")
-            return
+        self._render_overview(owned, hidden)
+        self._render_howto(owned, hidden)
+        self._render_guide()
+        # Settings > Main screen > "How to evolve your items" shows or hides that tab
+        if self.settings.show_how_to:
+            self.results_tabs.add(self.howto_frame)  # re-adding a hidden tab restores it in place
+        else:
+            self.results_tabs.hide(self.howto_frame)
 
+    WAITING = ("Waiting for your items. Start a run with Auto-detect on, "
+               "or tick the items you're holding in the Items list.")
+
+    def _render_overview(self, owned: set[str], hidden: set[str]) -> None:
+        out = self._begin(self.overview_text)
         opts = self.settings
-        if opts.show_holding:
-            out.insert("end", "YOU'RE HOLDING\n", "header")
-            held = held_in_order(self.db, owned)
-            for kind in ("weapon", "passive"):
-                group = [i for i in held if self.db.items[i].kind == kind]
-                if group:
-                    out.insert("end", "  ")
-                    for i, item in enumerate(group):
-                        if i:
-                            out.insert("end", "    ")
-                        self._insert_item(item, "result", show_level=True)
-                    out.insert("end", "\n")
+        if not owned:
+            out.insert("end", self.WAITING)
+        else:
+            if opts.show_holding:
+                out.insert("end", "YOU'RE HOLDING\n", "header")
+                held = held_in_order(self.db, owned)
+                for kind in ("weapon", "passive"):
+                    group = [i for i in held if self.db.items[i].kind == kind]
+                    if group:
+                        out.insert("end", "  ")
+                        for i, item in enumerate(group):
+                            if i:
+                                out.insert("end", "    ")
+                            self._insert_item(out, item, "result", show_level=True)
+                        out.insert("end", "\n")
+            ready = suggest(self.db, owned, hidden).ready if opts.show_ready else []
+            if ready:
+                out.insert("end", "READY TO EVOLVE - max the weapon, then open a chest\n", "header")
+                for s in ready:
+                    self._insert_suggestion(out, s)
+            elif opts.show_ready:
+                out.insert("end", "READY TO EVOLVE\n", "header")
+                out.insert("end", "Nothing yet - see the How to evolve tab for what to pick up.\n", "detail")
+            if not (opts.show_holding or opts.show_ready):
+                out.insert("end", "Overview is switched off in Settings > Main screen.")
+        out.configure(state="disabled")
 
-        ready = suggest(self.db, owned, hidden).ready if opts.show_ready else []
-        if ready:
-            out.insert("end", "READY TO EVOLVE - max the weapon, then open a chest\n", "header")
-            for s in ready:
-                self._insert_suggestion(s)
-
-        if opts.show_how_to:
+    def _render_howto(self, owned: set[str], hidden: set[str]) -> None:
+        out = self._begin(self.howto_text)
+        if not owned:
+            out.insert("end", self.WAITING)
+        else:
             out.insert("end", "HOW TO EVOLVE YOUR ITEMS\n", "header")
             for plan in plans_for_held(self.db, owned, hidden):
-                if plan.options or opts.show_no_evolution:
-                    self._insert_plan(plan, owned)
+                if plan.options or self.settings.show_no_evolution:
+                    self._insert_plan(out, plan, owned)
+        out.configure(state="disabled")
 
-        if not (opts.show_holding or opts.show_ready or opts.show_how_to):
-            out.insert("end", "Everything is switched off in Settings > Main screen.")
+    def _schedule_guide_refresh(self) -> None:
+        """Re-draw the guide shortly after typing stops (it has 150+ recipes with pictures)."""
+        if self._guide_job:
+            self.root.after_cancel(self._guide_job)
+        self._guide_job = self.root.after(250, self._render_guide)
+
+    def _render_guide(self) -> None:
+        """Every recipe, grouped by expansion; held items green; filtered by the search box."""
+        self._guide_job = None
+        out = self._begin(self.guide_text)
+        owned = self.owned()
+        hidden = self.hidden_expansions()
+        query = self.guide_search.get().strip().lower()
+        shown = 0
+        for dlc in ["Base game", *self.db.expansions()]:
+            if dlc in hidden:
+                continue
+            evos = [e for e in self.db.evolutions if e.dlc == dlc and (
+                not query or any(query in self.db.name(i).lower() for i in (e.result, *e.requires)))]
+            if not evos:
+                continue
+            out.insert("end", dlc.upper() + "\n", "header")
+            for kind, title in (("evolution", "Evolutions"), ("union", "Unions"), ("gift", "Gifts")):
+                group = [e for e in evos if e.kind == kind]
+                if not group:
+                    continue
+                out.insert("end", title + "\n", "subheader")
+                for evo in group:
+                    have = tuple(r for r in evo.requires if r in owned)
+                    missing = tuple(r for r in evo.requires if r not in owned)
+                    self._insert_suggestion(out, Suggestion(evo, have, missing), plain_missing=True)
+                    shown += 1
+        if not shown:
+            out.insert("end", "No evolutions match your search." if query else "All expansions are hidden in Settings.")
         out.configure(state="disabled")
 
     def _clear(self) -> None:

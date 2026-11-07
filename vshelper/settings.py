@@ -27,9 +27,9 @@ class Settings:
 
 # Labels for the Main screen switches, in the order they appear in Settings.
 MAIN_SCREEN_OPTIONS = [
-    ("show_holding", "You're holding"),
-    ("show_ready", "Ready to evolve"),
-    ("show_how_to", "How to evolve your items"),
+    ("show_holding", "Overview: You're holding"),
+    ("show_ready", "Overview: Ready to evolve"),
+    ("show_how_to", "How to evolve tab"),
     ("show_no_evolution", "Items with no evolution"),
     ("show_levels", "Item levels (Lv 5/8, LEVEL UP)"),
     ("show_details", "Details (max level, notes)"),

@@ -35,12 +35,13 @@ python -m vshelper
 1. Begin a run in Vampire Survivors. The game and the helper can be started in either order.
 2. The helper finds the game on its own. The first time after the game starts it searches memory
    for a few seconds; after that it updates about once per second.
-3. The right side shows, in order:
-   - **YOU'RE HOLDING**: your weapons, then your passive items.
-   - **READY TO EVOLVE**: recipes you have every part for. Get the weapon to max level, then
-     open a chest (usually after 10:00).
-   - **HOW TO EVOLVE YOUR ITEMS**: each held item, what it evolves into, and the other parts
-     it needs (green check mark = you have it, red cross = pick it up).
+3. The right side has three tabs:
+   - **Overview**: what you're holding (weapons, then passive items, with levels) and what is
+     **ready to evolve**. Get the weapon to max level, then open a chest (usually after 10:00).
+   - **How to evolve**: each held item, what it evolves into, and the other parts it needs
+     (green check mark = you have it, red cross = pick it up; READY / LEVEL UP tags).
+   - **All evolutions**: every recipe in the game, grouped by expansion and type (evolutions,
+     unions, gifts), with a search box. Items you hold are green; hidden expansions are left out.
 
 ## Item pictures
 
@@ -60,9 +61,9 @@ The status bar at the bottom says what the helper is doing ("Waiting for a run t
 breaks after a game update). The *Filter* box searches the item list.
 
 **Settings tab:** next to the *Items* tab. *Appearance* has the **Dark theme** switch (on by
-default; changes apply instantly). *Main screen* switches each part of the results pane on or off:
-You're holding, Ready to evolve, How to evolve your items, items with no evolution, item levels,
-details, game-file check marks and item pictures (all on by default). Under *Expansions*, untick any DLC you don't own to hide its
+default; changes apply instantly). *Main screen* switches parts of the results on or off:
+Overview's You're holding and Ready to evolve, the How to evolve tab, items with no evolution,
+item levels, details, game-file check marks and item pictures (all on by default). Under *Expansions*, untick any DLC you don't own to hide its
 items and evolutions (all are on by default). Settings are saved to `settings.json` in
 the project folder.
 

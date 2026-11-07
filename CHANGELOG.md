@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 00.10.00
+Date: 11/07/2026
+Time: 3:11 PM
+
+### Changes
+- The results area now has three tabs: **Overview** (You're holding and Ready to evolve), **How to evolve** (each held item, what it evolves into and what's still needed), and the new **All evolutions** guide.
+- All evolutions lists every recipe grouped by expansion and by type (evolutions, unions, gifts), with pictures, details and game-file checks. Held items are highlighted, hidden expansions are left out, and a search box filters by weapon, item or evolution name.
+- Settings > Main screen: "How to evolve tab" now shows or hides that tab, and the Overview switches are labelled as such. All tabs follow the dark/light theme.
+- README updated.
+
+### Reason
+User asked for a separate tab for how to evolve weapons, and chose both splitting the main screen into Overview / How to evolve and adding an All evolutions guide.
+
 ## Version 00.09.00
 Date: 11/07/2026
 Time: 3:09 PM
