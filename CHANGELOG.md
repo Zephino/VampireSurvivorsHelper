@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 00.13.01
+Date: 11/07/2026
+Time: 3:22 PM
+
+### Changes
+- The window title now shows the version, e.g. "Vampire Survivors Helper v00.13.01" (read from `VERSION`).
+
+### Reason
+User asked for the version to be shown in the title.
+
 ## Version 00.13.00
 Date: 11/07/2026
 Time: 3:21 PM

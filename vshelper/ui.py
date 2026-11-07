@@ -148,7 +148,7 @@ class App:
         self.expansion_vars: dict[str, tk.BooleanVar] = {}
         notice = notice or settings_warning
 
-        root.title("Vampire Survivors Helper")
+        root.title(f"Vampire Survivors Helper v{updater.local_version()}")
         self.native_theme = ttk.Style(root).theme_use()
         root.geometry("1000x620")
         root.minsize(640, 400)
