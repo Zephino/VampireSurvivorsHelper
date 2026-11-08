@@ -135,6 +135,28 @@ class GameReaderTests(unittest.TestCase):
         self.assertEqual(result.level_of("wine_glass"), (5, 8))
         self.assertEqual(result.level_of("whip"), (8, 8))
 
+    def test_no_memory_search_once_the_inventory_path_worked(self):
+        g = FakeGame()
+        g.set_named(g.weapon_list, [("Whip", 8, 8)])
+        reader = _reader(g)
+        self.assertEqual(reader.poll().owned, {"whip"})
+        g.set_named(g.weapon_list, [])  # e.g. a new run that hasn't given items yet
+
+        def no_search(*a):
+            raise AssertionError("searched memory for other lists")
+        reader.discover = no_search
+        reader._clock = lambda: 10_000.0  # well past the search interval
+        self.assertEqual(reader.poll().owned, frozenset())
+
+    def test_search_ignores_lists_of_item_data(self):
+        g = FakeGame()
+        data_list = g.make_list([])
+        g.set_objects(data_list, [g.make_data("Whip"), g.make_data("Knife")])  # WeaponData: no level
+        g.m.w64(g.players + 0x10, 0)  # the normal path doesn't exist (no players list)
+        g.m.w64(g.gm + 0x10, data_list)  # ...and a data list sits where the search will look
+        reader = _reader(g, inventories={"weapons": [["Nope"]]})
+        self.assertEqual(reader.poll().owned, frozenset())
+
     def test_coop_players_are_read(self):
         g = FakeGame()
         g.set_named(g.weapon_list, [("Whip", 8, 8)])

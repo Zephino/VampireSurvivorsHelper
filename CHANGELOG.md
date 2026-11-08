@@ -1,5 +1,17 @@
 # Changelog
 
+## Version 00.00.39
+Date: 11/08/2026
+Time: 2:14 AM
+
+### Changes
+- Fixed the helper showing items you aren't holding (e.g. 8 base-game weapons and Spinach, all without levels): it had fallen back to searching memory for any list of known items and picked up a list of item data. Now that search only runs when the known path to your inventory can't be found at all this session, and it only accepts lists of items that have a level (held equipment), never plain item data.
+- A searched-for list is replaced as soon as the known inventory path works again.
+- Tests for both cases.
+
+### Reason
+User reported the helper listed many items while they were holding only one.
+
 ## Version 00.00.38
 Date: 11/08/2026
 Time: 2:05 AM

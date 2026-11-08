@@ -172,6 +172,7 @@ class _Session:
     last_discovery: float = 0.0
     rejected: set[tuple[str, ...]] = field(default_factory=set)  # paths that turned out not to be the inventory
     catalog_done: bool = False
+    path_found: bool = False  # the game map's inventory path worked at least once this session
     held_seen: set[str] = field(default_factory=set)  # held items whose picture name was collected
 
 
@@ -265,15 +266,20 @@ class GameReader:
             return ReadResult("waiting", "Game found. Waiting for a run to start.")
 
         for kind, path in self.map.inventories.items():
-            if kind in s.chains:
+            if kind in s.chains and s.chains[kind].trusted:
                 continue
             for i, obj in roots.items():
                 names = self._follow_candidates(s.il2, obj, path)
                 if names:
-                    s.chains[kind] = Chain(i, names, trusted=True)
+                    s.chains[kind] = Chain(i, names, trusted=True)  # replaces a searched-for guess
+                    s.path_found = True
                     break
 
-        if len(s.chains) < len(self.map.inventories) and self._clock() - s.last_discovery >= REDISCOVER_SECONDS:
+        # Searching memory for item lists is only a fallback for when the known path to the
+        # inventory doesn't exist at all (e.g. a game update renamed things). Once the path has
+        # worked, a momentarily empty inventory must not be "filled" with some other list.
+        if (not s.path_found and len(s.chains) < len(self.map.inventories)
+                and self._clock() - s.last_discovery >= REDISCOVER_SECONDS):
             s.last_discovery = self._clock()
             for kind, chain in self.discover(s, roots).items():
                 s.chains.setdefault(kind, chain)
@@ -654,6 +660,16 @@ class GameReader:
             return None
         return None
 
+    def _is_held_item(self, il2: Il2Cpp, element: int) -> bool:
+        """Equipment you hold has a level; plain item data (collections, pools) doesn't."""
+        if not self.map.level_field:
+            return True
+        try:
+            il2.find_field(il2.object_class(element), self.map.level_field)
+            return True
+        except MemoryAccessError:
+            return False
+
     def read_levels(self, il2: Il2Cpp, element: int) -> tuple[int, int] | None:
         """(level, max level) of an equipment object, if the game map names those fields."""
         if not self.map.level_field or not self.map.max_level_field:
@@ -702,6 +718,8 @@ class GameReader:
                     elements = []
                 items = []
                 for el in elements:
+                    if not self._is_held_item(il2, el):
+                        continue  # item data (no level), e.g. a collection list, not an inventory
                     raw = self.identify(s, el)
                     item = self.matcher.match(raw) if raw else None
                     if item:
