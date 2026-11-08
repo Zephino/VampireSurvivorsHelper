@@ -1,5 +1,17 @@
 # Changelog
 
+## Version 00.00.37
+Date: 11/08/2026
+Time: 2:02 AM
+
+### Changes
+- Diagnose reports (Settings > Troubleshooting and `Diagnose.bat`) are now saved on the Desktop (the real Desktop folder, also when Windows has moved it into OneDrive), falling back to the helper's own folder only if there is no Desktop.
+- Creating a report no longer opens a folder afterwards; it just says where the file was saved.
+- README updated; test for the report location.
+
+### Reason
+User asked for diagnose reports to go on the Desktop and for no folder to be opened after creating one.
+
 ## Version 00.00.36
 Date: 11/08/2026
 Time: 2:01 AM

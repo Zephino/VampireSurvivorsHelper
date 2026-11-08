@@ -441,7 +441,7 @@ class App:
         trouble = ttk.LabelFrame(frame, text="Troubleshooting", padding=8)
         trouble.pack(fill="x", anchor="n", pady=(8, 0))
         ttk.Label(trouble, text="If your items aren't detected: start a run in the game, pause it, then create a "
-                                "report and send the file it makes.", wraplength=280, justify="left", style="Wrap.TLabel").pack(anchor="w")
+                                "report and send the file it saves on your Desktop.", wraplength=280, justify="left", style="Wrap.TLabel").pack(anchor="w")
         self.report_button = ttk.Button(trouble, text="Create diagnose report", command=self._create_report)
         self.report_button.pack(anchor="w", pady=(6, 0))
         self.report_status = tk.StringVar(value="")
@@ -558,8 +558,9 @@ class App:
 
         def work() -> None:
             try:
-                diagnose.run(diagnose.REPORT_PATH)
-                self.icon_messages.put(("report-done", str(diagnose.REPORT_PATH)))
+                path = diagnose.report_path()
+                diagnose.run(path)
+                self.icon_messages.put(("report-done", str(path)))
             except Exception as exc:  # show any failure instead of losing it in a background thread
                 self.icon_messages.put(("report-error", f"The report couldn't be created: {exc!r}"))
         threading.Thread(target=work, daemon=True).start()
@@ -569,9 +570,7 @@ class App:
         if kind == "report-error":
             self.report_status.set(message)
             return
-        self.report_status.set(f"Report saved: {message}")
-        if sys.platform == "win32":
-            subprocess.Popen(["explorer", f"/select,{message}"])
+        self.report_status.set(f"Report saved on your Desktop: {message}")
 
     # ---- launching the game ----
     def _launch_game(self) -> None:

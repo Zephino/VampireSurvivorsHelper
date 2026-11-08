@@ -22,10 +22,5 @@ echo.
 echo Collecting information - this can take a minute or two...
 python -m vshelper diagnose
 echo.
-if exist "vshelper-diagnose.txt" (
-    echo Done. Send the file vshelper-diagnose.txt - its folder opens now.
-    explorer /select,"%~dp0vshelper-diagnose.txt"
-) else (
-    echo The report could not be written. Please copy the text above instead.
-)
+echo Done. Send the file vshelper-diagnose.txt from your Desktop.
 pause

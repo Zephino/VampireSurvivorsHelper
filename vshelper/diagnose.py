@@ -419,10 +419,17 @@ def _read_game(out: Report, db: Database, gmap: GameMap, open_memory) -> ReadRes
     return result[0] if result else None
 
 
-REPORT_PATH = USER_ROOT / "vshelper-diagnose.txt"
+REPORT_NAME = "vshelper-diagnose.txt"
 
 
-def run(output: Path = REPORT_PATH, open_memory=ProcessMemory.open_by_name) -> int:
+def report_path() -> Path:
+    """Reports go on the Desktop so they're easy to find and send."""
+    from .paths import desktop_dir
+    return desktop_dir() / REPORT_NAME
+
+
+def run(output: Path | None = None, open_memory=ProcessMemory.open_by_name) -> int:
+    output = output or report_path()
     out = Report()
     out.add("Vampire Survivors Helper - diagnostic report")
     out.add(time.strftime("created %Y-%m-%d %H:%M"))

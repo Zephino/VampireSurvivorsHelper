@@ -282,6 +282,20 @@ class DiagnoseTests(unittest.TestCase):
         self.assertIn("YOU'RE HOLDING", text)
 
 
+class ReportLocationTests(unittest.TestCase):
+    def test_report_goes_to_the_desktop(self):
+        from unittest import mock
+        from vshelper import diagnose, paths
+        with tempfile.TemporaryDirectory() as d:
+            with mock.patch.object(Path, "home", return_value=Path(d)):
+                (Path(d) / "Desktop").mkdir()
+                if paths.sys.platform != "win32":
+                    self.assertEqual(diagnose.report_path(), Path(d) / "Desktop" / "vshelper-diagnose.txt")
+            with mock.patch.object(Path, "home", return_value=Path(d) / "no-desktop-here"):
+                if paths.sys.platform != "win32":
+                    self.assertEqual(paths.desktop_dir(), paths.USER_ROOT)  # no Desktop: falls back
+
+
 class GameMapTests(unittest.TestCase):
     def test_invalid_map_is_reported(self):
         from vshelper.memory.game import GameMapError

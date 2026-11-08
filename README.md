@@ -138,7 +138,7 @@ survive most game updates. If it stops working or the status bar shows "Unrecogn
 
 1. Start a run in the game.
 2. Double-click **`Diagnose.bat`** (or run `python -m vshelper diagnose`)
-3. Share the generated `vshelper-diagnose.txt`. It contains the helper's setup (versions, game
+3. Share `vshelper-diagnose.txt`, which is saved on your Desktop. It contains the helper's setup (versions, game
    folder), the game's class layouts, your current items, the game's item data, which pictures are
    missing, and the wiki-vs-game check; no personal data apart from the game's install folder.
    Each part catches its own errors, so the report is written even if something fails.
