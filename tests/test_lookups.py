@@ -58,6 +58,20 @@ class ParseItemPageTests(unittest.TestCase):
         self.assertIsNone(parse_item_page("Speculo Keremet Bubbles", arcana))
 
 
+class InfoboxLayoutTests(unittest.TestCase):
+    def test_several_fields_on_one_line(self):
+        text = "{{Infobox Weapon\n|dlc=oc\n|evolution = Nitesco|evolution-item=Empty Tome|id =TP_ENERGY1\n|rarity=50\n}}"
+        lookup = parse_item_page("Globus", text)
+        self.assertEqual(lookup.recipes, [{"result": "Nitesco", "requires": ["Globus", "Empty Tome"],
+                                           "kind": "evolution"}])
+        self.assertEqual(lookup.dlc, "Ode to Castlevania")
+
+    def test_links_with_pipes_stay_whole(self):
+        text = "{{Infobox Weapon\n|evolution = [[Armor (item)|Armor]] thing|evolution-item = {{slink|Gold Ring|txt=Gold}}\n}}"
+        lookup = parse_item_page("X", text)
+        self.assertEqual(lookup.recipes[0]["requires"], ["X", "Gold Ring"])
+
+
 class LookupCacheTests(unittest.TestCase):
     def test_new_item_and_recipe_are_added_and_remembered(self):
         db = load_database()

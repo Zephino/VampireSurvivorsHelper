@@ -1,5 +1,20 @@
 # Changelog
 
+## Version 00.00.40
+Date: 11/08/2026
+Time: 2:54 AM
+
+### Changes
+- The wiki data download now also reads every weapon's own wiki page (about 400 pages, a few seconds) and adds recipes the Evolution page doesn't list: 5 new ones (Mart-Hello + Parm Aegis = Hammer-Dah, and the character morphs of Bone, Carréllo, Celestial Dusting and Cherry Bomb). Bundled data: 165 -> 170 recipes.
+- Morphs are labelled as such ("needs the character at level 80 with this relic") and get their own "Morphs" heading in All evolutions.
+- Fixed reading wiki infoboxes that put several fields on one line (e.g. Globus, Optical Shot); this also improves single-item lookups.
+- Item-page recipes are skipped when their result is a passive item or when the Evolution page lists non-item conditions for it (e.g. Alucard Shield's "6 passives + 6 evolutions"), so they can't show as ready too early.
+- The helper now uses whichever copy of the wiki data is newer (bundled or last week's download), so updates with fresher data take effect immediately.
+- Tests for the infobox parsing and choosing the newer data. README updated.
+
+### Reason
+User keeps finding recipes the helper doesn't know and asked to pull all recipes from the wiki.
+
 ## Version 00.00.39
 Date: 11/08/2026
 Time: 2:14 AM

@@ -121,6 +121,23 @@ class BundledDataTests(unittest.TestCase):
         self.assertNotIn("festive_winds", [s.evolution.result for s in hidden.ready])
 
 
+class BestDatabaseTests(unittest.TestCase):
+    def test_newer_copy_wins(self):
+        from unittest import mock
+        from vshelper import data
+        bundled = data.load_database()
+        with tempfile.TemporaryDirectory() as d:
+            cached = Path(d) / "wiki_evolutions.json"
+            raw = json.loads(data.DEFAULT_DB_PATH.read_text(encoding="utf-8"))
+            with mock.patch.object(data, "CACHED_DB_PATH", cached):
+                raw["generated"] = "2000-01-01"  # older than the bundled data
+                cached.write_text(json.dumps(raw), encoding="utf-8")
+                self.assertEqual(data.load_best_database()[0].generated, bundled.generated)
+                raw["generated"] = "2999-01-01"  # a newer download
+                cached.write_text(json.dumps(raw), encoding="utf-8")
+                self.assertEqual(data.load_best_database()[0].generated, "2999-01-01")
+
+
 class GameDataTests(unittest.TestCase):
     GAME_JSON = json.dumps({
         "WHIP": [{"name": "Whip", "evoInto": "VAMPIRICA", "evoSynergy": ["MAXHEALTH"]}, {"level": 2}],

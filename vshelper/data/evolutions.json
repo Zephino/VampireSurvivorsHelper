@@ -1,7 +1,7 @@
 {
- "_comment": "Generated from https://vampire.survivors.wiki (CC BY-SA) on 2026-11-07 by 'python -m vshelper update-data'. Edit by re-running that command.",
+ "_comment": "Generated from https://vampire.survivors.wiki (CC BY-SA) on 2026-11-08 by 'python -m vshelper update-data'. Edit by re-running that command.",
  "source": "vampire.survivors.wiki",
- "generated": "2026-11-07",
+ "generated": "2026-11-08",
  "weapons": [
   {
    "id": "108_bocce",
@@ -55,7 +55,9 @@
   },
   {
    "id": "anima_of_mortaccio",
-   "name": "Anima of Mortaccio"
+   "name": "Anima of Mortaccio",
+   "dlc": "Base game",
+   "evolved": true
   },
   {
    "id": "anura",
@@ -180,7 +182,8 @@
   },
   {
    "id": "bone",
-   "name": "Bone"
+   "name": "Bone",
+   "dlc": "Base game"
   },
   {
    "id": "boo_roo_boolle",
@@ -231,11 +234,14 @@
   },
   {
    "id": "carrozza",
-   "name": "Carrozza!"
+   "name": "Carrozza!",
+   "dlc": "Base game",
+   "evolved": true
   },
   {
    "id": "carrello",
-   "name": "Carréllo"
+   "name": "Carréllo",
+   "dlc": "Base game"
   },
   {
    "id": "cavendish",
@@ -250,7 +256,8 @@
   },
   {
    "id": "celestial_dusting",
-   "name": "Celestial Dusting"
+   "name": "Celestial Dusting",
+   "dlc": "Base game"
   },
   {
    "id": "celestial_voulge",
@@ -274,7 +281,8 @@
   },
   {
    "id": "cherry_bomb",
-   "name": "Cherry Bomb"
+   "name": "Cherry Bomb",
+   "dlc": "Base game"
   },
   {
    "id": "claimh_solais",
@@ -779,7 +787,9 @@
   },
   {
    "id": "hammer_dah",
-   "name": "Hammer-Dah"
+   "name": "Hammer-Dah",
+   "dlc": "Base game",
+   "evolved": true
   },
   {
    "id": "hand_grenade",
@@ -1130,7 +1140,8 @@
   },
   {
    "id": "mart_hello",
-   "name": "Mart-Hello"
+   "name": "Mart-Hello",
+   "dlc": "Base game"
   },
   {
    "id": "mazo_familiar",
@@ -1386,7 +1397,9 @@
   },
   {
    "id": "profusione_damore",
-   "name": "Profusione D'Amore"
+   "name": "Profusione D'Amore",
+   "dlc": "Base game",
+   "evolved": true
   },
   {
    "id": "pronto_beam",
@@ -2043,7 +2056,9 @@
   },
   {
    "id": "yatta_daikarin",
-   "name": "Yatta Daikarin"
+   "name": "Yatta Daikarin",
+   "dlc": "Base game",
+   "evolved": true
   },
   {
    "id": "zweihander",
@@ -2091,6 +2106,26 @@
   {
    "id": "candelabrador",
    "name": "Candelabrador",
+   "dlc": "Base game"
+  },
+  {
+   "id": "chaos_altemanna",
+   "name": "Chaos Altemanna",
+   "dlc": "Base game"
+  },
+  {
+   "id": "chaos_lazulia",
+   "name": "Chaos Lazulia",
+   "dlc": "Base game"
+  },
+  {
+   "id": "chaos_malachite",
+   "name": "Chaos Malachite",
+   "dlc": "Base game"
+  },
+  {
+   "id": "chaos_rosalia",
+   "name": "Chaos Rosalia",
    "dlc": "Base game"
   },
   {
@@ -4462,6 +4497,71 @@
    ],
    "kind": "evolution",
    "dlc": "Ante Chamber"
+  },
+  {
+   "result": "anima_of_mortaccio",
+   "requires": [
+    "bone",
+    "chaos_malachite"
+   ],
+   "max_level": [
+    "bone"
+   ],
+   "kind": "morph",
+   "dlc": "Base game",
+   "notes": "Morph: needs the character at level 80 with this relic - see the wiki."
+  },
+  {
+   "result": "carrozza",
+   "requires": [
+    "carrello",
+    "chaos_lazulia"
+   ],
+   "max_level": [
+    "carrello"
+   ],
+   "kind": "morph",
+   "dlc": "Base game",
+   "notes": "Morph: needs the character at level 80 with this relic - see the wiki."
+  },
+  {
+   "result": "profusione_damore",
+   "requires": [
+    "celestial_dusting",
+    "chaos_altemanna"
+   ],
+   "max_level": [
+    "celestial_dusting"
+   ],
+   "kind": "morph",
+   "dlc": "Base game",
+   "notes": "Morph: needs the character at level 80 with this relic - see the wiki."
+  },
+  {
+   "result": "yatta_daikarin",
+   "requires": [
+    "cherry_bomb",
+    "chaos_rosalia"
+   ],
+   "max_level": [
+    "cherry_bomb"
+   ],
+   "kind": "morph",
+   "dlc": "Base game",
+   "notes": "Morph: needs the character at level 80 with this relic - see the wiki."
+  },
+  {
+   "result": "hammer_dah",
+   "requires": [
+    "mart_hello",
+    "parm_aegis"
+   ],
+   "max_level": [
+    "mart_hello"
+   ],
+   "kind": "evolution",
+   "dlc": "Base game",
+   "notes": "From the item's wiki page."
   }
  ]
 }

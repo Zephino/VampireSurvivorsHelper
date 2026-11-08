@@ -1200,7 +1200,8 @@ class App:
             if not evos:
                 continue
             out.insert("end", (dlc or "Found on the wiki").upper() + "\n", "header")
-            for kind, title in (("evolution", "Evolutions"), ("union", "Unions"), ("gift", "Gifts")):
+            for kind, title in (("evolution", "Evolutions"), ("union", "Unions"), ("gift", "Gifts"),
+                                ("morph", "Morphs (character level 80 + relic)")):
                 group = [e for e in evos if e.kind == kind]
                 if not group:
                     continue

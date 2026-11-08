@@ -161,7 +161,8 @@ Names used for detection live in `config/game_map.json`:
 ## Evolution data
 
 Recipes and item names come from the [Vampire Survivors wiki](https://vampire.survivors.wiki/Evolution)
-(CC BY-SA), covering the base game and all expansions:
+(CC BY-SA), covering the base game and all expansions: the Evolution page plus every weapon's own
+page (some recipes, such as character morphs, are only listed there):
 
 - A copy ships in `vshelper/data/evolutions.json`, so the helper works offline.
 - About once a week the helper downloads the latest wiki data in the background to

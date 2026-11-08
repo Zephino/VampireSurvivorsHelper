@@ -34,7 +34,7 @@ class Evolution:
     max_level: tuple[str, ...] = ()
     verified: bool = True
     notes: str = ""
-    kind: str = "evolution"  # evolution | union | gift
+    kind: str = "evolution"  # evolution | union | gift | morph
     dlc: str = "Base game"
 
 
@@ -71,12 +71,16 @@ def load_best_database() -> tuple[Database, str | None]:
 
     Returns (database, warning) where warning explains why the cached copy was not used.
     """
+    bundled = load_database()
     if CACHED_DB_PATH.exists():
         try:
-            return load_database(CACHED_DB_PATH), None
+            cached = load_database(CACHED_DB_PATH)
         except DatabaseError as exc:
-            return load_database(), f"Ignoring downloaded wiki data: {exc}"
-    return load_database(), None
+            return bundled, f"Ignoring downloaded wiki data: {exc}"
+        # use whichever is newer: an update can ship fresher data than last week's download
+        if cached.generated >= bundled.generated:
+            return cached, None
+    return bundled, None
 
 
 def load_database(path: Path | str = DEFAULT_DB_PATH) -> Database:

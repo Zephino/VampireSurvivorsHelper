@@ -21,6 +21,10 @@ EVOLUTION_PAGE = "Evolution"
 SKIP_SECTIONS = ("morph",)  # character morphs are not item evolutions
 NON_ITEMS = ("treasure chest",)  # pictures used in tables that are not inventory items
 DLC_SECTION_BASE = "Base game"
+# Infobox dlc codes -> expansion names (as the Evolution page's section titles call them)
+DLC_CODES = {"lm": "Legacy of the Moonspell", "tf": "Tides of the Foscari", "em": "Emergency Meeting",
+             "og": "Operation Guns", "oc": "Ode to Castlevania", "ed": "Emerald Diorama",
+             "ac": "Ante Chamber", "bm": "Legacy of the Bloodmoon", "lb": "Legacy of the Bloodmoon"}
 
 
 class WikiError(Exception):
@@ -264,13 +268,68 @@ def build_database(recipes: list[Recipe], weapon_titles: list[str], passive_titl
     }
 
 
-def download_database() -> tuple[dict, list[str]]:
-    """Fetch everything from the wiki. Returns (database dict, skipped rows)."""
+def fetch_pages(titles: list[str]) -> dict[str, str]:
+    """{title: wikitext} for many pages, 50 per request."""
+    pages: dict[str, str] = {}
+    for start in range(0, len(titles), 50):
+        data = _api({"action": "query", "prop": "revisions", "rvprop": "content", "rvslots": "main",
+                     "titles": "|".join(titles[start:start + 50])})
+        for page in data.get("query", {}).get("pages", []):
+            revs = page.get("revisions") or []
+            if revs:
+                pages[page["title"]] = revs[0].get("slots", {}).get("main", {}).get("content", "")
+    return pages
+
+
+def recipes_from_item_pages(weapon_titles: list[str], passive_names: set[str]) -> list[Recipe]:
+    """Recipes from every weapon page's infobox (evolution / union fields). Some recipes are only
+    listed there, not on the Evolution page."""
+    out: list[Recipe] = []
+    for title, text in fetch_pages(weapon_titles).items():
+        lookup = parse_item_page(title, text)
+        if lookup is None:
+            continue
+        for r in lookup.recipes:
+            requires = [n for n in r["requires"] if n]
+            if not requires or not r["result"] or r["result"] in passive_names:
+                continue  # e.g. a page naming a passive as its "evolution": not a real recipe
+            kind, notes = r["kind"], ["From the item's wiki page."]
+            if any(n.lower().startswith("chaos ") for n in requires[1:]):
+                kind = "morph"  # character morphs: a Chaos relic plus the character at level 80
+                notes = ["Morph: needs the character at level 80 with this relic - see the wiki."]
+            weapons = requires if kind == "union" else requires[:1]
+            catalysts = [] if kind == "union" else requires[1:]
+            out.append(Recipe(kind, lookup.dlc, weapons, catalysts, [], [r["result"]], notes))
+    return out
+
+
+def download_database(item_pages: bool = True) -> tuple[dict, list[str]]:
+    """Fetch everything from the wiki. Returns (database dict, skipped rows).
+
+    item_pages: also read every weapon page for recipes missing from the Evolution page.
+    """
     recipes, skipped = parse_evolution_page(fetch_wikitext(EVOLUTION_PAGE))
     if len(recipes) < 20:
         raise WikiError(f"Only {len(recipes)} recipes found on the wiki's Evolution page; "
                         "the page layout may have changed.")
-    return build_database(recipes, fetch_category("Weapons"), fetch_category("Passive items")), skipped
+    weapon_titles = fetch_category("Weapons")
+    passive_titles = fetch_category("Passive items")
+    if item_pages:
+        known_results = {slug(res) for r in recipes for res in r.results}
+        # results the Evolution page skipped for non-item conditions ("6 passives", ...) stay out:
+        # the item pages leave those conditions out and they would look ready too early
+        known_results |= {slug(m.group(1)) for row in skipped for m in [re.search(r"-> (.+?) \(condition", row)] if m}
+        passive_names = {_item_title(t) for t in passive_titles}
+        added = 0
+        for r in recipes_from_item_pages([t for t in weapon_titles if t.lower() != "weapons"], passive_names):
+            result = slug(r.results[0])
+            if result in known_results:
+                continue  # the Evolution page already has this one (with more detail)
+            known_results.add(result)
+            recipes.append(r)
+            added += 1
+        skipped.append(f"(added {added} recipes found only on item pages)")
+    return build_database(recipes, weapon_titles, passive_titles), skipped
 
 
 # ---- looking up a single item ---------------------------------------------
@@ -284,14 +343,38 @@ class ItemLookup:
     kind: str                       # "weapon" or "passive" (from the infobox type)
     recipes: list[dict]             # {"result", "requires", "kind"} in database-entry style, by name
     url: str
+    dlc: str = DLC_SECTION_BASE     # from the infobox's dlc code
 
 
 def _infobox_fields(text: str) -> dict[str, str]:
+    """Infobox 'key = value' pairs. Fields are split on '|' outside [[links]] and {{templates}},
+    so several fields on one line ('|evolution = X|evolution-item = Y') are read correctly."""
+    parts, depth, current = [], 0, []
+    i = 0
+    while i < len(text):
+        pair = text[i:i + 2]
+        if pair in ("[[", "{{"):
+            depth += 1
+            current.append(pair)
+            i += 2
+            continue
+        if pair in ("]]", "}}") and depth:
+            depth -= 1
+            current.append(pair)
+            i += 2
+            continue
+        if text[i] == "|" and depth == 0:
+            parts.append("".join(current))
+            current = []
+        else:
+            current.append(text[i])
+        i += 1
+    parts.append("".join(current))
     fields: dict[str, str] = {}
-    for line in text.split("\n|"):
-        if "=" in line:
-            key, value = line.split("=", 1)
-            fields[key.strip().lstrip("|").lower()] = value.strip()
+    for part in parts:
+        if "=" in part:
+            key, value = part.split("=", 1)
+            fields[key.strip().lower()] = value.strip()
     return fields
 
 
@@ -327,7 +410,8 @@ def parse_item_page(title: str, wikitext: str) -> ItemLookup | None:
         parts = [_plain(fields[k]) for k in sorted(fields) if re.fullmatch(r"requires\d+", k)]
         if parts:
             recipes.append({"result": name, "requires": [p for p in parts if p], "kind": "union"})
-    return ItemLookup(name, kind, recipes, PAGE_URL + urllib.parse.quote(title.replace(" ", "_")))
+    dlc = DLC_CODES.get(fields.get("dlc", "").strip().lower(), DLC_SECTION_BASE)
+    return ItemLookup(name, kind, recipes, PAGE_URL + urllib.parse.quote(title.replace(" ", "_")), dlc)
 
 
 def lookup_item(name: str) -> ItemLookup | None:
