@@ -70,7 +70,9 @@ python -m vshelper
    - **How to evolve**: each held item, what it evolves into, and the other parts it needs
      (green check mark = you have it, red cross = pick it up; READY / LEVEL UP tags).
    - **All evolutions**: every recipe in the game, grouped by expansion and type (evolutions,
-     unions, gifts), with a search box. Items you hold are green; hidden expansions are left out.
+     unions, gifts, morphs), with a search box. Items you hold are green; hidden expansions are
+     left out. Each recipe says which characters start with its weapon, and the search box also
+     finds character names (e.g. "Cornell" shows the recipes for his starting weapons).
 
 ## Updating
 

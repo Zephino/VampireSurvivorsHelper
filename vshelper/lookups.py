@@ -77,7 +77,7 @@ def apply_to_db(db: Database, entry: dict) -> int:
         code = entry.get("game_id", "")
         if code and not db.items[item_id].game_id:
             old = db.items[item_id]
-            db.items[item_id] = Item(old.id, old.name, old.kind, old.dlc, old.evolved, code)
+            db.items[item_id] = Item(old.id, old.name, old.kind, old.dlc, old.evolved, code, old.characters)
     known = {(e.result, frozenset(e.requires)) for e in db.evolutions}
     added = 0
     for recipe in entry.get("recipes", []):

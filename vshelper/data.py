@@ -26,6 +26,7 @@ class Item:
     dlc: str = "Base game"
     evolved: bool = False
     game_id: str = ""  # the game's internal code, e.g. BMN011_FIRE2_BALL (from the wiki)
+    characters: tuple[str, ...] = ()  # characters who start with this weapon (from the wiki)
 
 
 @dataclass(frozen=True)
@@ -109,6 +110,7 @@ def parse_database(raw: dict, source: str = "<data>") -> Database:
                     dlc=entry.get("dlc", "Base game"),
                     evolved=bool(entry.get("evolved", False)),
                     game_id=entry.get("game_id", ""),
+                    characters=tuple(entry.get("characters", ())),
                 )
             except KeyError as exc:
                 errors.append(f"{key} entry {entry!r} is missing {exc}")

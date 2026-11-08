@@ -200,7 +200,7 @@ def _item_title(title: str) -> str:
 
 
 def build_database(recipes: list[Recipe], weapon_titles: list[str], passive_titles: list[str],
-                   game_ids: dict[str, str] | None = None) -> dict:
+                   game_ids: dict[str, str] | None = None, starters: dict[str, list[str]] | None = None) -> dict:
     """Produce data in the format of vshelper/data/evolutions.json."""
     weapons: dict[str, dict] = {}
     passives: dict[str, dict] = {}
@@ -237,10 +237,13 @@ def build_database(recipes: list[Recipe], weapon_titles: list[str], passive_titl
     for item_id in evolved:
         weapons[item_id]["evolved"] = True
     by_slug = {slug(n): code for n, code in (game_ids or {}).items()}
+    starters_by_slug = {slug(w): chars for w, chars in (starters or {}).items()}
     for table in (weapons, passives):
         for item_id, entry in table.items():
             if item_id in by_slug:
                 entry["game_id"] = by_slug[item_id]  # lets the helper recognise the game's codes
+            if item_id in starters_by_slug:
+                entry["characters"] = starters_by_slug[item_id]  # characters who start with it
 
     evolutions = []
     seen = set()
@@ -297,6 +300,26 @@ def read_item_pages(titles: list[str]) -> list[ItemLookup]:
     return out
 
 
+def starting_weapons() -> dict[str, list[str]]:
+    """{weapon name: [characters who start with it]} from every character page's infobox."""
+    titles = [t for t in fetch_category("Characters") if t.lower() != "characters"]
+    starters: dict[str, list[str]] = {}
+    for title, text in fetch_pages(titles).items():
+        m = INFOBOX.search(text)
+        if not m or "character" not in m.group(1).strip().lower():
+            continue
+        fields = _infobox_fields(m.group(2))
+        name = _plain(fields.get("name") or title)
+        for key in sorted(fields):
+            if key == "weapon" or re.fullmatch(r"weapon\d+", key):
+                weapon = _plain(fields[key])
+                if weapon and name not in starters.setdefault(weapon, []):
+                    starters[weapon].append(name)
+    for chars in starters.values():
+        chars.sort()
+    return starters
+
+
 def recipes_from_item_pages(lookups: list[ItemLookup], passive_names: set[str]) -> list[Recipe]:
     """Recipes from the weapon pages' infoboxes (evolution / union fields). Some recipes are only
     listed there, not on the Evolution page."""
@@ -349,7 +372,8 @@ def download_database(item_pages: bool = True) -> tuple[dict, list[str]]:
         skipped.append(f"(added {added} recipes found only on item pages)")
     else:
         game_ids = {}
-    return build_database(recipes, weapon_titles, passive_titles, game_ids), skipped
+    starters = starting_weapons() if item_pages else {}
+    return build_database(recipes, weapon_titles, passive_titles, game_ids, starters), skipped
 
 
 # ---- looking up a single item ---------------------------------------------

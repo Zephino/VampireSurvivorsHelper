@@ -238,7 +238,7 @@ class App:
         self.guide_search = tk.StringVar()
         self.guide_search.trace_add("write", lambda *_: self._schedule_guide_refresh())
         search_bar.add(ttk.Entry(search_bar, textvariable=self.guide_search, width=30))
-        search_bar.add(ttk.Label(search_bar, text="weapon, item or evolution name"))
+        search_bar.add(ttk.Label(search_bar, text="weapon, item, evolution or character name"))
         guide_body, self.guide_text = self._text_pane(guide_frame)
         guide_body.pack(fill="both", expand=True)
         self._guide_job: str | None = None
@@ -733,6 +733,7 @@ class App:
             text.tag_configure("missing", foreground=pal["missing"])
             text.tag_configure("detail", foreground=pal["muted"])
             text.tag_configure("carddetail", foreground=pal["muted"])
+            text.tag_configure("characters", foreground=pal["planned"])
             text.tag_configure("level", foreground=pal["level"])
             text.tag_configure("maxed", foreground=pal["have"])
             text.tag_configure("subheader", foreground=pal["muted"])
@@ -910,8 +911,10 @@ class App:
             details.append("\u26a0 game files say: " + " + ".join(self.db.name(r) for r in check.game_requires))
         return details
 
-    def _insert_suggestion(self, out: tk.Text, s: Suggestion, plain_missing: bool = False) -> None:
-        """One recipe line: weapon + item = evolution. plain_missing: don't colour unowned parts red."""
+    def _insert_suggestion(self, out: tk.Text, s: Suggestion, plain_missing: bool = False,
+                           characters: bool = False) -> None:
+        """One recipe line: weapon + item = evolution. plain_missing: don't colour unowned parts red.
+        characters: add who starts with the recipe's weapons."""
         evo = s.evolution
         out.insert("end", "  ")
         for i, req in enumerate(evo.requires):
@@ -925,6 +928,19 @@ class App:
         details = self._details(s, skip_missing=plain_missing)
         if details:
             out.insert("end", "  |  ".join(details) + "\n", "detail")
+        if characters:
+            starters = self._starters(evo)
+            if starters:
+                out.insert("end", "Starting weapon of \u2014 " + "  |  ".join(starters) + "\n", "characters")
+
+    def _starters(self, evo) -> list[str]:
+        """'Keremet Bubbles: Rinaldo Gandolfi' for each part some character starts with."""
+        out = []
+        for req in evo.requires:
+            chars = self.db.items[req].characters if req in self.db.items else ()
+            if chars:
+                out.append(f"{self.db.name(req)}: {', '.join(chars)}")
+        return out
 
     def _insert_plan(self, out: tk.Text, plan: ItemPlan, owned: set[str]) -> None:
         """A held item card, then for each evolution: result card, the parts it needs, and its status."""
@@ -981,6 +997,7 @@ class App:
         text.tag_configure("result", font=("Segoe UI", 10, "bold"))
         text.tag_configure("detail", lmargin1=70, lmargin2=70)
         text.tag_configure("carddetail", lmargin1=40, lmargin2=40, spacing3=8)
+        text.tag_configure("characters", lmargin1=70, lmargin2=70, font=("Segoe UI", 9, "italic"))
         text.tag_configure("ready", foreground="#ffffff", background="#1b7f2a", font=("Segoe UI", 9, "bold"))
         text.tag_configure("levelup", foreground="#ffffff", background="#d35400", font=("Segoe UI", 9, "bold"))
         text.tag_configure("level", font=("Segoe UI", 9))
@@ -1178,6 +1195,14 @@ class App:
                     self._insert_plan(out, plan, owned)
         out.configure(state="disabled")
 
+    def _guide_matches(self, evo, query: str) -> bool:
+        """The search box matches item names and the names of characters who start with them."""
+        for item_id in (evo.result, *evo.requires):
+            item = self.db.items.get(item_id)
+            if item and (query in item.name.lower() or any(query in c.lower() for c in item.characters)):
+                return True
+        return False
+
     def _schedule_guide_refresh(self) -> None:
         """Re-draw the guide shortly after typing stops (it has 150+ recipes with pictures)."""
         if self._guide_job:
@@ -1195,8 +1220,7 @@ class App:
         for dlc in ["Base game", *self.db.expansions(), ""]:  # "" = recipes found by wiki lookups
             if dlc in hidden:
                 continue
-            evos = [e for e in self.db.evolutions if e.dlc == dlc and (
-                not query or any(query in self.db.name(i).lower() for i in (e.result, *e.requires)))]
+            evos = [e for e in self.db.evolutions if e.dlc == dlc and (not query or self._guide_matches(e, query))]
             if not evos:
                 continue
             out.insert("end", (dlc or "Found on the wiki").upper() + "\n", "header")
@@ -1209,7 +1233,8 @@ class App:
                 for evo in group:
                     have = tuple(r for r in evo.requires if r in owned)
                     missing = tuple(r for r in evo.requires if r not in owned)
-                    self._insert_suggestion(out, Suggestion(evo, have, missing), plain_missing=True)
+                    self._insert_suggestion(out, Suggestion(evo, have, missing), plain_missing=True,
+                                            characters=True)
                     shown += 1
         if not shown:
             out.insert("end", "No evolutions match your search." if query else "All expansions are hidden in Settings.")

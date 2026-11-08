@@ -1,5 +1,17 @@
 # Changelog
 
+## Version 00.00.42
+Date: 11/08/2026
+Time: 3:14 AM
+
+### Changes
+- All evolutions now shows which characters start with each recipe's weapon(s), e.g. "Starting weapon of - Knife: Gennaro Belpaese, Zephyr".
+- The All evolutions search box also matches character names: searching "Cornell" lists the recipes that use his starting weapons.
+- The wiki data download reads every character page (238) for their starting weapons; 212 weapons have at least one character. Stored per item as `characters` in the data.
+
+### Reason
+User wants to see which character has each weapon, to help choose characters.
+
 ## Version 00.00.41
 Date: 11/08/2026
 Time: 2:55 AM
