@@ -177,6 +177,13 @@ class GameReaderTests(unittest.TestCase):
         g.set_named(g.weapon_list, [("Whip", 8, 8)])
         self.assertEqual(len(_reader(g).poll().players), 1)
 
+    def test_game_code_instead_of_a_name(self):
+        g = FakeGame()  # Legacy of the Bloodmoon items carry their code where the name should be
+        g.set_named(g.weapon_list, [("BMN011_FIRE2_BALL", 2, 6)], enum_value=1811)
+        result = _reader(g).poll()
+        self.assertEqual(result.owned, {"fireball"})
+        self.assertEqual(result.unrecognized, ())
+
     def test_game_spelling_differs_from_the_wiki(self):
         g = FakeGame()
         g.set_named(g.weapon_list, [("Dextro Custos", 6, 6), ("Sinistro Custos", 6, 6)], enum_value=1438)

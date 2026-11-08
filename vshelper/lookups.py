@@ -43,7 +43,8 @@ class LookupCache:
     def put(self, name: str, lookup: ItemLookup | None, now: float | None = None) -> dict:
         entry = {"checked": time.time() if now is None else now, "found": lookup is not None}
         if lookup is not None:
-            entry.update(name=lookup.name, kind=lookup.kind, url=lookup.url, recipes=lookup.recipes)
+            entry.update(name=lookup.name, kind=lookup.kind, url=lookup.url, recipes=lookup.recipes,
+                         game_id=lookup.game_id)
         self.entries[_key(name)] = entry
         if lookup is not None:
             self.entries[_key(lookup.name)] = entry  # the page may be a redirect from another name
@@ -72,7 +73,11 @@ def apply_to_db(db: Database, entry: dict) -> int:
 
     page_item = entry.get("name", "")
     if page_item:
-        ensure(page_item, entry.get("kind", "weapon"))
+        item_id = ensure(page_item, entry.get("kind", "weapon"))
+        code = entry.get("game_id", "")
+        if code and not db.items[item_id].game_id:
+            old = db.items[item_id]
+            db.items[item_id] = Item(old.id, old.name, old.kind, old.dlc, old.evolved, code)
     known = {(e.result, frozenset(e.requires)) for e in db.evolutions}
     added = 0
     for recipe in entry.get("recipes", []):

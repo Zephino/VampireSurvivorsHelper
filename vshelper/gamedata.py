@@ -183,6 +183,7 @@ def load_catalog(out_dir: Path) -> dict[str, dict]:
 def catalog_frames(db: Database, catalog: dict[str, dict]) -> dict[str, str]:
     """item id -> picture (frame) name, matched by display name."""
     by_name = {_canon(i.name): i.id for i in db.items.values()}
+    by_name.update({_canon(i.game_id): i.id for i in db.items.values() if i.game_id})
     out = {}
     for name, entry in catalog.items():
         item = by_name.get(_canon(name))

@@ -59,6 +59,10 @@ class ParseItemPageTests(unittest.TestCase):
 
 
 class InfoboxLayoutTests(unittest.TestCase):
+    def test_game_code_is_read(self):
+        lookup = parse_item_page("FireBall", "{{Infobox Weapon\n|dlc = bm\n|id = BMN011_FIRE2_BALL\n|type = Normal\n}}")
+        self.assertEqual(lookup.game_id, "BMN011_FIRE2_BALL")
+
     def test_several_fields_on_one_line(self):
         text = "{{Infobox Weapon\n|dlc=oc\n|evolution = Nitesco|evolution-item=Empty Tome|id =TP_ENERGY1\n|rarity=50\n}}"
         lookup = parse_item_page("Globus", text)

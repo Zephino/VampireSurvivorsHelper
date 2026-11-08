@@ -25,6 +25,7 @@ class Item:
     kind: str  # "weapon" or "passive"
     dlc: str = "Base game"
     evolved: bool = False
+    game_id: str = ""  # the game's internal code, e.g. BMN011_FIRE2_BALL (from the wiki)
 
 
 @dataclass(frozen=True)
@@ -107,6 +108,7 @@ def parse_database(raw: dict, source: str = "<data>") -> Database:
                     kind=kind,
                     dlc=entry.get("dlc", "Base game"),
                     evolved=bool(entry.get("evolved", False)),
+                    game_id=entry.get("game_id", ""),
                 )
             except KeyError as exc:
                 errors.append(f"{key} entry {entry!r} is missing {exc}")

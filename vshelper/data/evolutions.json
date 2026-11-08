@@ -6,153 +6,182 @@
   {
    "id": "108_bocce",
    "name": "108 Bocce",
-   "dlc": "Legacy of the Bloodmoon"
+   "dlc": "Legacy of the Bloodmoon",
+   "game_id": "BOCCE"
   },
   {
    "id": "108_responsive_prayers",
    "name": "108 Responsive Prayers",
-   "dlc": "Legacy of the Bloodmoon"
+   "dlc": "Legacy of the Bloodmoon",
+   "game_id": "PRAYERS"
   },
   {
    "id": "acerbatus",
    "name": "Acerbatus",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_SPITE2"
   },
   {
    "id": "acquazzone",
-   "name": "Acquazzone"
+   "name": "Acquazzone",
+   "game_id": "FLOOD"
   },
   {
    "id": "alchemy_whip",
    "name": "Alchemy Whip",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_ALCHEMYWHIP1"
   },
   {
    "id": "alucard_shield",
-   "name": "Alucard Shield"
+   "name": "Alucard Shield",
+   "game_id": "TP_ALUCARDSHIELD"
   },
   {
    "id": "alucard_spear",
    "name": "Alucard Spear",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_ALUCARDSPEAR1"
   },
   {
    "id": "alucard_swords",
    "name": "Alucard Swords",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_ALUCARDSWORD2"
   },
   {
    "id": "alucart_sworb",
    "name": "Alucart Sworb",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_ALUCARDSWORD1"
   },
   {
    "id": "ammo_appalate",
    "name": "Ammo Appalate",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "EX_AMMO1"
   },
   {
    "id": "anima_of_mortaccio",
    "name": "Anima of Mortaccio",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "BONE2"
   },
   {
    "id": "anura",
    "name": "Anura",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_FROG"
   },
   {
    "id": "aqua_spheres",
-   "name": "Aqua Spheres"
+   "name": "Aqua Spheres",
+   "game_id": "EME_RING_WATER"
   },
   {
    "id": "arch_angle",
    "name": "Arch Angle",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_GRANDCROSS2"
   },
   {
    "id": "argent_flow",
    "name": "Argent Flow",
    "dlc": "Legacy of the Moonspell",
-   "evolved": true
+   "evolved": true,
+   "game_id": "SILVERWIND3"
   },
   {
    "id": "arma_dio",
-   "name": "Arma Dio"
+   "name": "Arma Dio",
+   "game_id": "ARMADIO"
   },
   {
    "id": "arrow_of_goth",
    "name": "Arrow of Goth",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_GOTH_MISSILE"
   },
   {
    "id": "ashella",
    "name": "Ashella",
-   "dlc": "Legacy of the Bloodmoon"
+   "dlc": "Legacy of the Bloodmoon",
+   "game_id": "BMN004_AXE1"
   },
   {
    "id": "ashes_of_muspell",
    "name": "Ashes of Muspell",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "MISSPELL2"
   },
   {
    "id": "atmo_torpedo",
    "name": "Atmo-Torpedo",
    "dlc": "Operation Guns",
-   "evolved": true
+   "evolved": true,
+   "game_id": "FB_CRUSH"
   },
   {
    "id": "aura_blast",
    "name": "Aura Blast",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_AURABLAST_WEAPON"
   },
   {
    "id": "aurablaster_tip",
    "name": "Aurablaster Tip",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_MARTIALWHIP2"
   },
   {
    "id": "axe",
    "name": "Axe",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "AXE"
   },
   {
    "id": "belnades_spellbook",
-   "name": "Belnades' Spellbook"
+   "name": "Belnades' Spellbook",
+   "game_id": "TP_SPELLBOOK"
   },
   {
    "id": "bfc2000_ad",
    "name": "BFC2000-AD",
    "dlc": "Operation Guns",
-   "evolved": true
+   "evolved": true,
+   "game_id": "FB_CROSSBOWCRASH"
   },
   {
    "id": "bi_bracelet",
    "name": "Bi-Bracelet",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TRIASSO2"
   },
   {
    "id": "big_fuzzy_fist",
    "name": "Big Fuzzy Fist",
    "dlc": "Operation Guns",
-   "evolved": true
+   "evolved": true,
+   "game_id": "FB_BIGFUZZYFIST"
   },
   {
    "id": "blacken_firmament",
    "name": "Blacken Firmament",
-   "dlc": "Legacy of the Bloodmoon"
+   "dlc": "Legacy of the Bloodmoon",
+   "game_id": "BMN008_BLACKEN1"
   },
   {
    "id": "blade_crossbow",
    "name": "Blade Crossbow",
-   "dlc": "Operation Guns"
+   "dlc": "Operation Guns",
+   "game_id": "FB_BLADECROSSBOW"
   },
   {
    "id": "blood_astronomia_xxi",
@@ -162,291 +191,345 @@
    "id": "blood_chalice",
    "name": "Blood Chalice",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_BLOOD2"
   },
   {
    "id": "blood_hex",
-   "name": "Blood Hex"
+   "name": "Blood Hex",
+   "game_id": "BMN_BLOODHEX"
   },
   {
    "id": "bloodlust",
    "name": "Bloodlust",
    "dlc": "Legacy of the Bloodmoon",
-   "evolved": true
+   "evolved": true,
+   "game_id": "BMN005_AXE2"
   },
   {
    "id": "bloody_tear",
    "name": "Bloody Tear",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "VAMPIRICA"
   },
   {
    "id": "bone",
    "name": "Bone",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "BONE"
   },
   {
    "id": "boo_roo_boolle",
    "name": "Boo Roo Boolle",
    "dlc": "Legacy of the Moonspell",
-   "evolved": true
+   "evolved": true,
+   "game_id": "BUBBLES2"
   },
   {
    "id": "bracelet",
    "name": "Bracelet",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "TRIASSO1"
   },
   {
    "id": "bullova",
    "name": "Bullova",
-   "dlc": "Emerald Diorama"
+   "dlc": "Emerald Diorama",
+   "game_id": "EME_AXE1"
   },
   {
    "id": "burning_alcarde",
-   "name": "Burning Alcarde"
+   "name": "Burning Alcarde",
+   "game_id": "TP_BLUEFIRE_WEAPON"
   },
   {
    "id": "bwaka_knife",
    "name": "Bwaka Knife",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_BWAKA2"
   },
   {
    "id": "c_u_laser",
    "name": "C-U-Laser",
-   "dlc": "Operation Guns"
+   "dlc": "Operation Guns",
+   "game_id": "FB_LASER"
   },
   {
    "id": "candybox",
-   "name": "Candybox"
+   "name": "Candybox",
+   "game_id": "CANDYBOX"
   },
   {
    "id": "cardinal_rain",
    "name": "Cardinal Rain",
    "dlc": "Legacy of the Bloodmoon",
-   "evolved": true
+   "evolved": true,
+   "game_id": "BMN001_SCARLET2"
   },
   {
    "id": "carnage_heart",
    "name": "Carnage Heart",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_NEUTRON_WEAPON2"
   },
   {
    "id": "carrozza",
    "name": "Carrozza!",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "CART2EVO"
   },
   {
    "id": "carrello",
    "name": "Carréllo",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "CART2"
   },
   {
    "id": "cavendish",
    "name": "Cavendish",
    "dlc": "Ante Chamber",
-   "evolved": true
+   "evolved": true,
+   "game_id": "LEM_BANANA2"
   },
   {
    "id": "celestial_booster",
    "name": "Celestial Booster",
-   "dlc": "Ante Chamber"
+   "dlc": "Ante Chamber",
+   "game_id": "LEM_PLANETS1"
   },
   {
    "id": "celestial_dusting",
    "name": "Celestial Dusting",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "FLOWER"
   },
   {
    "id": "celestial_voulge",
    "name": "Celestial Voulge",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "ICELANCE2"
   },
   {
    "id": "centralis_custos",
    "name": "Centralis Custos",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_CUSTOS3"
   },
   {
    "id": "chaos_disaster",
-   "name": "Chaos Disaster"
+   "name": "Chaos Disaster",
+   "game_id": "EME_RING_CHAOS"
   },
   {
    "id": "chaos_rune",
    "name": "Chaos Rune",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "FOLLOWER_KNIFE1"
   },
   {
    "id": "cherry_bomb",
    "name": "Cherry Bomb",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "CHERRY"
   },
   {
    "id": "claimh_solais",
    "name": "Claimh Solais",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_POCKET2"
   },
   {
    "id": "clear_asteroids",
    "name": "Clear Asteroids",
    "dlc": "Emergency Meeting",
-   "evolved": true
+   "evolved": true,
+   "game_id": "C1_GARBA2"
   },
   {
    "id": "clear_debris",
    "name": "Clear Debris",
-   "dlc": "Emergency Meeting"
+   "dlc": "Emergency Meeting",
+   "game_id": "C1_GARBA1"
   },
   {
    "id": "clock_lancet",
    "name": "Clock Lancet",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "LANCET"
   },
   {
    "id": "clock_tower",
    "name": "Clock Tower",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_CLOCKTOWER_WEAPON"
   },
   {
    "id": "coat_of_arms",
-   "name": "Coat of Arms"
+   "name": "Coat of Arms",
+   "game_id": "TP_COATOFARMS"
   },
   {
    "id": "cocytus",
    "name": "Cocytus",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_ICE2"
   },
   {
    "id": "confodere",
    "name": "Confodere",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_CONFODERE1"
   },
   {
    "id": "crimson_shroud",
    "name": "Crimson Shroud",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "SHROUD"
   },
   {
    "id": "crissaegrim_tip",
    "name": "Crissaegrim Tip",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_SONICWHIP2"
   },
   {
    "id": "cross",
    "name": "Cross",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "CROSS"
   },
   {
    "id": "cross_crasher_tip",
    "name": "Cross Crasher Tip",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_PLATINUMWHIP2"
   },
   {
    "id": "crossed_wires",
    "name": "Crossed Wires",
    "dlc": "Emergency Meeting",
-   "evolved": true
+   "evolved": true,
+   "game_id": "C1_SWIPECARD2"
   },
   {
    "id": "curved_knife",
    "name": "Curved Knife",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_BWAKA1"
   },
   {
    "id": "dairy_cart",
-   "name": "Dairy Cart"
+   "name": "Dairy Cart",
+   "game_id": "CART"
   },
   {
    "id": "damnation",
    "name": "Damnation",
    "dlc": "Legacy of the Bloodmoon",
-   "evolved": true
+   "evolved": true,
+   "game_id": "BMN009_BLACKEN2"
   },
   {
    "id": "dark_frogamorphosis",
    "name": "Dark Frogamorphosis",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_FROG2"
   },
   {
    "id": "dark_iron_shield",
    "name": "Dark Iron Shield",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_SHIELD2"
   },
   {
    "id": "dark_rift",
    "name": "Dark Rift",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_DARKRIFT"
   },
   {
    "id": "darkness_illusion",
    "name": "Darkness Illusion",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_SAVROG_WEAPON2"
   },
   {
    "id": "dayblade",
    "name": "Dayblade",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_LONGSWORD3"
   },
   {
    "id": "daybreaker_tip",
    "name": "Daybreaker Tip",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_HOLYWHIP2"
   },
   {
    "id": "death_hand",
-   "name": "Death Hand"
+   "name": "Death Hand",
+   "game_id": "TP_DEATHHAND"
   },
   {
    "id": "death_spiral",
    "name": "Death Spiral",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "SCYTHE"
   },
   {
    "id": "descent_into_misery",
    "name": "Descent Into Misery",
-   "dlc": "Legacy of the Bloodmoon"
+   "dlc": "Legacy of the Bloodmoon",
+   "game_id": "DESCENT_MISERY"
   },
   {
    "id": "dextro_custos",
    "name": "Dextro Custos",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_CUSTOS1"
   },
   {
    "id": "dies_irae",
    "name": "Dies Irae",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_GOTH_MISSILE2"
   },
   {
    "id": "discus",
    "name": "Discus",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_DISCUS1"
   },
   {
    "id": "diver_mines",
    "name": "Diver Mines",
-   "dlc": "Operation Guns"
+   "dlc": "Operation Guns",
+   "game_id": "FB_DIVERMINES"
   },
   {
    "id": "divergence",
    "name": "Divergence",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_CANNON3"
   },
   {
    "id": "divine_bloodline_ix",
@@ -455,103 +538,122 @@
   {
    "id": "dominus_agony",
    "name": "Dominus Agony",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_DOMINUS3"
   },
   {
    "id": "dominus_anger",
    "name": "Dominus Anger",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_DOMINUS1"
   },
   {
    "id": "dominus_hatred",
    "name": "Dominus Hatred",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_DOMINUS2"
   },
   {
    "id": "dragon_water_whip",
    "name": "Dragon Water Whip",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_DRAGONWATER1"
   },
   {
    "id": "dress_sword",
    "name": "Dress Sword",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_RAPIER2"
   },
   {
    "id": "dust_to_dust",
    "name": "Dust to Dust",
    "dlc": "Legacy of the Bloodmoon",
-   "evolved": true
+   "evolved": true,
+   "game_id": "BMN003_DUST2"
   },
   {
    "id": "eagle_gun",
    "name": "Eagle Gun",
-   "dlc": "Emerald Diorama"
+   "dlc": "Emerald Diorama",
+   "game_id": "EME_PISTOL1"
   },
   {
    "id": "ebony_diabologue",
-   "name": "Ebony Diabologue"
+   "name": "Ebony Diabologue",
+   "game_id": "TP_DIABOLOGUE"
   },
   {
    "id": "ebony_wings",
    "name": "Ebony Wings",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "SILF2"
   },
   {
    "id": "echo_night",
    "name": "Echo Night",
    "dlc": "Legacy of the Moonspell",
-   "evolved": true
+   "evolved": true,
+   "game_id": "SUMMONNIGHT2"
   },
   {
    "id": "eight_the_sparrow",
    "name": "Eight The Sparrow",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "GUNS2"
   },
   {
    "id": "embrace_of_gaea",
    "name": "Embrace of Gaea",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EX_GAEA2"
   },
   {
    "id": "emerald_rapture",
    "name": "Emerald Rapture",
-   "dlc": "Emerald Diorama"
+   "dlc": "Emerald Diorama",
+   "game_id": "EME_WAVE"
   },
   {
    "id": "emerald_wave",
    "name": "Emerald Wave",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_WAVE2"
   },
   {
    "id": "emergency_meeting",
    "name": "Emergency Meeting",
    "dlc": "Emergency Meeting",
-   "evolved": true
+   "evolved": true,
+   "game_id": "C1_REPORT2"
   },
   {
    "id": "endo_gears",
    "name": "Endo Gears",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_GEARS_WEAPON"
   },
   {
    "id": "epi_head",
    "name": "Epi Head",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_HEADS_WEAPON"
   },
   {
    "id": "eskizzibur",
    "name": "Eskizzibur",
-   "dlc": "Tides of the Foscari"
+   "dlc": "Tides of the Foscari",
+   "game_id": "SWORD"
   },
   {
    "id": "espada_ropera",
    "name": "Espada Ropera",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_RAPIER3"
   },
   {
    "id": "evolution",
@@ -561,126 +663,150 @@
    "id": "falconwind",
    "name": "Falconwind",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_AXE2"
   },
   {
    "id": "familiar_forge",
-   "name": "Familiar Forge"
+   "name": "Familiar Forge",
+   "game_id": "TP_FAMILIARFORGE"
   },
   {
    "id": "fear_nova",
-   "name": "Fear Nova"
+   "name": "Fear Nova",
+   "game_id": "NOVA_FEAR"
   },
   {
    "id": "feather_spear",
    "name": "Feather Spear",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_SPEAR2"
   },
   {
    "id": "festive_winds",
    "name": "Festive Winds",
    "dlc": "Legacy of the Moonspell",
-   "evolved": true
+   "evolved": true,
+   "game_id": "SILVERWIND2"
   },
   {
    "id": "fibonacci_spritz",
    "name": "Fibonacci Spritz",
-   "dlc": "Ante Chamber"
+   "dlc": "Ante Chamber",
+   "game_id": "LEM_FIBONACCI1"
   },
   {
    "id": "fire_nova",
-   "name": "Fire Nova"
+   "name": "Fire Nova",
+   "game_id": "NOVA_FIRE"
   },
   {
    "id": "fire_wand",
    "name": "Fire Wand",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "FIREBALL"
   },
   {
    "id": "fire_l3gs",
    "name": "Fire-L3GS",
    "dlc": "Operation Guns",
-   "evolved": true
+   "evolved": true,
+   "game_id": "FB_FIREWALL"
   },
   {
    "id": "firearm",
    "name": "Firearm",
-   "dlc": "Operation Guns"
+   "dlc": "Operation Guns",
+   "game_id": "FB_FIREARM"
   },
   {
    "id": "fireball",
    "name": "FireBall",
-   "dlc": "Legacy of the Bloodmoon"
+   "dlc": "Legacy of the Bloodmoon",
+   "game_id": "BMN011_FIRE2_BALL"
   },
   {
    "id": "firefall",
    "name": "FireFall",
-   "dlc": "Legacy of the Bloodmoon"
+   "dlc": "Legacy of the Bloodmoon",
+   "game_id": "BMN010_FIRE1_FALL"
   },
   {
    "id": "firestall",
    "name": "FireStall",
    "dlc": "Legacy of the Bloodmoon",
-   "evolved": true
+   "evolved": true,
+   "game_id": "BMN013_FIRE4"
   },
   {
    "id": "firewall",
    "name": "FireWall",
-   "dlc": "Legacy of the Bloodmoon"
+   "dlc": "Legacy of the Bloodmoon",
+   "game_id": "BMN012_FIRE3_WALL"
   },
   {
    "id": "flamberge",
    "name": "Flamberge",
-   "dlc": "Emerald Diorama"
+   "dlc": "Emerald Diorama",
+   "game_id": "EME_GREATSWORD1"
   },
   {
    "id": "flames_of_misspell",
    "name": "Flames of Misspell",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "MISSPELL"
   },
   {
    "id": "flash_arrow",
    "name": "Flash Arrow",
-   "dlc": "Tides of the Foscari"
+   "dlc": "Tides of the Foscari",
+   "game_id": "FLASHARROW"
   },
   {
    "id": "fleuret",
    "name": "Fleuret",
-   "dlc": "Emerald Diorama"
+   "dlc": "Emerald Diorama",
+   "game_id": "EME_RAPIER1"
   },
   {
    "id": "forbidden_siren",
    "name": "Forbidden Siren",
    "dlc": "Legacy of the Bloodmoon",
-   "evolved": true
+   "evolved": true,
+   "game_id": "BMN007_SCREAM2"
   },
   {
    "id": "four_seasons",
    "name": "Four Seasons",
-   "dlc": "Legacy of the Moonspell"
+   "dlc": "Legacy of the Moonspell",
+   "game_id": "FOURSEASONS"
   },
   {
    "id": "fulgur",
    "name": "Fulgur",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_ELEC1"
   },
   {
    "id": "fuwalafuwaloo",
    "name": "Fuwalafuwaloo",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "VENTO2"
   },
   {
    "id": "galatyn",
    "name": "Galatyn",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_GREATSWORD3"
   },
   {
    "id": "gale_force",
    "name": "Gale Force",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_WIND1"
   },
   {
    "id": "game_killer_0",
@@ -689,23 +815,27 @@
   {
    "id": "garlic",
    "name": "Garlic",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "GARLIC"
   },
   {
    "id": "gatti_amari",
    "name": "Gatti Amari",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "GATTI"
   },
   {
    "id": "gaze_of_gaea",
    "name": "Gaze of Gaea",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "EX_GAEA1"
   },
   {
    "id": "gekkabijin",
    "name": "Gekkabijin",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_KATANA2"
   },
   {
    "id": "gemini_i",
@@ -715,7 +845,8 @@
    "id": "gemma_torpor",
    "name": "Gemma Torpor",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_EARTH2"
   },
   {
    "id": "gifts",
@@ -725,65 +856,77 @@
    "id": "gilded_hand",
    "name": "Gilded Hand",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_PUNCH3"
   },
   {
    "id": "glaive",
    "name": "Glaive",
-   "dlc": "Emerald Diorama"
+   "dlc": "Emerald Diorama",
+   "game_id": "EME_SPEAR1"
   },
   {
    "id": "glass_fandango",
    "name": "Glass Fandango",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "ICELANCE"
   },
   {
    "id": "globus",
    "name": "Globus",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_ENERGY1"
   },
   {
    "id": "godai_shuffle",
    "name": "Godai Shuffle",
    "dlc": "Legacy of the Moonspell",
-   "evolved": true
+   "evolved": true,
+   "game_id": "FOURSEASONS2"
   },
   {
    "id": "gorgeous_moon",
    "name": "Gorgeous Moon",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "SIRE"
   },
   {
    "id": "grand_cross",
    "name": "Grand Cross",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_GRANDCROSS"
   },
   {
    "id": "greatest_jubilee",
-   "name": "Greatest Jubilee"
+   "name": "Greatest Jubilee",
+   "game_id": "JUBILEE"
   },
   {
    "id": "gros_michel",
    "name": "Gros Michel",
-   "dlc": "Ante Chamber"
+   "dlc": "Ante Chamber",
+   "game_id": "LEM_BANANA1"
   },
   {
    "id": "guardians_targe",
    "name": "Guardian's Targe",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_SACREDBEASTS1"
   },
   {
    "id": "gunastrophe",
    "name": "Gunastrophe",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EX_AMMO2"
   },
   {
    "id": "gungnir_souris",
    "name": "Gungnir-Souris",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_CHAUVE2"
   },
   {
    "id": "hammer_dah",
@@ -794,15 +937,18 @@
   {
    "id": "hand_grenade",
    "name": "Hand Grenade",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_RPG1"
   },
   {
    "id": "hand_of_vlad",
-   "name": "Hand of Vlad"
+   "name": "Hand of Vlad",
+   "game_id": "TP_DRACULAHAND"
   },
   {
    "id": "hats",
-   "name": "Hats"
+   "name": "Hats",
+   "game_id": "C1_HATCOLLECTION1"
   },
   {
    "id": "heart_of_fire_xix",
@@ -812,331 +958,393 @@
    "id": "heaven_sword",
    "name": "Heaven Sword",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "HEAVENSWORD"
   },
   {
    "id": "heavens_thunder",
-   "name": "Heaven's Thunder"
+   "name": "Heaven's Thunder",
+   "game_id": "EME_RING_WOOD"
   },
   {
    "id": "hecaton_machine_gun",
    "name": "Hecaton Machine Gun",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_CANNON2"
   },
   {
    "id": "hellfire",
    "name": "Hellfire",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "HELLFIRE"
   },
   {
    "id": "hex",
    "name": "Hex",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_EVIL1"
   },
   {
    "id": "holy_wand",
    "name": "Holy Wand",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "HOLY_MISSILE"
   },
   {
    "id": "homing_miss",
    "name": "Homing Miss",
-   "dlc": "Operation Guns"
+   "dlc": "Operation Guns",
+   "game_id": "FB_HOMING"
   },
   {
    "id": "hydra_cannon",
    "name": "Hydra Cannon",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_MECH2"
   },
   {
    "id": "hydro_pump_climax",
    "name": "Hydro Pump Climax",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_HYDROSTORM2"
   },
   {
    "id": "hydro_storm",
    "name": "Hydro Storm",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_HYDROSTORM"
   },
   {
    "id": "hydrostormer_tip",
    "name": "Hydrostormer Tip",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_DRAGONWATER2"
   },
   {
    "id": "hypergravity",
-   "name": "Hypergravity"
+   "name": "Hypergravity",
+   "game_id": "EME_RING_EARTH"
   },
   {
    "id": "hyperion_bazooka",
    "name": "Hyperion Bazooka",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_MECH3"
   },
   {
    "id": "ice_fang",
    "name": "Ice Fang",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_ICE1"
   },
   {
    "id": "ice_nova",
-   "name": "Ice Nova"
+   "name": "Ice Nova",
+   "game_id": "NOVA_ICEE"
   },
   {
    "id": "icebrand",
    "name": "Icebrand",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_ICEBRAND"
   },
   {
    "id": "impostongue",
    "name": "Impostongue",
    "dlc": "Emergency Meeting",
-   "evolved": true
+   "evolved": true,
+   "game_id": "C1_TONGUE2"
   },
   {
    "id": "incineration",
    "name": "Incineration",
-   "dlc": "Legacy of the Bloodmoon"
+   "dlc": "Legacy of the Bloodmoon",
+   "game_id": "BMN002_DUST1"
   },
   {
    "id": "infernolatro",
    "name": "Infernolatro",
-   "dlc": "Ante Chamber"
+   "dlc": "Ante Chamber",
+   "game_id": "LEM_INFERNO1"
   },
   {
    "id": "infinite_corridor",
    "name": "Infinite Corridor",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "CORRIDOR"
   },
   {
    "id": "insatiable",
-   "name": "Insatiable"
+   "name": "Insatiable",
+   "game_id": "INSATIABLE"
   },
   {
    "id": "intuition",
-   "name": "Intuition"
+   "name": "Intuition",
+   "game_id": "EME_SELECTOR"
   },
   {
    "id": "iron_ball",
    "name": "Iron Ball",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_IRONBALL1"
   },
   {
    "id": "iron_shield",
    "name": "Iron Shield",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_SHIELD1"
   },
   {
    "id": "jodore",
    "name": "J'Odore",
    "dlc": "Legacy of the Moonspell",
-   "evolved": true
+   "evolved": true,
+   "game_id": "MIRAGEROBE2"
   },
   {
    "id": "javelin",
    "name": "Javelin",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_JAVELIN1"
   },
   {
    "id": "jet_black_whip",
    "name": "Jet Black Whip",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_LEMURIA1"
   },
   {
    "id": "jetstream",
    "name": "Jetstream",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_KNIFE2"
   },
   {
    "id": "jewel_gun",
    "name": "Jewel Gun",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_GUN2"
   },
   {
    "id": "just_vent",
    "name": "Just Vent",
-   "dlc": "Emergency Meeting"
+   "dlc": "Emergency Meeting",
+   "game_id": "C1_VENT1"
   },
   {
    "id": "kaiser_knuckle",
    "name": "Kaiser Knuckle",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_LAPISTE1"
   },
   {
    "id": "kardia_phlegeton",
    "name": "Kardía Phlegeton",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_AURABLAST_WEAPON2"
   },
   {
    "id": "keremet_bubbles",
    "name": "Keremet Bubbles",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_ACID1"
   },
   {
    "id": "keremet_morbus",
    "name": "Keremet Morbus",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_ACID2"
   },
   {
    "id": "khukuri",
    "name": "Khukuri",
-   "dlc": "Emerald Diorama"
+   "dlc": "Emerald Diorama",
+   "game_id": "EME_KNIFE1"
   },
   {
    "id": "kick",
    "name": "Kick",
-   "dlc": "Emerald Diorama"
+   "dlc": "Emerald Diorama",
+   "game_id": "EME_KICK1"
   },
   {
    "id": "king_bible",
    "name": "King Bible",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "HOLYBOOK"
   },
   {
    "id": "knife",
    "name": "Knife",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "KNIFE"
   },
   {
    "id": "kyra_stones",
    "name": "Kyra-Stones",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EX_MAGISTONE2"
   },
   {
    "id": "la_borra",
    "name": "La Borra",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "BORA"
   },
   {
    "id": "la_robba",
-   "name": "La Robba"
+   "name": "La Robba",
+   "game_id": "ROBBA"
   },
   {
    "id": "lapiste_tepisto",
    "name": "Lapiste Tepisto",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_LAPISTE2"
   },
   {
    "id": "laurel",
    "name": "Laurel",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "LAUREL"
   },
   {
    "id": "legacy_of_death_soul_river",
    "name": "Legacy of Death: Soul River",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_DARKRIFT2"
   },
   {
    "id": "legionnaire",
    "name": "Legionnaire",
    "dlc": "Tides of the Foscari",
-   "evolved": true
+   "evolved": true,
+   "game_id": "SWORD2"
   },
   {
    "id": "lifesign_scan",
    "name": "Lifesign Scan",
-   "dlc": "Emergency Meeting"
+   "dlc": "Emergency Meeting",
+   "game_id": "C1_MEDICAL1"
   },
   {
    "id": "lightning_ring",
    "name": "Lightning Ring",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "LIGHTNING"
   },
   {
    "id": "lohengrin",
    "name": "Lohengrin",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_SPEAR3"
   },
   {
    "id": "long_gun",
    "name": "Long Gun",
-   "dlc": "Operation Guns"
+   "dlc": "Operation Guns",
+   "game_id": "FB_FULLAUTO"
   },
   {
    "id": "long_inus",
    "name": "Long Inus",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_JAVELIN2"
   },
   {
    "id": "lordstar",
    "name": "Lordstar",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_LONGSWORD2"
   },
   {
    "id": "lucky_swipe",
    "name": "Lucky Swipe",
-   "dlc": "Emergency Meeting"
+   "dlc": "Emergency Meeting",
+   "game_id": "C1_SWIPECARD1"
   },
   {
    "id": "luminaire",
    "name": "Luminaire",
    "dlc": "Tides of the Foscari",
-   "evolved": true
+   "evolved": true,
+   "game_id": "PRISMATICMISS2"
   },
   {
    "id": "luminatio",
    "name": "Luminatio",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_LIGHT1"
   },
   {
    "id": "lunarbight",
    "name": "LunarBight",
-   "dlc": "Legacy of the Moonspell"
+   "dlc": "Legacy of the Moonspell",
+   "game_id": "MS_LUNAR3_BIGHT"
   },
   {
    "id": "lunarflight",
    "name": "LunarFlight",
    "dlc": "Legacy of the Moonspell",
-   "evolved": true
+   "evolved": true,
+   "game_id": "MS_LUNAR4"
   },
   {
    "id": "lunarmight",
    "name": "LunarMight",
-   "dlc": "Legacy of the Moonspell"
+   "dlc": "Legacy of the Moonspell",
+   "game_id": "MS_LUNAR1_MIGHT"
   },
   {
    "id": "lunarsight",
    "name": "LunarSight",
-   "dlc": "Legacy of the Moonspell"
+   "dlc": "Legacy of the Moonspell",
+   "game_id": "MS_LUNAR2_SIGHT"
   },
   {
    "id": "mace",
    "name": "Mace",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_MACE1"
   },
   {
    "id": "magi_stone",
    "name": "Magi-Stone",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "EX_MAGISTONE1"
   },
   {
    "id": "magic_wand",
    "name": "Magic Wand",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "MAGIC_MISSILE"
   },
   {
    "id": "mannajja",
    "name": "Mannajja",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "MANNAGGIA"
   },
   {
    "id": "mart_hello",
@@ -1147,91 +1355,107 @@
    "id": "mazo_familiar",
    "name": "Mazo Familiar",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "BATTILIA2"
   },
   {
    "id": "meal_ticket",
    "name": "Meal Ticket",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_WINEGLASS2"
   },
   {
    "id": "melio_confodere",
    "name": "Melio Confodere",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_CONFODERE3"
   },
   {
    "id": "metal_claw",
    "name": "Metal Claw",
-   "dlc": "Operation Guns"
+   "dlc": "Operation Guns",
+   "game_id": "FB_METALCLAW"
   },
   {
    "id": "mille_bolle_blu",
    "name": "Mille Bolle Blu",
-   "dlc": "Legacy of the Moonspell"
+   "dlc": "Legacy of the Moonspell",
+   "game_id": "BUBBLES"
   },
   {
    "id": "million_cut",
    "name": "Million Cut",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_VALMANWAY2"
   },
   {
    "id": "millionaire",
    "name": "Millionaire",
    "dlc": "Tides of the Foscari",
-   "evolved": true
+   "evolved": true,
+   "game_id": "FLASHARROW2"
   },
   {
    "id": "miracle_of_multiplication",
    "name": "Miracle of Multiplication",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EX_PENSHIN_UNION"
   },
   {
    "id": "mirage_robe",
    "name": "Mirage Robe",
-   "dlc": "Legacy of the Moonspell"
+   "dlc": "Legacy of the Moonspell",
+   "game_id": "MIRAGEROBE"
   },
   {
    "id": "moon_rod",
    "name": "Moon Rod",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_STARFLAIL2"
   },
   {
    "id": "mormegil_tip",
    "name": "Mormegil Tip",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_LEMURIA2"
   },
   {
    "id": "morning_star",
-   "name": "Morning Star"
+   "name": "Morning Star",
+   "game_id": "TP_MORNINGSTAR"
   },
   {
    "id": "multistage_missiles",
    "name": "Multistage Missiles",
    "dlc": "Operation Guns",
-   "evolved": true
+   "evolved": true,
+   "game_id": "FB_MULTISTAGE"
   },
   {
    "id": "muramasa",
    "name": "Muramasa",
    "dlc": "Legacy of the Moonspell",
-   "evolved": true
+   "evolved": true,
+   "game_id": "NIGHTSWORD2"
   },
   {
    "id": "myo_lift",
    "name": "Myo Lift",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_ELEVATOR_WEAPON"
   },
   {
    "id": "naneinferno",
    "name": "NaneInferno",
    "dlc": "Ante Chamber",
-   "evolved": true
+   "evolved": true,
+   "game_id": "LEM_INFERNO2"
   },
   {
    "id": "nduja_fritta_tanto",
@@ -1241,47 +1465,55 @@
    "id": "negative_space",
    "name": "Negative Space",
    "dlc": "Ante Chamber",
-   "evolved": true
+   "evolved": true,
+   "game_id": "LEM_PLANETS2"
   },
   {
    "id": "night_sword",
    "name": "Night Sword",
-   "dlc": "Legacy of the Moonspell"
+   "dlc": "Legacy of the Moonspell",
+   "game_id": "NIGHTSWORD"
   },
   {
    "id": "nightmare",
    "name": "Nightmare",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_EVIL2"
   },
   {
    "id": "ninth_circle",
    "name": "Ninth Circle",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_ICEBRAND2"
   },
   {
    "id": "nitesco",
    "name": "Nitesco",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_ENERGY2"
   },
   {
    "id": "no_future",
    "name": "NO FUTURE",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "ROCHER"
   },
   {
    "id": "ophion",
    "name": "Ophion",
    "dlc": "Tides of the Foscari",
-   "evolved": true
+   "evolved": true,
+   "game_id": "SHADOWSERVANT2"
   },
   {
    "id": "optical_shot",
    "name": "Optical Shot",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_SPITE1"
   },
   {
    "id": "out_of_bounds_xii",
@@ -1290,256 +1522,303 @@
   {
    "id": "pako_battiliar",
    "name": "Pako Battiliar",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "BATTILIA"
   },
   {
    "id": "paranormal_scan",
    "name": "Paranormal Scan",
    "dlc": "Emergency Meeting",
-   "evolved": true
+   "evolved": true,
+   "game_id": "C1_MEDICAL2"
   },
   {
    "id": "party_popper",
-   "name": "Party Popper"
+   "name": "Party Popper",
+   "game_id": "PARTY"
   },
   {
    "id": "peachone",
    "name": "Peachone",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "SILF"
   },
   {
    "id": "pendragon",
    "name": "Pendragon",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_PISTOL2"
   },
   {
    "id": "penshin_fatcha",
    "name": "Penshin Fatcha",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EX_PENSHIN"
   },
   {
    "id": "pentagram",
    "name": "Pentagram",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "PENTAGRAM"
   },
   {
    "id": "peri_pendulum",
    "name": "Peri Pendulum",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_PENDULUM_WEAPON"
   },
   {
    "id": "phas3r",
    "name": "Phas3r",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "PHASER"
   },
   {
    "id": "phiera_der_tuphello",
    "name": "Phiera Der Tuphello",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "GUNS"
   },
   {
    "id": "phieraggi",
    "name": "Phieraggi",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "GUNS3"
   },
   {
    "id": "photonstorm",
    "name": "Photonstorm",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "PHASER2"
   },
   {
    "id": "platinum_whip",
    "name": "Platinum Whip",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_PLATINUMWHIP1"
   },
   {
    "id": "pneuma_tempestas",
    "name": "Pneuma Tempestas",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_WIND2"
   },
   {
    "id": "pocket_knife",
    "name": "Pocket Knife",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_POCKET1"
   },
   {
    "id": "power_of_lire",
    "name": "Power of Lire",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_POWEROFLIRE\nTP_SOULSTEAL_WEAPON2"
   },
   {
    "id": "power_of_sire",
    "name": "Power of Sire",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_DOMINUS4"
   },
   {
    "id": "pressure_point",
    "name": "Pressure Point",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_PUNCH2"
   },
   {
    "id": "prism_lass",
    "name": "Prism Lass",
-   "dlc": "Operation Guns"
+   "dlc": "Operation Guns",
+   "game_id": "FB_PRISMCUTLASS"
   },
   {
    "id": "prismatic_missile",
    "name": "Prismatic Missile",
-   "dlc": "Tides of the Foscari"
+   "dlc": "Tides of the Foscari",
+   "game_id": "PRISMATICMISS"
   },
   {
    "id": "profusione_damore",
    "name": "Profusione D'Amore",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "FLOWER2"
   },
   {
    "id": "pronto_beam",
    "name": "Pronto Beam",
    "dlc": "Operation Guns",
-   "evolved": true
+   "evolved": true,
+   "game_id": "FB_PROTONBEAM"
   },
   {
    "id": "prototype_a",
    "name": "Prototype A",
    "dlc": "Operation Guns",
-   "evolved": true
+   "evolved": true,
+   "game_id": "FB_PROTOTYPE_A"
   },
   {
    "id": "prototype_b",
    "name": "Prototype B",
    "dlc": "Operation Guns",
-   "evolved": true
+   "evolved": true,
+   "game_id": "FB_PROTOTYPE_B"
   },
   {
    "id": "prototype_c",
    "name": "Prototype C",
    "dlc": "Operation Guns",
-   "evolved": true
+   "evolved": true,
+   "game_id": "FB_PROTOTYPE_C"
   },
   {
    "id": "punch",
    "name": "Punch",
-   "dlc": "Emerald Diorama"
+   "dlc": "Emerald Diorama",
+   "game_id": "EME_PUNCH1"
   },
   {
    "id": "pursuant_blades",
    "name": "Pursuant Blades",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_DUAL2"
   },
   {
    "id": "raging_fire",
    "name": "Raging Fire",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_FIRE1"
   },
   {
    "id": "rapidus_fio",
    "name": "Rapidus Fio",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_RAPIDUS2"
   },
   {
    "id": "refectio",
    "name": "Refectio",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_HOLY1"
   },
   {
    "id": "report",
    "name": "Report!",
-   "dlc": "Emergency Meeting"
+   "dlc": "Emergency Meeting",
+   "game_id": "C1_REPORT1"
   },
   {
    "id": "rings_of_calamity",
-   "name": "Rings of Calamity"
+   "name": "Rings of Calamity",
+   "game_id": "EME_MAGIC2"
   },
   {
    "id": "road_to_heaven",
    "name": "Road to Heaven",
    "dlc": "Legacy of the Bloodmoon",
-   "evolved": true
+   "evolved": true,
+   "game_id": "HEAVENSROAD"
   },
   {
    "id": "rock_riot",
    "name": "Rock Riot",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_EARTH1"
   },
   {
    "id": "rocket_science",
    "name": "Rocket Science",
    "dlc": "Emergency Meeting",
-   "evolved": true
+   "evolved": true,
+   "game_id": "C1_SAMPLES2"
   },
   {
    "id": "royal_flush",
    "name": "Royal Flush",
    "dlc": "Ante Chamber",
-   "evolved": true
+   "evolved": true,
+   "game_id": "LEM_FIBONACCI2"
   },
   {
    "id": "ruler_sword_body",
-   "name": "Ruler Sword Body"
+   "name": "Ruler Sword Body",
+   "game_id": "TP_RULERSWORD_BODY"
   },
   {
    "id": "rumba",
-   "name": "Rumba"
+   "name": "Rumba",
+   "game_id": "EX_RUMBA1"
   },
   {
    "id": "rune_sword",
    "name": "Rune Sword",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_SLASH2"
   },
   {
    "id": "runetracer",
    "name": "Runetracer",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "DIAMOND"
   },
   {
    "id": "saber_machine_gun",
    "name": "Saber Machine Gun",
-   "dlc": "Emerald Diorama"
+   "dlc": "Emerald Diorama",
+   "game_id": "EME_CANNON1"
   },
   {
    "id": "sacred_beasts_tower_shield",
    "name": "Sacred Beasts Tower Shield",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_SACREDBEASTS2"
   },
   {
    "id": "salamender",
    "name": "Salamender",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_FIRE2"
   },
   {
    "id": "sanctuary",
    "name": "Sanctuary",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_HOLY2"
   },
   {
    "id": "sanguine_star",
    "name": "Sanguine Star",
-   "dlc": "Emerald Diorama"
+   "dlc": "Emerald Diorama",
+   "game_id": "EME_BLOOD1"
   },
   {
    "id": "santa_javelin",
    "name": "Santa Javelin",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "SANTAJAVELIN"
   },
   {
    "id": "santa_water",
    "name": "Santa Water",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "HOLYWATER"
   },
   {
    "id": "sarabande_of_healing_vi",
@@ -1548,99 +1827,118 @@
   {
    "id": "scarlet_needle",
    "name": "Scarlet Needle",
-   "dlc": "Legacy of the Bloodmoon"
+   "dlc": "Legacy of the Bloodmoon",
+   "game_id": "BMN000_SCARLET1"
   },
   {
    "id": "science_rocks",
    "name": "Science Rocks",
-   "dlc": "Emergency Meeting"
+   "dlc": "Emergency Meeting",
+   "game_id": "C1_SAMPLES1"
   },
   {
    "id": "screams_from_the_void",
    "name": "Screams from the Void",
-   "dlc": "Legacy of the Bloodmoon"
+   "dlc": "Legacy of the Bloodmoon",
+   "game_id": "BMN006_SCREAM1"
   },
   {
    "id": "seraphic_cry",
    "name": "Seraphic Cry",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "SANTAJAVELIN2"
   },
   {
    "id": "shadow_pinion",
    "name": "Shadow Pinion",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "TRAPANO"
   },
   {
    "id": "shadow_servant",
    "name": "Shadow Servant",
-   "dlc": "Tides of the Foscari"
+   "dlc": "Tides of the Foscari",
+   "game_id": "SHADOWSERVANT"
   },
   {
    "id": "shaft_orb",
-   "name": "Shaft Orb"
+   "name": "Shaft Orb",
+   "game_id": "TP_SHAFTORB"
   },
   {
    "id": "sharp_tongue",
    "name": "Sharp Tongue",
-   "dlc": "Emergency Meeting"
+   "dlc": "Emergency Meeting",
+   "game_id": "C1_TONGUE1"
   },
   {
    "id": "shimmering_sands",
    "name": "Shimmering Sands",
    "dlc": "Legacy of the Bloodmoon",
-   "evolved": true
+   "evolved": true,
+   "game_id": "SHIMMERING_SANDS"
   },
   {
    "id": "short_gun",
    "name": "Short Gun",
-   "dlc": "Operation Guns"
+   "dlc": "Operation Guns",
+   "game_id": "FB_RAPIDFIRE"
   },
   {
    "id": "shuriken",
    "name": "Shuriken",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_SHURIKEN1"
   },
   {
    "id": "silver_revolver",
    "name": "Silver Revolver",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_GUN1"
   },
   {
    "id": "silver_wind",
    "name": "Silver Wind",
-   "dlc": "Legacy of the Moonspell"
+   "dlc": "Legacy of the Moonspell",
+   "game_id": "SILVERWIND"
   },
   {
    "id": "sinestro_custos",
    "name": "Sinestro Custos",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_CUSTOS2"
   },
   {
    "id": "sole_solution",
    "name": "Sole Solution",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "SOLES"
   },
   {
    "id": "song_of_mana",
    "name": "Song of Mana",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "SONG"
   },
   {
    "id": "sonic_bloom",
    "name": "Sonic Bloom",
-   "dlc": "Operation Guns"
+   "dlc": "Operation Guns",
+   "game_id": "FB_SONIC"
   },
   {
    "id": "sonic_dash",
    "name": "Sonic Dash",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_RAPIDUS1"
   },
   {
    "id": "sonic_whip",
    "name": "Sonic Whip",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_SONICWHIP1"
   },
   {
    "id": "sorbetto",
@@ -1648,352 +1946,417 @@
   },
   {
    "id": "sossoldi",
-   "name": "Sossoldi"
+   "name": "Sossoldi",
+   "game_id": "EX_COINTOSS1"
   },
   {
    "id": "soul_eater",
    "name": "Soul Eater",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "VORTEX"
   },
   {
    "id": "soul_steal",
    "name": "Soul Steal",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_SOULSTEAL_WEAPON"
   },
   {
    "id": "spectral_sword",
-   "name": "Spectral Sword"
+   "name": "Spectral Sword",
+   "game_id": "TP_SPECTRALSWORD"
   },
   {
    "id": "spellstream",
    "name": "SpellStream",
-   "dlc": "Tides of the Foscari"
+   "dlc": "Tides of the Foscari",
+   "game_id": "SPELL_STREAM"
   },
   {
    "id": "spellstrike",
    "name": "SpellStrike",
-   "dlc": "Tides of the Foscari"
+   "dlc": "Tides of the Foscari",
+   "game_id": "SPELL_STRIKE"
   },
   {
    "id": "spellstring",
    "name": "SpellString",
-   "dlc": "Tides of the Foscari"
+   "dlc": "Tides of the Foscari",
+   "game_id": "SPELL_STRING"
   },
   {
    "id": "spellstrom",
    "name": "SpellStrom",
    "dlc": "Tides of the Foscari",
-   "evolved": true
+   "evolved": true,
+   "game_id": "SPELL_STROM"
   },
   {
    "id": "spirit_disturbance",
    "name": "Spirit Disturbance",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EX_FLIK2"
   },
   {
    "id": "spirit_of_light",
    "name": "Spirit of Light",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_SUMMON_SPIRIT2"
   },
   {
    "id": "spirit_rings",
-   "name": "Spirit Rings"
+   "name": "Spirit Rings",
+   "game_id": "EME_MAGIC1"
   },
   {
    "id": "spirit_tornado_tip",
    "name": "Spirit Tornado Tip",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_WINDWHIP2"
   },
   {
    "id": "splashers",
    "name": "Splashers",
-   "dlc": "Emerald Diorama"
+   "dlc": "Emerald Diorama",
+   "game_id": "EME_DUAL1"
   },
   {
    "id": "spread_shot",
    "name": "Spread Shot",
-   "dlc": "Operation Guns"
+   "dlc": "Operation Guns",
+   "game_id": "FB_SPREAD"
   },
   {
    "id": "stained_glass",
-   "name": "Stained Glass"
+   "name": "Stained Glass",
+   "game_id": "WINDOW"
   },
   {
    "id": "stamazza",
    "name": "Stamazza",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_MACE2"
   },
   {
    "id": "star_flail",
    "name": "Star Flail",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_STARFLAIL1"
   },
   {
    "id": "stellar_blade",
    "name": "Stellar Blade",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_DISCUS2"
   },
   {
    "id": "summon_night",
    "name": "Summon Night",
-   "dlc": "Legacy of the Moonspell"
+   "dlc": "Legacy of the Moonspell",
+   "game_id": "SUMMONNIGHT"
   },
   {
    "id": "summon_spirit",
    "name": "Summon Spirit",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_SUMMON_SPIRIT"
   },
   {
    "id": "summon_spirit_tornado",
    "name": "Summon Spirit Tornado",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_SPIRITTORNADO"
   },
   {
    "id": "sunlight",
-   "name": "Sunlight"
+   "name": "Sunlight",
+   "game_id": "EME_RING_FIRE"
   },
   {
    "id": "super_candybox_ii_turbo",
-   "name": "Super Candybox II Turbo"
+   "name": "Super Candybox II Turbo",
+   "game_id": "CANDYBOX2"
   },
   {
    "id": "super_missile",
    "name": "Super Missile",
-   "dlc": "Emerald Diorama"
+   "dlc": "Emerald Diorama",
+   "game_id": "EME_MECH1"
   },
   {
    "id": "svarog_statue",
    "name": "Svarog Statue",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_SAVROG_WEAPON"
   },
   {
    "id": "sword_brothers",
    "name": "Sword Brothers",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_SWORD_BROTHERS"
   },
   {
    "id": "take_us_away",
-   "name": "Take Us Away"
+   "name": "Take Us Away",
+   "game_id": "TRAINHAZARD"
   },
   {
    "id": "tenebris_tonitrus",
    "name": "Tenebris Tonitrus",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_ELEC2"
   },
   {
    "id": "the_rpg",
    "name": "The RPG",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_RPG2"
   },
   {
    "id": "thousand_edge",
    "name": "Thousand Edge",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "THOUSAND"
   },
   {
    "id": "thunder_loop",
    "name": "Thunder Loop",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "LOOP"
   },
   {
    "id": "thunderbolt_spear",
    "name": "Thunderbolt Spear",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_ALUCARDSPEAR2"
   },
   {
    "id": "time_warp",
    "name": "Time Warp",
    "dlc": "Operation Guns",
-   "evolved": true
+   "evolved": true,
+   "game_id": "FB_TIMEWARP"
   },
   {
    "id": "tonnoddeeo",
    "name": "Tonn'oddeeo",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EX_PENSHIN_EVO4EX_PENSHIN_STATIC4"
   },
   {
    "id": "tonnomoto",
    "name": "Tonn'omoto",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EX_PENSHIN_EVO3EX_PENSHIN_STATIC3"
   },
   {
    "id": "tonnado",
    "name": "Tonnado",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EX_PENSHIN_EVO2EX_PENSHIN_STATIC2"
   },
   {
    "id": "tonne",
    "name": "Tonne",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EX_PENSHIN_EVO1EX_PENSHIN_STATIC1"
   },
   {
    "id": "tonno_subito",
    "name": "Tonno Subito",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EX_PENSHIN_EVO7EX_PENSHIN_STATIC7"
   },
   {
    "id": "town_sword",
    "name": "Town Sword",
-   "dlc": "Emerald Diorama"
+   "dlc": "Emerald Diorama",
+   "game_id": "EME_LONGSWORD1"
   },
   {
    "id": "tri_bracelet",
    "name": "Tri-Bracelet",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TRIASSO3"
   },
   {
    "id": "triangle_kick",
    "name": "Triangle Kick",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_KICK2"
   },
   {
    "id": "trident",
    "name": "Trident",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_CHAUVE1"
   },
   {
    "id": "trinum_custodem",
    "name": "Trinum Custodem",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_CUSTOS4"
   },
   {
    "id": "troll_bomb",
    "name": "Troll Bomb",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_NEUTRON_WEAPON"
   },
   {
    "id": "twin_dragon",
    "name": "Twin Dragon",
-   "dlc": "Emerald Diorama"
+   "dlc": "Emerald Diorama",
+   "game_id": "EME_KATANA1"
   },
   {
    "id": "tyrfing",
    "name": "Tyrfing",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_SLASH1"
   },
   {
    "id": "umbra",
    "name": "Umbra",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_DARK1"
   },
   {
    "id": "unearthly_bolt",
    "name": "Unearthly Bolt",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "EX_FLIK1"
   },
   {
    "id": "unholy_vespers",
    "name": "Unholy Vespers",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "VESPERS"
   },
   {
    "id": "universitas",
    "name": "Universitas",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_UNIVERSITAS"
   },
   {
    "id": "unjust_ejection",
    "name": "Unjust Ejection",
    "dlc": "Emergency Meeting",
-   "evolved": true
+   "evolved": true,
+   "game_id": "C1_VENT2"
   },
   {
    "id": "unsurpassed",
    "name": "Unsurpassed",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EX_PENSHIN_EVO6EX_PENSHIN_STATIC6"
   },
   {
    "id": "valkyrie_turner",
    "name": "Valkyrie Turner",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TRAPANO2"
   },
   {
    "id": "valmanway",
    "name": "Valmanway",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_VALMANWAY"
   },
   {
    "id": "vampire_killer",
    "name": "Vampire Killer",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_ALCHEMYWHIP2"
   },
   {
    "id": "vandalier",
    "name": "Vandalier",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "SILF3"
   },
   {
    "id": "vanitas_whip",
    "name": "Vanitas Whip",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_MARTIALWHIP1"
   },
   {
    "id": "vento_sacro",
    "name": "Vento Sacro",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "VENTO"
   },
   {
    "id": "venus_crescent",
    "name": "Venus Crescent",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_SPIRITTORNADO2"
   },
   {
    "id": "vermilion_sands",
-   "name": "Vermilion Sands"
+   "name": "Vermilion Sands",
+   "game_id": "EME_RING_METAL"
   },
   {
    "id": "vibhuti_whip",
    "name": "Vibhuti Whip",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_HOLYWHIP1"
   },
   {
    "id": "vicious_hunger",
    "name": "Vicious Hunger",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "STIGRANGATTI"
   },
   {
    "id": "victory_sword",
    "name": "Victory Sword",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "VICTORY"
   },
   {
    "id": "vjaya_sisters",
    "name": "Vjaya Sisters",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_SWORD_BROTHERS2"
   },
   {
    "id": "vol_confodere",
    "name": "Vol Confodere",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_CONFODERE2"
   },
   {
    "id": "vol_luminatio",
@@ -2005,7 +2368,8 @@
    "id": "vol_umbra",
    "name": "Vol Umbra",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_DARK2"
   },
   {
    "id": "wandering_the_jet_black_xxi",
@@ -2013,64 +2377,75 @@
   },
   {
    "id": "water_veil",
-   "name": "Water Veil"
+   "name": "Water Veil",
+   "game_id": "BUBBLE_SUPPORT"
   },
   {
    "id": "wave_beam",
    "name": "Wave Beam",
    "dlc": "Operation Guns",
-   "evolved": true
+   "evolved": true,
+   "game_id": "FB_WAVE"
   },
   {
    "id": "whip",
    "name": "Whip",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "WHIP"
   },
   {
    "id": "wicked_ruler",
    "name": "Wicked Ruler",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "FOLLOWER_KNIFE2"
   },
   {
    "id": "wind_whip",
    "name": "Wind Whip",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_WINDWHIP1"
   },
   {
    "id": "wine_glass",
    "name": "Wine Glass",
-   "dlc": "Ode to Castlevania"
+   "dlc": "Ode to Castlevania",
+   "game_id": "TP_WINEGLASS1"
   },
   {
    "id": "wrecking_ball",
    "name": "Wrecking Ball",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_IRONBALL2"
   },
   {
    "id": "yagyu_shuriken",
    "name": "Yagyu Shuriken",
    "dlc": "Ode to Castlevania",
-   "evolved": true
+   "evolved": true,
+   "game_id": "TP_SHURIKEN2"
   },
   {
    "id": "yatta_daikarin",
    "name": "Yatta Daikarin",
    "dlc": "Base game",
-   "evolved": true
+   "evolved": true,
+   "game_id": "CHERRY2"
   },
   {
    "id": "zweihander",
    "name": "Zweihander",
    "dlc": "Emerald Diorama",
-   "evolved": true
+   "evolved": true,
+   "game_id": "EME_GREATSWORD2"
   }
  ],
  "passives": [
   {
    "id": "academy_badge",
-   "name": "Academy Badge"
+   "name": "Academy Badge",
+   "game_id": "ACADEMYBADGE"
   },
   {
    "id": "amimic",
@@ -2091,22 +2466,26 @@
   {
    "id": "armor",
    "name": "Armor",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "ARMOR"
   },
   {
    "id": "attractorb",
    "name": "Attractorb",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "MAGNET"
   },
   {
    "id": "bracer",
    "name": "Bracer",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "SPEED"
   },
   {
    "id": "candelabrador",
    "name": "Candelabrador",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "AREA"
   },
   {
    "id": "chaos_altemanna",
@@ -2131,32 +2510,38 @@
   {
    "id": "clover",
    "name": "Clover",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "LUCK"
   },
   {
    "id": "crown",
    "name": "Crown",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "GROWTH"
   },
   {
    "id": "duplicator",
    "name": "Duplicator",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "AMOUNT"
   },
   {
    "id": "empty_tome",
    "name": "Empty Tome",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "COOLDOWN"
   },
   {
    "id": "gold_ring",
    "name": "Gold Ring",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "GOLD"
   },
   {
    "id": "hollow_heart",
    "name": "Hollow Heart",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "MAXHEALTH"
   },
   {
    "id": "karomas_mana",
@@ -2166,75 +2551,90 @@
   {
    "id": "metaglio_left",
    "name": "Metaglio Left",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "LEFT"
   },
   {
    "id": "metaglio_right",
    "name": "Metaglio Right",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "RIGHT"
   },
   {
    "id": "mini_crewmate",
    "name": "Mini Crewmate",
-   "dlc": "Emergency Meeting"
+   "dlc": "Emergency Meeting",
+   "game_id": "C1_SHRINK_CREWMA"
   },
   {
    "id": "mini_engineer",
    "name": "Mini Engineer",
-   "dlc": "Emergency Meeting"
+   "dlc": "Emergency Meeting",
+   "game_id": "C1_SHRINK_ENGINE"
   },
   {
    "id": "mini_ghost",
    "name": "Mini Ghost",
-   "dlc": "Emergency Meeting"
+   "dlc": "Emergency Meeting",
+   "game_id": "C1_SHRINK_GHOSTT"
   },
   {
    "id": "mini_guardian",
    "name": "Mini Guardian",
-   "dlc": "Emergency Meeting"
+   "dlc": "Emergency Meeting",
+   "game_id": "C1_SHRINK_GUARDI"
   },
   {
    "id": "mini_horse",
-   "name": "Mini Horse"
+   "name": "Mini Horse",
+   "game_id": "C1_SHRINK_HORSEE"
   },
   {
    "id": "mini_impostor",
    "name": "Mini Impostor",
-   "dlc": "Emergency Meeting"
+   "dlc": "Emergency Meeting",
+   "game_id": "C1_SHRINK_IMPOST"
   },
   {
    "id": "mini_scientist",
    "name": "Mini Scientist",
-   "dlc": "Emergency Meeting"
+   "dlc": "Emergency Meeting",
+   "game_id": "C1_SHRINK_SCIENT"
   },
   {
    "id": "mini_shapeshifter",
    "name": "Mini Shapeshifter",
-   "dlc": "Emergency Meeting"
+   "dlc": "Emergency Meeting",
+   "game_id": "C1_SHRINK_SHAPES"
   },
   {
    "id": "outer_saboteur",
    "name": "Outer Saboteur",
-   "dlc": "Ante Chamber"
+   "dlc": "Ante Chamber",
+   "game_id": "LEM_ACC_SABOTEUR"
   },
   {
    "id": "parm_aegis",
    "name": "Parm Aegis",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "PARMA"
   },
   {
    "id": "pearl_magatama",
-   "name": "Pearl magatama"
+   "name": "Pearl magatama",
+   "game_id": "PEARLMAGATAMA"
   },
   {
    "id": "pummarola",
    "name": "Pummarola",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "REGEN"
   },
   {
    "id": "silver_ring",
    "name": "Silver Ring",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "SILVER"
   },
   {
    "id": "skull_omaniac",
@@ -2244,26 +2644,31 @@
   {
    "id": "spellbinder",
    "name": "Spellbinder",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "DURATION"
   },
   {
    "id": "spinach",
    "name": "Spinach",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "POWER"
   },
   {
    "id": "stone_mask",
    "name": "Stone Mask",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "GREED"
   },
   {
    "id": "tetraforce",
-   "name": "Tetraforce"
+   "name": "Tetraforce",
+   "game_id": "TETRAFORCE"
   },
   {
    "id": "tirajisu",
    "name": "Tirajisú",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "REVIVAL"
   },
   {
    "id": "torronas_box",
@@ -2272,17 +2677,20 @@
   },
   {
    "id": "velvet_dodecahedron",
-   "name": "Velvet Dodecahedron"
+   "name": "Velvet Dodecahedron",
+   "game_id": "BMN_DODECAHEDRON"
   },
   {
    "id": "weapon_power_up",
    "name": "Weapon Power-Up",
-   "dlc": "Operation Guns"
+   "dlc": "Operation Guns",
+   "game_id": "FB_WEAPONPU"
   },
   {
    "id": "wings",
    "name": "Wings",
-   "dlc": "Base game"
+   "dlc": "Base game",
+   "game_id": "MOVESPEED"
   }
  ],
  "evolutions": [

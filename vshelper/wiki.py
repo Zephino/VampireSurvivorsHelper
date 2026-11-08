@@ -199,7 +199,8 @@ def _item_title(title: str) -> str:
     return re.sub(r"\s*\((item|weapon)\)\s*$", "", title)
 
 
-def build_database(recipes: list[Recipe], weapon_titles: list[str], passive_titles: list[str]) -> dict:
+def build_database(recipes: list[Recipe], weapon_titles: list[str], passive_titles: list[str],
+                   game_ids: dict[str, str] | None = None) -> dict:
     """Produce data in the format of vshelper/data/evolutions.json."""
     weapons: dict[str, dict] = {}
     passives: dict[str, dict] = {}
@@ -235,6 +236,11 @@ def build_database(recipes: list[Recipe], weapon_titles: list[str], passive_titl
             add(weapons, name, None)
     for item_id in evolved:
         weapons[item_id]["evolved"] = True
+    by_slug = {slug(n): code for n, code in (game_ids or {}).items()}
+    for table in (weapons, passives):
+        for item_id, entry in table.items():
+            if item_id in by_slug:
+                entry["game_id"] = by_slug[item_id]  # lets the helper recognise the game's codes
 
     evolutions = []
     seen = set()
@@ -281,13 +287,22 @@ def fetch_pages(titles: list[str]) -> dict[str, str]:
     return pages
 
 
-def recipes_from_item_pages(weapon_titles: list[str], passive_names: set[str]) -> list[Recipe]:
-    """Recipes from every weapon page's infobox (evolution / union fields). Some recipes are only
+def read_item_pages(titles: list[str]) -> list[ItemLookup]:
+    """Every item page's infobox."""
+    out = []
+    for title, text in fetch_pages(titles).items():
+        lookup = parse_item_page(title, text)
+        if lookup is not None:
+            out.append(lookup)
+    return out
+
+
+def recipes_from_item_pages(lookups: list[ItemLookup], passive_names: set[str]) -> list[Recipe]:
+    """Recipes from the weapon pages' infoboxes (evolution / union fields). Some recipes are only
     listed there, not on the Evolution page."""
     out: list[Recipe] = []
-    for title, text in fetch_pages(weapon_titles).items():
-        lookup = parse_item_page(title, text)
-        if lookup is None:
+    for lookup in lookups:
+        if lookup.kind != "weapon":
             continue
         for r in lookup.recipes:
             requires = [n for n in r["requires"] if n]
@@ -320,8 +335,11 @@ def download_database(item_pages: bool = True) -> tuple[dict, list[str]]:
         # the item pages leave those conditions out and they would look ready too early
         known_results |= {slug(m.group(1)) for row in skipped for m in [re.search(r"-> (.+?) \(condition", row)] if m}
         passive_names = {_item_title(t) for t in passive_titles}
+        pages = read_item_pages([t for t in weapon_titles + passive_titles
+                                 if t.lower() not in ("weapons", "passive items")])
+        game_ids = {p.name: p.game_id for p in pages if p.game_id}
         added = 0
-        for r in recipes_from_item_pages([t for t in weapon_titles if t.lower() != "weapons"], passive_names):
+        for r in recipes_from_item_pages(pages, passive_names):
             result = slug(r.results[0])
             if result in known_results:
                 continue  # the Evolution page already has this one (with more detail)
@@ -329,7 +347,9 @@ def download_database(item_pages: bool = True) -> tuple[dict, list[str]]:
             recipes.append(r)
             added += 1
         skipped.append(f"(added {added} recipes found only on item pages)")
-    return build_database(recipes, weapon_titles, passive_titles), skipped
+    else:
+        game_ids = {}
+    return build_database(recipes, weapon_titles, passive_titles, game_ids), skipped
 
 
 # ---- looking up a single item ---------------------------------------------
@@ -344,6 +364,7 @@ class ItemLookup:
     recipes: list[dict]             # {"result", "requires", "kind"} in database-entry style, by name
     url: str
     dlc: str = DLC_SECTION_BASE     # from the infobox's dlc code
+    game_id: str = ""               # the game's internal code (infobox 'id'), e.g. BMN011_FIRE2_BALL
 
 
 def _infobox_fields(text: str) -> dict[str, str]:
@@ -411,7 +432,8 @@ def parse_item_page(title: str, wikitext: str) -> ItemLookup | None:
         if parts:
             recipes.append({"result": name, "requires": [p for p in parts if p], "kind": "union"})
     dlc = DLC_CODES.get(fields.get("dlc", "").strip().lower(), DLC_SECTION_BASE)
-    return ItemLookup(name, kind, recipes, PAGE_URL + urllib.parse.quote(title.replace(" ", "_")), dlc)
+    game_id = _plain(fields.get("id", "")).strip()
+    return ItemLookup(name, kind, recipes, PAGE_URL + urllib.parse.quote(title.replace(" ", "_")), dlc, game_id)
 
 
 def lookup_item(name: str) -> ItemLookup | None:

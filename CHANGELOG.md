@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 00.00.41
+Date: 11/08/2026
+Time: 2:55 AM
+
+### Changes
+- Fixed items that the game stores with an internal code instead of a name (e.g. Legacy of the Bloodmoon's FireBall is "BMN011_FIRE2_BALL") showing as "Unrecognized". The wiki data download now also reads the passive item pages and saves each item's game code from the wiki infobox ("id"); 408 of 434 items have one. The helper recognises held items by that code, and uses it to match pictures from the game's item catalogue.
+- Codes found by single-item wiki lookups are used too. Tests for both.
+
+### Reason
+User's diagnose report showed FireBall as "Unrecognized: BMN011_FIRE2_BALL", so nothing was listed for it.
+
 ## Version 00.00.40
 Date: 11/08/2026
 Time: 2:54 AM

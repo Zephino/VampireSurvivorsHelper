@@ -95,6 +95,8 @@ class ItemMatcher:
         for item in list(self.db.items.values()):
             canon.setdefault(_canon(item.id), item.id)
             canon.setdefault(_canon(item.name), item.id)
+            if item.game_id:  # some DLC items carry their code instead of a name in the game
+                canon.setdefault(_canon(item.game_id), item.id)
         self._canon = canon  # swapped in one step: the reader thread may be using it
 
     def add_aliases(self, aliases: dict[str, str]) -> None:
