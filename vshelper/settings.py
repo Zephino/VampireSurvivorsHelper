@@ -16,6 +16,7 @@ class Settings:
     # Expansions the user switched off; everything else is shown (so new DLC is on by default).
     hidden_expansions: list[str] = field(default_factory=list)
     dark_theme: bool = True
+    launch_game_on_start: bool = True   # start Vampire Survivors (through Steam) with the helper
     check_updates_on_start: bool = True
     auto_detect: bool = True            # read items from the game (Settings > Detection)
     hide_items_when_auto: bool = True   # hide the item list on Overview while auto-detect is on

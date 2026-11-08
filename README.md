@@ -47,8 +47,8 @@ Without it the helper still works, just without pictures.
 
 ## Running
 
-Double-click **`Start Helper.bat`** in the project folder. It starts Vampire Survivors through
-Steam (unless it's already running) and opens the helper window without a console window.
+Double-click **`Start Helper.bat`** in the project folder. It opens the helper window without a
+console window; the helper then starts Vampire Survivors (see below).
 
 Or, from a terminal in the project folder:
 
@@ -56,7 +56,9 @@ Or, from a terminal in the project folder:
 python -m vshelper
 ```
 
-1. Begin a run in Vampire Survivors. The game and the helper can be started in either order.
+1. The helper starts Vampire Survivors through Steam when it opens (Settings > Game >
+   *Start Vampire Survivors when the helper opens*, on by default), and the
+   **▶ Launch Vampire Survivors** button at the top right starts it any time. Begin a run.
 2. The helper finds the game on its own. The first time after the game starts it searches memory
    for a few seconds; after that it updates about once per second.
 3. The right side has three tabs:

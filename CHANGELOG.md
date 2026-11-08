@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 00.00.36
+Date: 11/08/2026
+Time: 2:01 AM
+
+### Changes
+- Added a "Launch Vampire Survivors" button at the top right (and in Settings > Game) that starts the game through Steam. It shows "Game running" and is greyed out while the game is open.
+- New setting Settings > Game > "Start Vampire Survivors when the helper opens" (on by default); it only launches the game if it isn't already running. Works for the exe too.
+- `Start Helper.bat` no longer starts the game itself (the helper does, so the setting controls it and the game isn't started twice).
+- New `vshelper/game_launcher.py` with tests; README updated.
+
+### Reason
+User asked for a toggle to open Vampire Survivors automatically and a button to open it.
+
 ## Version 00.00.35
 Date: 11/07/2026
 Time: 5:21 PM

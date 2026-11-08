@@ -1,6 +1,6 @@
 @echo off
 setlocal
-rem Starts Vampire Survivors (through Steam, if it isn't already running) and the helper window.
+rem Starts the helper window (which starts Vampire Survivors too, unless switched off in Settings).
 cd /d "%~dp0"
 
 python --version >nul 2>&1
@@ -23,11 +23,7 @@ if errorlevel 1 (
     )
 )
 
-tasklist /FI "IMAGENAME eq VampireSurvivors.exe" 2>nul | find /I "VampireSurvivors.exe" >nul
-if errorlevel 1 (
-    echo Starting Vampire Survivors through Steam...
-    start "" "steam://rungameid/1794680"
-)
+rem The helper starts Vampire Survivors itself (Settings > Game > Start Vampire Survivors...).
 
 rem pythonw runs the helper without a console window.
 start "" pythonw -m vshelper

@@ -15,7 +15,7 @@ import subprocess
 import sys
 import webbrowser
 
-from . import gamedata, icons, lookups, updater
+from . import game_launcher, gamedata, icons, lookups, updater
 from . import settings as user_settings
 from .data import CACHE_ROOT, CACHED_DB_PATH, Database, DatabaseError, Item, parse_database
 from .evolutions import ItemPlan, Suggestion, held_in_order, plans_for_held, suggest
@@ -208,7 +208,12 @@ class App:
         # One row of tabs across the whole window.
         # Co-op: choose whose items Overview and How to evolve show (hidden when playing alone).
         self.player_var = tk.IntVar(value=0)
-        self.player_bar = FlowFrame(root, padding=(6, 4))
+        # Bar above the tabs: co-op player switch (left) and the game launch button (right).
+        self.top_bar = ttk.Frame(root, padding=(6, 4, 6, 0))
+        self.top_bar.pack(fill="x")
+        self.launch_button = ttk.Button(self.top_bar, text="\u25b6 Launch Vampire Survivors", command=self._launch_game)
+        self.launch_button.pack(side="right")
+        self.player_bar = FlowFrame(self.top_bar)
         self._player_labels: tuple[str, ...] = ()
         self.tabs = ttk.Notebook(root)
         self.tabs.pack(fill="both", expand=True, padx=6, pady=(6, 0))
@@ -288,6 +293,12 @@ class App:
         self.lookup_thread.start()
         if self.settings.check_updates_on_start:
             self._check_updates(quiet=True)
+        self._game_process = game_map.process_name if game_map else "VampireSurvivors.exe"
+        if self.settings.launch_game_on_start and not game_launcher.is_running(self._game_process):
+            self._launch_game()  # greys the button out while Steam starts the game
+        else:
+            self._update_launch_button()
+        root.after(5000, self._watch_game)
 
         self.reader_thread: ReaderThread | None = None
         if game_map is not None:
@@ -352,6 +363,13 @@ class App:
     def _settings_tab(self, parent: tk.Widget) -> ttk.Frame:
         outer, frame = self._scrollable(parent, stretch=True, on_width=self._settings_width_changed)
         frame.configure(padding=8)
+        game = ttk.LabelFrame(frame, text="Game", padding=8)
+        game.pack(fill="x", anchor="n", pady=(0, 8))
+        self.launch_on_start_var = tk.BooleanVar(value=self.settings.launch_game_on_start)
+        ttk.Checkbutton(game, text="Start Vampire Survivors when the helper opens", variable=self.launch_on_start_var,
+                        command=self._launch_on_start_changed, style="Setting.TCheckbutton").pack(anchor="w")
+        ttk.Button(game, text="\u25b6 Launch Vampire Survivors now", command=self._launch_game).pack(anchor="w", pady=(6, 0))
+
         detection = ttk.LabelFrame(frame, text="Detection", padding=8)
         detection.pack(fill="x", anchor="n", pady=(0, 8))
         self.auto_check = ttk.Checkbutton(detection, text="Auto-detect items from the game", variable=self.auto_var,
@@ -554,6 +572,33 @@ class App:
         self.report_status.set(f"Report saved: {message}")
         if sys.platform == "win32":
             subprocess.Popen(["explorer", f"/select,{message}"])
+
+    # ---- launching the game ----
+    def _launch_game(self) -> None:
+        error = game_launcher.launch()
+        if error:
+            self.icon_status.set(error)
+        else:
+            self.status.set("Starting Vampire Survivors through Steam...")
+            self.launch_button.state(["disabled"])
+            self.root.after(15000, self._update_launch_button)  # re-enable if it didn't start
+
+    def _watch_game(self) -> None:
+        """Without auto-detect nothing reports on the game, so check now and then for the button."""
+        if not self.auto_on():
+            self._update_launch_button()
+        self.root.after(5000, self._watch_game)
+
+    def _launch_on_start_changed(self) -> None:
+        self.settings.launch_game_on_start = self.launch_on_start_var.get()
+        self._save_settings()
+
+    def _update_launch_button(self, running: bool | None = None) -> None:
+        """Grey the button out while the game is running (known from auto-detect, else checked)."""
+        if running is None:
+            running = game_launcher.is_running(self._game_process)
+        self.launch_button.configure(text="Game running" if running else "\u25b6 Launch Vampire Survivors")
+        self.launch_button.state(["disabled"] if running else ["!disabled"])
 
     # ---- updates ----
     def _update_on_start_changed(self) -> None:
@@ -780,7 +825,7 @@ class App:
         for i, label in enumerate(labels):
             self.player_bar.add(ttk.Radiobutton(self.player_bar, text=label, value=i, variable=self.player_var,
                                                 style="Toolbutton", command=self._refresh))
-        self.player_bar.pack(fill="x", padx=6, before=self.tabs)
+        self.player_bar.pack(side="left", fill="x", expand=True)
 
     def holder_title(self) -> str:
         friend = self.selected_player()
@@ -1221,6 +1266,8 @@ class App:
                 latest = self.results.get_nowait()
             except queue.Empty:
                 break
+        if latest is not None:
+            self._update_launch_button(running=latest.state != "not_running")
         if latest is not None and self.auto_var.get():
             self.status.set(latest.message)
             if latest.state == "ok":
