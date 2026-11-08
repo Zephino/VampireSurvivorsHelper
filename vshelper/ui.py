@@ -209,14 +209,19 @@ class App:
         # Co-op: choose whose items Overview and How to evolve show (hidden when playing alone).
         self.player_var = tk.IntVar(value=0)
         # Bar above the tabs: co-op player switch (left) and the game launch button (right).
+        # Co-op player switch: its own row above the tabs, shown only when there are 2+ players.
         self.top_bar = ttk.Frame(root, padding=(6, 4, 6, 0))
-        self.top_bar.pack(fill="x")
-        self.launch_button = ttk.Button(self.top_bar, text="\u25b6 Launch Vampire Survivors", command=self._launch_game)
-        self.launch_button.pack(side="right")
         self.player_bar = FlowFrame(self.top_bar)
+        self.player_bar.pack(side="left", fill="x", expand=True)
         self._player_labels: tuple[str, ...] = ()
         self.tabs = ttk.Notebook(root)
         self.tabs.pack(fill="both", expand=True, padx=6, pady=(6, 0))
+        # The launch button sits in the tab row, on the right (placed over the notebook's empty
+        # tab-row space instead of taking a row of its own).
+        self.launch_button = ttk.Button(root, text="\u25b6 Launch Vampire Survivors", command=self._launch_game,
+                                        style="TabRow.TButton")
+        self.launch_button.place(in_=self.tabs, relx=1.0, x=0, y=0, anchor="ne")
+        self.launch_button.lift()
         self.results_tabs = self.tabs  # Overview / How to evolve / All evolutions live here too
         # Overview: the item list on the left (hidden automatically while auto-detect is on),
         # your items and what's ready on the right.
@@ -717,6 +722,7 @@ class App:
             style.theme_use(self.native_theme)
             self.root.configure(background=style.lookup("TFrame", "background") or "SystemButtonFace")
         self._reapply_wrapping()
+        style.configure("TabRow.TButton", padding=(10, 1))  # as tall as a tab
         canvas_bg = pal["bg"] or style.lookup("TFrame", "background") or "SystemButtonFace"
         for canvas in self.canvases:
             canvas.configure(background=canvas_bg)
@@ -816,7 +822,7 @@ class App:
         self.player_bar._items.clear()
         if len(labels) < 2:
             self.player_var.set(0)
-            self.player_bar.pack_forget()
+            self.top_bar.pack_forget()
             return
         if self.player_var.get() >= len(labels):
             self.player_var.set(0)
@@ -824,7 +830,7 @@ class App:
         for i, label in enumerate(labels):
             self.player_bar.add(ttk.Radiobutton(self.player_bar, text=label, value=i, variable=self.player_var,
                                                 style="Toolbutton", command=self._refresh))
-        self.player_bar.pack(side="left", fill="x", expand=True)
+        self.top_bar.pack(fill="x", before=self.tabs)
 
     def holder_title(self) -> str:
         friend = self.selected_player()

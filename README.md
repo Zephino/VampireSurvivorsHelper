@@ -58,7 +58,7 @@ python -m vshelper
 
 1. The helper starts Vampire Survivors through Steam when it opens (Settings > Game >
    *Start Vampire Survivors when the helper opens*, on by default), and the
-   **▶ Launch Vampire Survivors** button at the top right starts it any time. Begin a run.
+   **▶ Launch Vampire Survivors** button at the right end of the tab row starts it any time. Begin a run.
 2. The helper finds the game on its own. The first time after the game starts it searches memory
    for a few seconds; after that it updates about once per second.
 3. The right side has three tabs:

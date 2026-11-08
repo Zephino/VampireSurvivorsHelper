@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 00.00.38
+Date: 11/08/2026
+Time: 2:05 AM
+
+### Changes
+- The "Launch Vampire Survivors" / "Game running" button now sits at the right end of the tab row (level with Overview, All evolutions and Settings) instead of on its own row, and is slimmer to match the tabs. The extra row above the tabs only appears for the co-op player switch.
+
+### Reason
+User wanted the launch button on the same level as the tabs to reclaim the unused space.
+
 ## Version 00.00.37
 Date: 11/08/2026
 Time: 2:02 AM
