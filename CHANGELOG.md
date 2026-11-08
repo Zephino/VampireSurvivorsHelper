@@ -1,5 +1,20 @@
 # Changelog
 
+## Version 00.00.43
+Date: 11/08/2026
+Time: 3:27 AM
+
+### Changes
+- Fewer antivirus false alarms for the exe:
+  - The GitHub build compiles PyInstaller's starter program (bootloader) from source instead of using the prebuilt one shared by every PyInstaller program.
+  - The exe now has file details (product name, description, version, copyright) in Properties > Details.
+  - Each release also includes a folder version, `VampireSurvivorsHelper-folder.zip` (the exe plus its files, not packed into one file), which antivirus programs flag far less often.
+- The folder version knows it can't replace itself: its update button opens the download page instead. The diagnose report says which build is running (folder version / standalone exe / Python source).
+- Build recipe: `VSH_ONEDIR=1` builds the folder version. README updated.
+
+### Reason
+A friend's PC kept saying the app is a virus; user chose the free build changes to reduce false positives.
+
 ## Version 00.00.42
 Date: 11/08/2026
 Time: 3:14 AM

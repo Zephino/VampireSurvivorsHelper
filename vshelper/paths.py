@@ -13,6 +13,10 @@ from pathlib import Path
 
 FROZEN = bool(getattr(sys, "frozen", False))
 
+# The folder version keeps its files in an "_internal" folder next to the exe; the single-file exe
+# unpacks them to a temporary folder instead. Only the single-file exe can update itself in place.
+FOLDER_BUILD = FROZEN and Path(getattr(sys, "_MEIPASS", "")).parent == Path(sys.executable).parent
+
 if FROZEN:
     RESOURCE_ROOT = Path(getattr(sys, "_MEIPASS", Path(sys.executable).parent))
     USER_ROOT = Path(os.environ.get("LOCALAPPDATA") or Path.home()) / "VampireSurvivorsHelper"

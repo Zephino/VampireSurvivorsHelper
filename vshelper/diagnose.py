@@ -126,7 +126,9 @@ def _environment(out: Report, gmap: GameMap | None) -> None:
     version = (PROJECT_ROOT / "VERSION").read_text(encoding="utf-8").strip() if (PROJECT_ROOT / "VERSION").exists() else "?"
     out.add(f"  helper version: {version}")
     out.add(f"  python: {sys.version.split()[0]} ({platform.architecture()[0]}) {sys.executable}")
-    out.add(f"  running as: {'standalone exe' if FROZEN else 'Python source'}; saving files in {USER_ROOT}")
+    from .paths import FOLDER_BUILD
+    kind = "folder version" if FOLDER_BUILD else "standalone exe" if FROZEN else "Python source"
+    out.add(f"  running as: {kind}; saving files in {USER_ROOT}")
     out.add(f"  system: {platform.platform()}")
     if sys.platform == "win32":
         try:

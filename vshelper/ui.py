@@ -412,7 +412,11 @@ class App:
         buttons = FlowFrame(updates)
         buttons.pack(fill="x", pady=(6, 0))
         self.check_button = buttons.add(ttk.Button(buttons, text="Check for updates", command=self._check_updates))
-        self.update_button = ttk.Button(buttons, text="Update now", command=self._apply_update, state="disabled")
+        if updater.FOLDER_BUILD:  # the folder version can't swap itself: open the download page instead
+            self.update_button = ttk.Button(buttons, text="Download page", state="disabled",
+                                            command=lambda: webbrowser.open(updater.DOWNLOAD_URL))
+        else:
+            self.update_button = ttk.Button(buttons, text="Update now", command=self._apply_update, state="disabled")
         buttons.add(self.update_button)
         self.restart_button = ttk.Button(buttons, text="Restart helper", command=self._restart)
         self.update_buttons = buttons

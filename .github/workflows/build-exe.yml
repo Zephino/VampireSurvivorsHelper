@@ -23,13 +23,29 @@ jobs:
           python-version: "3.12"
 
       - name: Install packages
-        run: python -m pip install -r requirements.txt -r requirements-build.txt
+        run: python -m pip install -r requirements.txt
+
+      # PyInstaller's starter program ("bootloader") is compiled here instead of using the
+      # prebuilt one every PyInstaller program shares (malware included): antivirus programs flag
+      # the shared one much more often.
+      - name: Install PyInstaller with a freshly compiled bootloader
+        env:
+          PYINSTALLER_COMPILE_BOOTLOADER: "1"
+        run: python -m pip install --no-binary pyinstaller -r requirements-build.txt
 
       - name: Run tests
         run: python -m unittest -v
 
-      - name: Build exe
+      - name: Build exe (single file)
         run: python -m PyInstaller --noconfirm --clean VampireSurvivorsHelper.spec
+
+      - name: Build folder version
+        shell: pwsh
+        env:
+          VSH_ONEDIR: "1"
+        run: |
+          python -m PyInstaller --noconfirm --clean --workpath build/onedir VampireSurvivorsHelper.spec
+          Compress-Archive -Path dist/VampireSurvivorsHelper -DestinationPath dist/VampireSurvivorsHelper-folder.zip
 
       - name: Read version
         id: version
@@ -44,9 +60,9 @@ jobs:
           tag="v${{ steps.version.outputs.version }}"
           # Release notes: the newest changelog entry
           awk '/^## Version /{n++} n==1' CHANGELOG.md > notes.md
+          files="dist/VampireSurvivorsHelper.exe dist/VampireSurvivorsHelper-folder.zip"
           if gh release view "$tag" > /dev/null 2>&1; then
-            gh release upload "$tag" dist/VampireSurvivorsHelper.exe --clobber
+            gh release upload "$tag" $files --clobber
           else
-            gh release create "$tag" dist/VampireSurvivorsHelper.exe \
-              --title "Vampire Survivors Helper $tag" --notes-file notes.md
+            gh release create "$tag" $files --title "Vampire Survivors Helper $tag" --notes-file notes.md
           fi

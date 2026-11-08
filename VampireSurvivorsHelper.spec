@@ -1,6 +1,42 @@
-# PyInstaller build recipe for the standalone exe. Build with "Build Exe.bat"
+# PyInstaller build recipe. Build with "Build Exe.bat"
 # (or: python -m PyInstaller --noconfirm --clean VampireSurvivorsHelper.spec).
+#
+# Set VSH_ONEDIR=1 to build the folder version (dist/VampireSurvivorsHelper/ with the exe and its
+# files) instead of the single exe. Antivirus programs flag folder builds far less often.
+import os
+import re
+
 from PyInstaller.utils.hooks import collect_all
+
+try:  # needs pefile, which PyInstaller installs on Windows (the only place file details apply)
+    from PyInstaller.utils.win32.versioninfo import (
+        FixedFileInfo, StringFileInfo, StringStruct, StringTable, VarFileInfo, VarStruct, VSVersionInfo,
+    )
+except ImportError:
+    VSVersionInfo = None
+
+ONEDIR = os.environ.get("VSH_ONEDIR") == "1"
+NAME = "VampireSurvivorsHelper"
+
+# File details shown in the exe's Properties > Details (unlabelled programs look more suspicious).
+version_text = open("VERSION", encoding="utf-8").read().strip()
+numbers = tuple((list(map(int, re.findall(r"\d+", version_text))) + [0, 0, 0, 0])[:4])
+version_info = None if VSVersionInfo is None else VSVersionInfo(
+    ffi=FixedFileInfo(filevers=numbers, prodvers=numbers),
+    kids=[
+        StringFileInfo([StringTable("040904B0", [
+            StringStruct("CompanyName", "Zephino"),
+            StringStruct("FileDescription", "Vampire Survivors Helper - shows how to evolve your items"),
+            StringStruct("FileVersion", version_text),
+            StringStruct("InternalName", NAME),
+            StringStruct("LegalCopyright", "Open source: github.com/Zephino/VampireSurvivorsHelper"),
+            StringStruct("OriginalFilename", NAME + ".exe"),
+            StringStruct("ProductName", "Vampire Survivors Helper"),
+            StringStruct("ProductVersion", version_text),
+        ])]),
+        VarFileInfo([VarStruct("Translation", [0x0409, 1200])]),
+    ],
+)
 
 datas = [
     ("vshelper/data/evolutions.json", "vshelper/data"),  # bundled wiki data (works offline)
@@ -29,14 +65,15 @@ a = Analysis(
     noarchive=False,
 )
 pyz = PYZ(a.pure)
-exe = EXE(
-    pyz,
-    a.scripts,
-    a.binaries,
-    a.datas,
-    [],
-    name="VampireSurvivorsHelper",
+
+common = dict(
+    name=NAME,
     console=False,  # a window app: no black console window
     upx=False,      # UPX compression makes antivirus false positives more likely
-    onefile=True,
+    version=version_info,
 )
+if ONEDIR:
+    exe = EXE(pyz, a.scripts, [], exclude_binaries=True, **common)
+    coll = COLLECT(exe, a.binaries, a.datas, name=NAME, upx=False)
+else:
+    exe = EXE(pyz, a.scripts, a.binaries, a.datas, [], onefile=True, **common)

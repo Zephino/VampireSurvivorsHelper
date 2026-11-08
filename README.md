@@ -10,7 +10,10 @@ never changes anything in the game, so it gives no gameplay advantage.
 
 Download **VampireSurvivorsHelper.exe** from the
 [latest release](https://github.com/Zephino/VampireSurvivorsHelper/releases/latest) and double-click
-it. Nothing else to install. Windows may show "Windows protected your PC" because the exe isn't
+it. Nothing else to install. If an antivirus program complains about the single exe, download
+**VampireSurvivorsHelper-folder.zip** instead, unzip it and run `VampireSurvivorsHelper.exe` inside
+(folder builds are flagged far less often; to update it, download the new zip - Settings > Updates
+opens the page). Windows may show "Windows protected your PC" because the exe isn't
 signed: click **More info > Run anyway**. Some antivirus programs are wary of new exes that read
 another program's memory; the helper only *reads* the game and never changes it.
 
@@ -24,8 +27,10 @@ single exe stays in the folder. Settings > Troubleshooting >
 ## Building the exe (for sharing)
 
 - **Automatically:** whenever `VERSION` changes on `main`, the GitHub Actions workflow
-  (`.github/workflows/build-exe.yml`) builds the exe on Windows, runs the tests and publishes it as
-  a release. You can also start it by hand from the repository's **Actions** tab.
+  (`.github/workflows/build-exe.yml`) builds on Windows, runs the tests and publishes a release
+  with the single exe and the folder version (`VampireSurvivorsHelper-folder.zip`). To trip fewer
+  antivirus false alarms it compiles PyInstaller's starter program from source and gives the exe
+  proper file details (Properties > Details). You can also start it by hand from the repository's **Actions** tab.
 - **On your PC:** double-click **`Build Exe.bat`**. It installs PyInstaller (build tool only,
   `requirements-build.txt`) and writes `dist\VampireSurvivorsHelper.exe`, then opens that folder.
   The recipe is `VampireSurvivorsHelper.spec`.

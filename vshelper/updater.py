@@ -15,7 +15,7 @@ import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from .paths import FROZEN, RESOURCE_ROOT
+from .paths import FOLDER_BUILD, FROZEN, RESOURCE_ROOT
 
 PROJECT_ROOT = RESOURCE_ROOT
 BRANCH = "main"
@@ -191,6 +191,9 @@ def check(root: Path = PROJECT_ROOT) -> UpdateInfo:
 
 def apply(root: Path = PROJECT_ROOT) -> str:
     """Download and install the latest version. Returns a short summary."""
+    if FOLDER_BUILD:
+        raise UpdateError(f"This is the folder version: download the new VampireSurvivorsHelper-folder.zip from "
+                          f"{DOWNLOAD_URL} and replace the folder with it.")
     if FROZEN:
         return apply_release(check(root), Path(sys.executable))
     _require_git_checkout(root)
